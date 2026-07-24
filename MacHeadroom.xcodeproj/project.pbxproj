@@ -11,6 +11,9 @@
         A10000000000000000000002 /* MacHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MacHeadroomApp.swift */; };
         A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
         B10000000000000000000001 /* AppIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AppIdentityTests.swift */; };
+        D10000000000000000000001 /* ProcessSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* ProcessSnapshot.swift */; };
+        D10000000000000000000002 /* ProcessTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* ProcessTableSampler.swift */; };
+        D10000000000000000000003 /* HostSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* HostSampler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +37,9 @@
         A2000000000000000000000A /* Mac Headroom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Headroom.app"; sourceTree = BUILT_PRODUCTS_DIR; };
         B20000000000000000000001 /* AppIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityTests.swift; sourceTree = "<group>"; };
         B20000000000000000000002 /* MacHeadroomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacHeadroomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+        D20000000000000000000001 /* ProcessSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessSnapshot.swift; sourceTree = "<group>"; };
+        D20000000000000000000002 /* ProcessTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTableSampler.swift; sourceTree = "<group>"; };
+        D20000000000000000000003 /* HostSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostSampler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +74,7 @@
             isa = PBXGroup;
             children = (
                 A40000000000000000000003 /* App */,
+                D40000000000000000000001 /* Sampling */,
                 A40000000000000000000005 /* Resources */,
                 A20000000000000000000005 /* MacHeadroom.entitlements */,
             );
@@ -116,6 +123,16 @@
                 B20000000000000000000001 /* AppIdentityTests.swift */,
             );
             path = MacHeadroomTests;
+            sourceTree = "<group>";
+        };
+        D40000000000000000000001 /* Sampling */ = {
+            isa = PBXGroup;
+            children = (
+                D20000000000000000000001 /* ProcessSnapshot.swift */,
+                D20000000000000000000002 /* ProcessTableSampler.swift */,
+                D20000000000000000000003 /* HostSampler.swift */,
+            );
+            path = Sampling;
             sourceTree = "<group>";
         };
 /* End PBXGroup section */
@@ -219,6 +236,9 @@
             files = (
                 A10000000000000000000001 /* AppIdentity.swift in Sources */,
                 A10000000000000000000002 /* MacHeadroomApp.swift in Sources */,
+                D10000000000000000000001 /* ProcessSnapshot.swift in Sources */,
+                D10000000000000000000002 /* ProcessTableSampler.swift in Sources */,
+                D10000000000000000000003 /* HostSampler.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
