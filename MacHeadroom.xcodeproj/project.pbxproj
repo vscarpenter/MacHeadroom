@@ -10,7 +10,18 @@
         A10000000000000000000001 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppIdentity.swift */; };
         A10000000000000000000002 /* MacHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MacHeadroomApp.swift */; };
         A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
+        B10000000000000000000001 /* AppIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AppIdentityTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+        C10000000000000000000001 /* PBXContainerItemProxy */ = {
+            isa = PBXContainerItemProxy;
+            containerPortal = A80000000000000000000001 /* Project object */;
+            proxyType = 1;
+            remoteGlobalIDString = A50000000000000000000001;
+            remoteInfo = MacHeadroom;
+        };
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
         A20000000000000000000001 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
@@ -21,10 +32,19 @@
         A20000000000000000000008 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
         A20000000000000000000009 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
         A2000000000000000000000A /* Mac Headroom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Headroom.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+        B20000000000000000000001 /* AppIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityTests.swift; sourceTree = "<group>"; };
+        B20000000000000000000002 /* MacHeadroomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacHeadroomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
         A30000000000000000000001 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        B30000000000000000000001 /* Frameworks */ = {
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
             files = (
@@ -38,6 +58,7 @@
             isa = PBXGroup;
             children = (
                 A40000000000000000000002 /* MacHeadroom */,
+                B40000000000000000000001 /* MacHeadroomTests */,
                 A40000000000000000000006 /* Configuration */,
                 A40000000000000000000007 /* Products */,
             );
@@ -84,8 +105,17 @@
             isa = PBXGroup;
             children = (
                 A2000000000000000000000A /* Mac Headroom.app */,
+                B20000000000000000000002 /* MacHeadroomTests.xctest */,
             );
             name = Products;
+            sourceTree = "<group>";
+        };
+        B40000000000000000000001 /* MacHeadroomTests */ = {
+            isa = PBXGroup;
+            children = (
+                B20000000000000000000001 /* AppIdentityTests.swift */,
+            );
+            path = MacHeadroomTests;
             sourceTree = "<group>";
         };
 /* End PBXGroup section */
@@ -108,6 +138,24 @@
             productReference = A2000000000000000000000A /* Mac Headroom.app */;
             productType = "com.apple.product-type.application";
         };
+        B50000000000000000000001 /* MacHeadroomTests */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = B90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroomTests" */;
+            buildPhases = (
+                B70000000000000000000001 /* Sources */,
+                B30000000000000000000001 /* Frameworks */,
+                B60000000000000000000001 /* Resources */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+                B00000000000000000000001 /* PBXTargetDependency */,
+            );
+            name = MacHeadroomTests;
+            productName = MacHeadroomTests;
+            productReference = B20000000000000000000002 /* MacHeadroomTests.xctest */;
+            productType = "com.apple.product-type.bundle.unit-test";
+        };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -120,6 +168,10 @@
                 TargetAttributes = {
                     A50000000000000000000001 = {
                         CreatedOnToolsVersion = 26.6;
+                    };
+                    B50000000000000000000001 = {
+                        CreatedOnToolsVersion = 26.6;
+                        TestTargetID = A50000000000000000000001;
                     };
                 };
             };
@@ -137,6 +189,7 @@
             projectRoot = "";
             targets = (
                 A50000000000000000000001 /* MacHeadroom */,
+                B50000000000000000000001 /* MacHeadroomTests */,
             );
         };
 /* End PBXProject section */
@@ -147,6 +200,13 @@
             buildActionMask = 2147483647;
             files = (
                 A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        B60000000000000000000001 /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -162,7 +222,23 @@
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
+        B70000000000000000000001 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                B10000000000000000000001 /* AppIdentityTests.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+        B00000000000000000000001 /* PBXTargetDependency */ = {
+            isa = PBXTargetDependency;
+            target = A50000000000000000000001 /* MacHeadroom */;
+            targetProxy = C10000000000000000000001 /* PBXContainerItemProxy */;
+        };
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
         A90000000000000000000003 /* Debug */ = {
@@ -215,6 +291,42 @@
             };
             name = Release;
         };
+        B90000000000000000000005 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                BUNDLE_LOADER = "$(TEST_HOST)";
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                GENERATE_INFOPLIST_FILE = YES;
+                MACOSX_DEPLOYMENT_TARGET = 14.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroomTests;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SDKROOT = macosx;
+                SWIFT_STRICT_CONCURRENCY = complete;
+                SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+                SWIFT_VERSION = 6.0;
+                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
+            };
+            name = Debug;
+        };
+        B90000000000000000000006 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                BUNDLE_LOADER = "$(TEST_HOST)";
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                GENERATE_INFOPLIST_FILE = YES;
+                MACOSX_DEPLOYMENT_TARGET = 14.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroomTests;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SDKROOT = macosx;
+                SWIFT_STRICT_CONCURRENCY = complete;
+                SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+                SWIFT_VERSION = 6.0;
+                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
+            };
+            name = Release;
+        };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -232,6 +344,15 @@
             buildConfigurations = (
                 A90000000000000000000005 /* Debug */,
                 A90000000000000000000006 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        B90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroomTests" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                B90000000000000000000005 /* Debug */,
+                B90000000000000000000006 /* Release */,
             );
             defaultConfigurationIsVisible = 0;
             defaultConfigurationName = Release;
