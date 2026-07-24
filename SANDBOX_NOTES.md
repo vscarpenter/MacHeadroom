@@ -1,8 +1,12 @@
 # Mac Headroom sandbox feasibility spike
 
-**Decision:** STOP — on macOS 26.5.2, sandboxed `proc_pid_rusage` returned
-`EPERM` for every non-self same-user process; no approved public alternative
-was established.
+**Decision:** STOP. On macOS 26.5.2, sandboxed `proc_pid_rusage` returned
+`EPERM` for every non-self same-user process, and no approved public
+alternative was established.
+
+**Resolved:** July 24, 2026. Vinny picked option 1 below. See
+[Resolution](#resolution-july-24-2026) at the end of this document. Phase 1
+is unblocked.
 
 **Test date:** July 24, 2026
 
@@ -46,7 +50,7 @@ Activity Monitor-style memory value is not.
   `--phase-zero-probe`
 
 This result proves behavior on macOS 26.5.2. It does not prove that every
-supported macOS 14–26 release has an identical sandbox boundary.
+supported macOS 14-26 release has an identical sandbox boundary.
 
 ## Sandbox and constraint proof
 
@@ -278,3 +282,27 @@ App Store distribution is non-negotiable, pursue option 4 first and treat
 option 1 as the fallback. If exact Activity Monitor-style metrics are the
 non-negotiable product requirement, option 2 is the only path this spike
 actually proved.
+
+## Resolution (July 24, 2026)
+
+Vinny chose option 1: keep the Sandbox and the App Store, and swap the
+memory metric from physical footprint to resident size.
+
+`proc_pidinfo(PROC_PIDTASKINFO)` already returns `pti_resident_size` for
+every same-user process, so the app does not need `proc_pid_rusage` at all
+going forward. Dropping that call also removes 679 guaranteed `EPERM`
+attempts per tick, which helps the 0.5 percent CPU budget in the brief.
+
+The UI labels this value plainly instead of calling it unqualified "Memory,"
+so it never claims Activity Monitor parity it cannot deliver. Grouped totals
+will run higher than Activity Monitor's phys_footprint numbers for apps with
+many helper processes. RSS counts shared framework pages once per process,
+not once per app. Chrome and Safari will show this drift the most.
+
+Filing an Apple DTS request about non-self `phys_footprint` access under
+Sandbox remains worthwhile, and it can happen independently of the app
+build. It does not block Phase 1.
+
+Phase 1 starts from this commit. The `PhaseZero` probe target is retired: its
+findings are permanent above, and its source is recoverable from git history
+at `44ab12713a5f4a3fc1303cc82452176e5d80e953` if it is ever needed again.

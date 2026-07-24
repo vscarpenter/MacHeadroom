@@ -9,16 +9,12 @@
 /* Begin PBXBuildFile section */
         A10000000000000000000001 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppIdentity.swift */; };
         A10000000000000000000002 /* MacHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MacHeadroomApp.swift */; };
-        A10000000000000000000003 /* ProbeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* ProbeModels.swift */; };
-        A10000000000000000000004 /* SandboxProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* SandboxProbe.swift */; };
         A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
         A20000000000000000000001 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
         A20000000000000000000002 /* MacHeadroomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacHeadroomApp.swift; sourceTree = "<group>"; };
-        A20000000000000000000003 /* ProbeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbeModels.swift; sourceTree = "<group>"; };
-        A20000000000000000000004 /* SandboxProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxProbe.swift; sourceTree = "<group>"; };
         A20000000000000000000005 /* MacHeadroom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacHeadroom.entitlements; sourceTree = "<group>"; };
         A20000000000000000000006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
         A20000000000000000000007 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -51,7 +47,6 @@
             isa = PBXGroup;
             children = (
                 A40000000000000000000003 /* App */,
-                A40000000000000000000004 /* PhaseZero */,
                 A40000000000000000000005 /* Resources */,
                 A20000000000000000000005 /* MacHeadroom.entitlements */,
             );
@@ -65,15 +60,6 @@
                 A20000000000000000000002 /* MacHeadroomApp.swift */,
             );
             path = App;
-            sourceTree = "<group>";
-        };
-        A40000000000000000000004 /* PhaseZero */ = {
-            isa = PBXGroup;
-            children = (
-                A20000000000000000000003 /* ProbeModels.swift */,
-                A20000000000000000000004 /* SandboxProbe.swift */,
-            );
-            path = PhaseZero;
             sourceTree = "<group>";
         };
         A40000000000000000000005 /* Resources */ = {
@@ -173,8 +159,6 @@
             files = (
                 A10000000000000000000001 /* AppIdentity.swift in Sources */,
                 A10000000000000000000002 /* MacHeadroomApp.swift in Sources */,
-                A10000000000000000000003 /* ProbeModels.swift in Sources */,
-                A10000000000000000000004 /* SandboxProbe.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
