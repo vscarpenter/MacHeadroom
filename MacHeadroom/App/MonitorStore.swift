@@ -78,6 +78,11 @@ final class MonitorStore {
     cpuConvention = defaults.bool(forKey: DefaultsKey.perCoreConvention) ? .perCore : .machineCapacity
     showsMenuBarText = defaults.bool(forKey: DefaultsKey.showsMenuBarText)
     launchAtLogin = SMAppService.mainApp.status == .enabled
+    // Property observers don't run during init, so the menu bar text option
+    // has to start its live sampling here on relaunch.
+    if showsMenuBarText {
+      start()
+    }
   }
 
   /// Sample immediately on open, per the brief, regardless of whether the
