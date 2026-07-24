@@ -30,6 +30,8 @@ struct SettingsView: View {
   }
 }
 
-#Preview {
-  SettingsView(store: PreviewFixtures.makeStore())
-}
+#if DEBUG
+  #Preview {
+    SettingsView(store: PreviewFixtures.makeStore())
+  }
+#endif

@@ -110,12 +110,14 @@ struct PopoverView: View {
   }
 }
 
-#Preview("Popover - Light") {
-  PopoverView(store: PreviewFixtures.makeStore())
-    .preferredColorScheme(.light)
-}
+#if DEBUG
+  #Preview("Popover - Light") {
+    PopoverView(store: PreviewFixtures.makeStore())
+      .preferredColorScheme(.light)
+  }
 
-#Preview("Popover - Dark") {
-  PopoverView(store: PreviewFixtures.makeStore())
-    .preferredColorScheme(.dark)
-}
+  #Preview("Popover - Dark") {
+    PopoverView(store: PreviewFixtures.makeStore())
+      .preferredColorScheme(.dark)
+  }
+#endif
