@@ -1,467 +1,471 @@
 // !$*UTF8*$!
 {
-    archiveVersion = 1;
-    classes = {
-    };
-    objectVersion = 56;
-    objects = {
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
 
 /* Begin PBXBuildFile section */
-        A10000000000000000000001 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppIdentity.swift */; };
-        A10000000000000000000002 /* MacHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MacHeadroomApp.swift */; };
-        A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
-        I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
-        B10000000000000000000001 /* AppIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AppIdentityTests.swift */; };
-        D10000000000000000000001 /* ProcessSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* ProcessSnapshot.swift */; };
-        D10000000000000000000002 /* ProcessTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* ProcessTableSampler.swift */; };
-        D10000000000000000000003 /* HostSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* HostSampler.swift */; };
-        D10000000000000000000004 /* CPUDelta.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000004 /* CPUDelta.swift */; };
-        D10000000000000000000005 /* HostCPUDelta.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* HostCPUDelta.swift */; };
-        D10000000000000000000006 /* MonitorTick.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* MonitorTick.swift */; };
-        D10000000000000000000007 /* SamplerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* SamplerService.swift */; };
-        E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
-        E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
-        F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
-        F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
-        F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
-        G10000000000000000000001 /* MonitorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* MonitorStore.swift */; };
-        H10000000000000000000001 /* MetricKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000001 /* MetricKind.swift */; };
-        H10000000000000000000002 /* ValueFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000002 /* ValueFormatting.swift */; };
-        H10000000000000000000003 /* GroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000003 /* GroupRowView.swift */; };
-        H10000000000000000000004 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000004 /* PopoverView.swift */; };
-        H10000000000000000000005 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000005 /* SettingsView.swift */; };
-        H10000000000000000000006 /* PreviewFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000006 /* PreviewFixtures.swift */; };
+		A10000000000000000000001 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppIdentity.swift */; };
+		A10000000000000000000002 /* MacHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MacHeadroomApp.swift */; };
+		A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
+		B10000000000000000000001 /* AppIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AppIdentityTests.swift */; };
+		D10000000000000000000001 /* ProcessSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* ProcessSnapshot.swift */; };
+		D10000000000000000000002 /* ProcessTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* ProcessTableSampler.swift */; };
+		D10000000000000000000003 /* HostSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* HostSampler.swift */; };
+		D10000000000000000000004 /* CPUDelta.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000004 /* CPUDelta.swift */; };
+		D10000000000000000000005 /* HostCPUDelta.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* HostCPUDelta.swift */; };
+		D10000000000000000000006 /* MonitorTick.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* MonitorTick.swift */; };
+		D10000000000000000000007 /* SamplerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* SamplerService.swift */; };
+		E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
+		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
+		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
+		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
+		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
+		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
+		G10000000000000000000001 /* MonitorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* MonitorStore.swift */; };
+		H10000000000000000000001 /* MetricKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000001 /* MetricKind.swift */; };
+		H10000000000000000000002 /* ValueFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000002 /* ValueFormatting.swift */; };
+		H10000000000000000000003 /* GroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000003 /* GroupRowView.swift */; };
+		H10000000000000000000004 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000004 /* PopoverView.swift */; };
+		H10000000000000000000005 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000005 /* SettingsView.swift */; };
+		H10000000000000000000006 /* PreviewFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000006 /* PreviewFixtures.swift */; };
+		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-        C10000000000000000000001 /* PBXContainerItemProxy */ = {
-            isa = PBXContainerItemProxy;
-            containerPortal = A80000000000000000000001 /* Project object */;
-            proxyType = 1;
-            remoteGlobalIDString = A50000000000000000000001;
-            remoteInfo = MacHeadroom;
-        };
+		C10000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A80000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000000000000000000001;
+			remoteInfo = MacHeadroom;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-        A20000000000000000000001 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
-        A20000000000000000000002 /* MacHeadroomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacHeadroomApp.swift; sourceTree = "<group>"; };
-        A20000000000000000000005 /* MacHeadroom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacHeadroom.entitlements; sourceTree = "<group>"; };
-        A20000000000000000000006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-        I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-        A20000000000000000000007 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
-        A20000000000000000000008 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-        A20000000000000000000009 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
-        A2000000000000000000000A /* Mac Headroom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Headroom.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-        B20000000000000000000001 /* AppIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityTests.swift; sourceTree = "<group>"; };
-        B20000000000000000000002 /* MacHeadroomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacHeadroomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-        D20000000000000000000001 /* ProcessSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessSnapshot.swift; sourceTree = "<group>"; };
-        D20000000000000000000002 /* ProcessTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTableSampler.swift; sourceTree = "<group>"; };
-        D20000000000000000000003 /* HostSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostSampler.swift; sourceTree = "<group>"; };
-        D20000000000000000000004 /* CPUDelta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDelta.swift; sourceTree = "<group>"; };
-        D20000000000000000000005 /* HostCPUDelta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostCPUDelta.swift; sourceTree = "<group>"; };
-        D20000000000000000000006 /* MonitorTick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorTick.swift; sourceTree = "<group>"; };
-        D20000000000000000000007 /* SamplerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerService.swift; sourceTree = "<group>"; };
-        E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
-        E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
-        F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
-        F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
-        F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
-        G20000000000000000000001 /* MonitorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStore.swift; sourceTree = "<group>"; };
-        H20000000000000000000001 /* MetricKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricKind.swift; sourceTree = "<group>"; };
-        H20000000000000000000002 /* ValueFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueFormatting.swift; sourceTree = "<group>"; };
-        H20000000000000000000003 /* GroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRowView.swift; sourceTree = "<group>"; };
-        H20000000000000000000004 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
-        H20000000000000000000005 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-        H20000000000000000000006 /* PreviewFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFixtures.swift; sourceTree = "<group>"; };
+		A20000000000000000000001 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* MacHeadroomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacHeadroomApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* MacHeadroom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacHeadroom.entitlements; sourceTree = "<group>"; };
+		A20000000000000000000006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		A20000000000000000000007 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		A20000000000000000000008 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		A20000000000000000000009 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		A2000000000000000000000A /* Mac Headroom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Headroom.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000001 /* AppIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000002 /* MacHeadroomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacHeadroomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D20000000000000000000001 /* ProcessSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessSnapshot.swift; sourceTree = "<group>"; };
+		D20000000000000000000002 /* ProcessTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTableSampler.swift; sourceTree = "<group>"; };
+		D20000000000000000000003 /* HostSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostSampler.swift; sourceTree = "<group>"; };
+		D20000000000000000000004 /* CPUDelta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDelta.swift; sourceTree = "<group>"; };
+		D20000000000000000000005 /* HostCPUDelta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostCPUDelta.swift; sourceTree = "<group>"; };
+		D20000000000000000000006 /* MonitorTick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorTick.swift; sourceTree = "<group>"; };
+		D20000000000000000000007 /* SamplerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerService.swift; sourceTree = "<group>"; };
+		E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
+		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
+		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
+		G20000000000000000000001 /* MonitorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStore.swift; sourceTree = "<group>"; };
+		H20000000000000000000001 /* MetricKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricKind.swift; sourceTree = "<group>"; };
+		H20000000000000000000002 /* ValueFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueFormatting.swift; sourceTree = "<group>"; };
+		H20000000000000000000003 /* GroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRowView.swift; sourceTree = "<group>"; };
+		H20000000000000000000004 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
+		H20000000000000000000005 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		H20000000000000000000006 /* PreviewFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFixtures.swift; sourceTree = "<group>"; };
+		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-        A30000000000000000000001 /* Frameworks */ = {
-            isa = PBXFrameworksBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        B30000000000000000000001 /* Frameworks */ = {
-            isa = PBXFrameworksBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-        A40000000000000000000001 = {
-            isa = PBXGroup;
-            children = (
-                A40000000000000000000002 /* MacHeadroom */,
-                B40000000000000000000001 /* MacHeadroomTests */,
-                A40000000000000000000006 /* Configuration */,
-                A40000000000000000000007 /* Products */,
-            );
-            sourceTree = "<group>";
-        };
-        A40000000000000000000002 /* MacHeadroom */ = {
-            isa = PBXGroup;
-            children = (
-                A40000000000000000000003 /* App */,
-                D40000000000000000000001 /* Sampling */,
-                F40000000000000000000001 /* Grouping */,
-                H40000000000000000000001 /* UI */,
-                A40000000000000000000005 /* Resources */,
-                I20000000000000000000001 /* Assets.xcassets */,
-                A20000000000000000000005 /* MacHeadroom.entitlements */,
-            );
-            path = MacHeadroom;
-            sourceTree = "<group>";
-        };
-        A40000000000000000000003 /* App */ = {
-            isa = PBXGroup;
-            children = (
-                A20000000000000000000001 /* AppIdentity.swift */,
-                A20000000000000000000002 /* MacHeadroomApp.swift */,
-                G20000000000000000000001 /* MonitorStore.swift */,
-            );
-            path = App;
-            sourceTree = "<group>";
-        };
-        A40000000000000000000005 /* Resources */ = {
-            isa = PBXGroup;
-            children = (
-                A20000000000000000000006 /* PrivacyInfo.xcprivacy */,
-            );
-            path = Resources;
-            sourceTree = "<group>";
-        };
-        A40000000000000000000006 /* Configuration */ = {
-            isa = PBXGroup;
-            children = (
-                A20000000000000000000009 /* Shared.xcconfig */,
-                A20000000000000000000007 /* Debug.xcconfig */,
-                A20000000000000000000008 /* Release.xcconfig */,
-            );
-            path = Configuration;
-            sourceTree = "<group>";
-        };
-        A40000000000000000000007 /* Products */ = {
-            isa = PBXGroup;
-            children = (
-                A2000000000000000000000A /* Mac Headroom.app */,
-                B20000000000000000000002 /* MacHeadroomTests.xctest */,
-            );
-            name = Products;
-            sourceTree = "<group>";
-        };
-        B40000000000000000000001 /* MacHeadroomTests */ = {
-            isa = PBXGroup;
-            children = (
-                B20000000000000000000001 /* AppIdentityTests.swift */,
-                E20000000000000000000001 /* CPUDeltaTests.swift */,
-                E20000000000000000000002 /* GroupingEngineTests.swift */,
-            );
-            path = MacHeadroomTests;
-            sourceTree = "<group>";
-        };
-        F40000000000000000000001 /* Grouping */ = {
-            isa = PBXGroup;
-            children = (
-                F20000000000000000000001 /* AppMetadata.swift */,
-                F20000000000000000000002 /* AppGroup.swift */,
-                F20000000000000000000003 /* GroupingEngine.swift */,
-            );
-            path = Grouping;
-            sourceTree = "<group>";
-        };
-        H40000000000000000000001 /* UI */ = {
-            isa = PBXGroup;
-            children = (
-                H20000000000000000000001 /* MetricKind.swift */,
-                H20000000000000000000002 /* ValueFormatting.swift */,
-                H20000000000000000000003 /* GroupRowView.swift */,
-                H20000000000000000000004 /* PopoverView.swift */,
-                H20000000000000000000005 /* SettingsView.swift */,
-                H20000000000000000000006 /* PreviewFixtures.swift */,
-            );
-            path = UI;
-            sourceTree = "<group>";
-        };
-        D40000000000000000000001 /* Sampling */ = {
-            isa = PBXGroup;
-            children = (
-                D20000000000000000000001 /* ProcessSnapshot.swift */,
-                D20000000000000000000002 /* ProcessTableSampler.swift */,
-                D20000000000000000000003 /* HostSampler.swift */,
-                D20000000000000000000004 /* CPUDelta.swift */,
-                D20000000000000000000005 /* HostCPUDelta.swift */,
-                D20000000000000000000006 /* MonitorTick.swift */,
-                D20000000000000000000007 /* SamplerService.swift */,
-            );
-            path = Sampling;
-            sourceTree = "<group>";
-        };
+		A40000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A40000000000000000000002 /* MacHeadroom */,
+				B40000000000000000000001 /* MacHeadroomTests */,
+				A40000000000000000000006 /* Configuration */,
+				A40000000000000000000007 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A40000000000000000000002 /* MacHeadroom */ = {
+			isa = PBXGroup;
+			children = (
+				A40000000000000000000003 /* App */,
+				D40000000000000000000001 /* Sampling */,
+				F40000000000000000000001 /* Grouping */,
+				H40000000000000000000001 /* UI */,
+				A40000000000000000000005 /* Resources */,
+				I20000000000000000000001 /* Assets.xcassets */,
+				A20000000000000000000005 /* MacHeadroom.entitlements */,
+			);
+			path = MacHeadroom;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* AppIdentity.swift */,
+				A20000000000000000000002 /* MacHeadroomApp.swift */,
+				G20000000000000000000001 /* MonitorStore.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000005 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000006 /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000006 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000009 /* Shared.xcconfig */,
+				A20000000000000000000007 /* Debug.xcconfig */,
+				A20000000000000000000008 /* Release.xcconfig */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000007 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000A /* Mac Headroom.app */,
+				B20000000000000000000002 /* MacHeadroomTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B40000000000000000000001 /* MacHeadroomTests */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000001 /* AppIdentityTests.swift */,
+				E20000000000000000000001 /* CPUDeltaTests.swift */,
+				E20000000000000000000002 /* GroupingEngineTests.swift */,
+				E20000000000000000000003 /* PopoverLayoutTests.swift */,
+			);
+			path = MacHeadroomTests;
+			sourceTree = "<group>";
+		};
+		D40000000000000000000001 /* Sampling */ = {
+			isa = PBXGroup;
+			children = (
+				D20000000000000000000001 /* ProcessSnapshot.swift */,
+				D20000000000000000000002 /* ProcessTableSampler.swift */,
+				D20000000000000000000003 /* HostSampler.swift */,
+				D20000000000000000000004 /* CPUDelta.swift */,
+				D20000000000000000000005 /* HostCPUDelta.swift */,
+				D20000000000000000000006 /* MonitorTick.swift */,
+				D20000000000000000000007 /* SamplerService.swift */,
+			);
+			path = Sampling;
+			sourceTree = "<group>";
+		};
+		F40000000000000000000001 /* Grouping */ = {
+			isa = PBXGroup;
+			children = (
+				F20000000000000000000001 /* AppMetadata.swift */,
+				F20000000000000000000002 /* AppGroup.swift */,
+				F20000000000000000000003 /* GroupingEngine.swift */,
+			);
+			path = Grouping;
+			sourceTree = "<group>";
+		};
+		H40000000000000000000001 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				H20000000000000000000001 /* MetricKind.swift */,
+				H20000000000000000000002 /* ValueFormatting.swift */,
+				H20000000000000000000003 /* GroupRowView.swift */,
+				H20000000000000000000004 /* PopoverView.swift */,
+				H20000000000000000000005 /* SettingsView.swift */,
+				H20000000000000000000006 /* PreviewFixtures.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-        A50000000000000000000001 /* MacHeadroom */ = {
-            isa = PBXNativeTarget;
-            buildConfigurationList = A90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroom" */;
-            buildPhases = (
-                A70000000000000000000001 /* Sources */,
-                A30000000000000000000001 /* Frameworks */,
-                A60000000000000000000001 /* Resources */,
-            );
-            buildRules = (
-            );
-            dependencies = (
-            );
-            name = MacHeadroom;
-            productName = MacHeadroom;
-            productReference = A2000000000000000000000A /* Mac Headroom.app */;
-            productType = "com.apple.product-type.application";
-        };
-        B50000000000000000000001 /* MacHeadroomTests */ = {
-            isa = PBXNativeTarget;
-            buildConfigurationList = B90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroomTests" */;
-            buildPhases = (
-                B70000000000000000000001 /* Sources */,
-                B30000000000000000000001 /* Frameworks */,
-                B60000000000000000000001 /* Resources */,
-            );
-            buildRules = (
-            );
-            dependencies = (
-                B00000000000000000000001 /* PBXTargetDependency */,
-            );
-            name = MacHeadroomTests;
-            productName = MacHeadroomTests;
-            productReference = B20000000000000000000002 /* MacHeadroomTests.xctest */;
-            productType = "com.apple.product-type.bundle.unit-test";
-        };
+		A50000000000000000000001 /* MacHeadroom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroom" */;
+			buildPhases = (
+				A70000000000000000000001 /* Sources */,
+				A30000000000000000000001 /* Frameworks */,
+				A60000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacHeadroom;
+			productName = MacHeadroom;
+			productReference = A2000000000000000000000A /* Mac Headroom.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B50000000000000000000001 /* MacHeadroomTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroomTests" */;
+			buildPhases = (
+				B70000000000000000000001 /* Sources */,
+				B30000000000000000000001 /* Frameworks */,
+				B60000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B00000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = MacHeadroomTests;
+			productName = MacHeadroomTests;
+			productReference = B20000000000000000000002 /* MacHeadroomTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-        A80000000000000000000001 /* Project object */ = {
-            isa = PBXProject;
-            attributes = {
-                BuildIndependentTargetsInParallel = 1;
-                LastSwiftUpdateCheck = 2660;
-                LastUpgradeCheck = 2660;
-                TargetAttributes = {
-                    A50000000000000000000001 = {
-                        CreatedOnToolsVersion = 26.6;
-                    };
-                    B50000000000000000000001 = {
-                        CreatedOnToolsVersion = 26.6;
-                        TestTargetID = A50000000000000000000001;
-                    };
-                };
-            };
-            buildConfigurationList = A90000000000000000000001 /* Build configuration list for PBXProject "MacHeadroom" */;
-            compatibilityVersion = "Xcode 14.0";
-            developmentRegion = en;
-            hasScannedForEncodings = 0;
-            knownRegions = (
-                en,
-                Base,
-            );
-            mainGroup = A40000000000000000000001;
-            productRefGroup = A40000000000000000000007 /* Products */;
-            projectDirPath = "";
-            projectRoot = "";
-            targets = (
-                A50000000000000000000001 /* MacHeadroom */,
-                B50000000000000000000001 /* MacHeadroomTests */,
-            );
-        };
+		A80000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					A50000000000000000000001 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					B50000000000000000000001 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = A50000000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = A90000000000000000000001 /* Build configuration list for PBXProject "MacHeadroom" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A40000000000000000000001;
+			productRefGroup = A40000000000000000000007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A50000000000000000000001 /* MacHeadroom */,
+				B50000000000000000000001 /* MacHeadroomTests */,
+			);
+		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-        A60000000000000000000001 /* Resources */ = {
-            isa = PBXResourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */,
-                I10000000000000000000001 /* Assets.xcassets in Resources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        B60000000000000000000001 /* Resources */ = {
-            isa = PBXResourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		A60000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */,
+				I10000000000000000000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B60000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-        A70000000000000000000001 /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                A10000000000000000000001 /* AppIdentity.swift in Sources */,
-                A10000000000000000000002 /* MacHeadroomApp.swift in Sources */,
-                D10000000000000000000001 /* ProcessSnapshot.swift in Sources */,
-                D10000000000000000000002 /* ProcessTableSampler.swift in Sources */,
-                D10000000000000000000003 /* HostSampler.swift in Sources */,
-                D10000000000000000000004 /* CPUDelta.swift in Sources */,
-                D10000000000000000000005 /* HostCPUDelta.swift in Sources */,
-                D10000000000000000000006 /* MonitorTick.swift in Sources */,
-                D10000000000000000000007 /* SamplerService.swift in Sources */,
-                F10000000000000000000001 /* AppMetadata.swift in Sources */,
-                F10000000000000000000002 /* AppGroup.swift in Sources */,
-                F10000000000000000000003 /* GroupingEngine.swift in Sources */,
-                G10000000000000000000001 /* MonitorStore.swift in Sources */,
-                H10000000000000000000001 /* MetricKind.swift in Sources */,
-                H10000000000000000000002 /* ValueFormatting.swift in Sources */,
-                H10000000000000000000003 /* GroupRowView.swift in Sources */,
-                H10000000000000000000004 /* PopoverView.swift in Sources */,
-                H10000000000000000000005 /* SettingsView.swift in Sources */,
-                H10000000000000000000006 /* PreviewFixtures.swift in Sources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
-        B70000000000000000000001 /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                B10000000000000000000001 /* AppIdentityTests.swift in Sources */,
-                E10000000000000000000001 /* CPUDeltaTests.swift in Sources */,
-                E10000000000000000000002 /* GroupingEngineTests.swift in Sources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		A70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* AppIdentity.swift in Sources */,
+				A10000000000000000000002 /* MacHeadroomApp.swift in Sources */,
+				D10000000000000000000001 /* ProcessSnapshot.swift in Sources */,
+				D10000000000000000000002 /* ProcessTableSampler.swift in Sources */,
+				D10000000000000000000003 /* HostSampler.swift in Sources */,
+				D10000000000000000000004 /* CPUDelta.swift in Sources */,
+				D10000000000000000000005 /* HostCPUDelta.swift in Sources */,
+				D10000000000000000000006 /* MonitorTick.swift in Sources */,
+				D10000000000000000000007 /* SamplerService.swift in Sources */,
+				F10000000000000000000001 /* AppMetadata.swift in Sources */,
+				F10000000000000000000002 /* AppGroup.swift in Sources */,
+				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
+				G10000000000000000000001 /* MonitorStore.swift in Sources */,
+				H10000000000000000000001 /* MetricKind.swift in Sources */,
+				H10000000000000000000002 /* ValueFormatting.swift in Sources */,
+				H10000000000000000000003 /* GroupRowView.swift in Sources */,
+				H10000000000000000000004 /* PopoverView.swift in Sources */,
+				H10000000000000000000005 /* SettingsView.swift in Sources */,
+				H10000000000000000000006 /* PreviewFixtures.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000001 /* AppIdentityTests.swift in Sources */,
+				E10000000000000000000001 /* CPUDeltaTests.swift in Sources */,
+				E10000000000000000000002 /* GroupingEngineTests.swift in Sources */,
+				E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-        B00000000000000000000001 /* PBXTargetDependency */ = {
-            isa = PBXTargetDependency;
-            target = A50000000000000000000001 /* MacHeadroom */;
-            targetProxy = C10000000000000000000001 /* PBXContainerItemProxy */;
-        };
+		B00000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000000000000000000001 /* MacHeadroom */;
+			targetProxy = C10000000000000000000001 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-        A90000000000000000000003 /* Debug */ = {
-            isa = XCBuildConfiguration;
-            buildSettings = {
-                CLANG_ENABLE_MODULES = YES;
-                CLANG_ENABLE_OBJC_ARC = YES;
-                COPY_PHASE_STRIP = NO;
-                DEBUG_INFORMATION_FORMAT = dwarf;
-                ENABLE_STRICT_OBJC_MSGSEND = YES;
-                GCC_C_LANGUAGE_STANDARD = gnu17;
-                GCC_NO_COMMON_BLOCKS = YES;
-                MACOSX_DEPLOYMENT_TARGET = 14.0;
-                MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-                ONLY_ACTIVE_ARCH = YES;
-                SDKROOT = macosx;
-                SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-            };
-            name = Debug;
-        };
-        A90000000000000000000004 /* Release */ = {
-            isa = XCBuildConfiguration;
-            buildSettings = {
-                CLANG_ENABLE_MODULES = YES;
-                CLANG_ENABLE_OBJC_ARC = YES;
-                COPY_PHASE_STRIP = YES;
-                DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-                ENABLE_NS_ASSERTIONS = NO;
-                ENABLE_STRICT_OBJC_MSGSEND = YES;
-                GCC_C_LANGUAGE_STANDARD = gnu17;
-                GCC_NO_COMMON_BLOCKS = YES;
-                MACOSX_DEPLOYMENT_TARGET = 14.0;
-                MTL_ENABLE_DEBUG_INFO = NO;
-                SDKROOT = macosx;
-                SWIFT_COMPILATION_MODE = wholemodule;
-            };
-            name = Release;
-        };
-        A90000000000000000000005 /* Debug */ = {
-            isa = XCBuildConfiguration;
-            baseConfigurationReference = A20000000000000000000007 /* Debug.xcconfig */;
-            buildSettings = {
-            };
-            name = Debug;
-        };
-        A90000000000000000000006 /* Release */ = {
-            isa = XCBuildConfiguration;
-            baseConfigurationReference = A20000000000000000000008 /* Release.xcconfig */;
-            buildSettings = {
-            };
-            name = Release;
-        };
-        B90000000000000000000005 /* Debug */ = {
-            isa = XCBuildConfiguration;
-            buildSettings = {
-                BUNDLE_LOADER = "$(TEST_HOST)";
-                CODE_SIGN_STYLE = Automatic;
-                CURRENT_PROJECT_VERSION = 1;
-                GENERATE_INFOPLIST_FILE = YES;
-                MACOSX_DEPLOYMENT_TARGET = 14.0;
-                PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroomTests;
-                PRODUCT_NAME = "$(TARGET_NAME)";
-                SDKROOT = macosx;
-                SWIFT_STRICT_CONCURRENCY = complete;
-                SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
-                SWIFT_VERSION = 6.0;
-                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
-            };
-            name = Debug;
-        };
-        B90000000000000000000006 /* Release */ = {
-            isa = XCBuildConfiguration;
-            buildSettings = {
-                BUNDLE_LOADER = "$(TEST_HOST)";
-                CODE_SIGN_STYLE = Automatic;
-                CURRENT_PROJECT_VERSION = 1;
-                GENERATE_INFOPLIST_FILE = YES;
-                MACOSX_DEPLOYMENT_TARGET = 14.0;
-                PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroomTests;
-                PRODUCT_NAME = "$(TARGET_NAME)";
-                SDKROOT = macosx;
-                SWIFT_STRICT_CONCURRENCY = complete;
-                SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
-                SWIFT_VERSION = 6.0;
-                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
-            };
-            name = Release;
-        };
+		A90000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			};
+			name = Debug;
+		};
+		A90000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		A90000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A20000000000000000000007 /* Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		A90000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A20000000000000000000008 /* Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		B90000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroomTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
+			};
+			name = Debug;
+		};
+		B90000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroomTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-        A90000000000000000000001 /* Build configuration list for PBXProject "MacHeadroom" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                A90000000000000000000003 /* Debug */,
-                A90000000000000000000004 /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
-        A90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroom" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                A90000000000000000000005 /* Debug */,
-                A90000000000000000000006 /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
-        B90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroomTests" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                B90000000000000000000005 /* Debug */,
-                B90000000000000000000006 /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
+		A90000000000000000000001 /* Build configuration list for PBXProject "MacHeadroom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A90000000000000000000003 /* Debug */,
+				A90000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A90000000000000000000005 /* Debug */,
+				A90000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B90000000000000000000002 /* Build configuration list for PBXNativeTarget "MacHeadroomTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B90000000000000000000005 /* Debug */,
+				B90000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-    };
-    rootObject = A80000000000000000000001 /* Project object */;
+	};
+	rootObject = A80000000000000000000001 /* Project object */;
 }

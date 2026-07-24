@@ -71,7 +71,10 @@ struct PopoverView: View {
       .padding(12)
       .animation(reduceMotion ? nil : .default, value: groups)
     }
-    .frame(maxHeight: 360)
+    // A fixed height, not maxHeight: the MenuBarExtra window sizes itself
+    // once, at open, before the first sample lands. The ideal height must
+    // not depend on list content or the rows arrive into zero space.
+    .frame(height: 360)
   }
 
   private var footer: some View {
