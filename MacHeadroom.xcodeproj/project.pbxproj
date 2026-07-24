@@ -24,6 +24,8 @@
 		E10000000000000000000004 /* MenuBarGlyphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000004 /* MenuBarGlyphTests.swift */; };
 		E10000000000000000000005 /* SamplerBurstTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000005 /* SamplerBurstTests.swift */; };
 		E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000006 /* SingleInstanceGuardTests.swift */; };
+		E10000000000000000000007 /* ProcessGlossaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000007 /* ProcessGlossaryTests.swift */; };
+		H10000000000000000000007 /* ProcessGlossary.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000007 /* ProcessGlossary.swift */; };
 		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
@@ -72,6 +74,8 @@
 		E20000000000000000000004 /* MenuBarGlyphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarGlyphTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000005 /* SamplerBurstTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerBurstTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000006 /* SingleInstanceGuardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuardTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000007 /* ProcessGlossaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossaryTests.swift; sourceTree = "<group>"; };
+		H20000000000000000000007 /* ProcessGlossary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossary.swift; sourceTree = "<group>"; };
 		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
@@ -176,6 +180,7 @@
 				E20000000000000000000004 /* MenuBarGlyphTests.swift */,
 				E20000000000000000000005 /* SamplerBurstTests.swift */,
 				E20000000000000000000006 /* SingleInstanceGuardTests.swift */,
+				E20000000000000000000007 /* ProcessGlossaryTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -213,6 +218,7 @@
 				H20000000000000000000004 /* PopoverView.swift */,
 				H20000000000000000000005 /* SettingsView.swift */,
 				H20000000000000000000006 /* PreviewFixtures.swift */,
+				H20000000000000000000007 /* ProcessGlossary.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -337,6 +343,7 @@
 				H10000000000000000000004 /* PopoverView.swift in Sources */,
 				H10000000000000000000005 /* SettingsView.swift in Sources */,
 				H10000000000000000000006 /* PreviewFixtures.swift in Sources */,
+				H10000000000000000000007 /* ProcessGlossary.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +358,7 @@
 				E10000000000000000000004 /* MenuBarGlyphTests.swift in Sources */,
 				E10000000000000000000005 /* SamplerBurstTests.swift in Sources */,
 				E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */,
+				E10000000000000000000007 /* ProcessGlossaryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

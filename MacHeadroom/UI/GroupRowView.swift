@@ -13,6 +13,7 @@ struct GroupRowView: View {
     guard let value, maxValue > 0 else { return 0 }
     return min(max(value / maxValue, 0), 1)
   }
+  private var glossaryEntry: ProcessGlossary.Entry? { ProcessGlossary.entry(for: group) }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
@@ -38,8 +39,19 @@ struct GroupRowView: View {
           .resizable()
           .frame(width: 18, height: 18)
 
-        Text(group.name)
-          .lineLimit(1)
+        if let entry = glossaryEntry {
+          VStack(alignment: .leading, spacing: 1) {
+            Text(entry.friendlyName)
+              .lineLimit(1)
+            Text(group.name)
+              .font(.caption2)
+              .foregroundStyle(.secondary)
+              .lineLimit(1)
+          }
+        } else {
+          Text(group.name)
+            .lineLimit(1)
+        }
 
         if group.processCount > 1 {
           Text("×\(group.processCount)")
@@ -71,6 +83,7 @@ struct GroupRowView: View {
     }
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
+    .help(glossaryEntry?.blurb ?? "")
     .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: value)
 
     if isExpanded {
@@ -83,7 +96,8 @@ struct GroupRowView: View {
   private var accessibilityLabel: String {
     let processWord = group.processCount == 1 ? "process" : "processes"
     let metricLabel = metric == .cpu ? "percent CPU" : "memory"
-    return "\(group.name), \(group.processCount) \(processWord), "
+    let name = glossaryEntry.map { "\($0.friendlyName), \(group.name)" } ?? group.name
+    return "\(name), \(group.processCount) \(processWord), "
       + "\(ValueFormatting.value(metric, for: group)) \(metricLabel)"
   }
 }

@@ -76,10 +76,26 @@
         ]
       )
 
+      let spotlight = AppGroup(
+        groupKey: "name:corespotlightd",
+        name: "corespotlightd",
+        bundleIdentifier: nil,
+        representativePID: 5000,
+        cpuPercent: 2.2,
+        memoryBytes: 180_000_000,
+        children: [
+          ProcessMeasurement(
+            snapshot: ProcessSnapshot(
+              pid: 5000, parentPID: 1, userID: 501, name: "corespotlightd",
+              startIdentity: "5000:0", cpuTimeTicks: 0, residentBytes: 180_000_000),
+            cpuPercent: 2.2)
+        ]
+      )
+
       let cpuGroups = GroupingEngine.topGroups(
-        from: [chrome, xcode, slack, finder], by: \.cpuPercent, limit: 10)
+        from: [chrome, xcode, slack, finder, spotlight], by: \.cpuPercent, limit: 10)
       let memoryGroups = GroupingEngine.topGroups(
-        from: [chrome, xcode, slack, finder], by: { Double($0.memoryBytes) }, limit: 10)
+        from: [chrome, xcode, slack, finder, spotlight], by: { Double($0.memoryBytes) }, limit: 10)
 
       return MonitorStore.preview(
         cpuGroups: cpuGroups,
