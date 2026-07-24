@@ -22,6 +22,7 @@
 		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
 		E10000000000000000000004 /* MenuBarGlyphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000004 /* MenuBarGlyphTests.swift */; };
+		E10000000000000000000005 /* SamplerBurstTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000005 /* SamplerBurstTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -67,6 +68,7 @@
 		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000004 /* MenuBarGlyphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarGlyphTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000005 /* SamplerBurstTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerBurstTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				E20000000000000000000002 /* GroupingEngineTests.swift */,
 				E20000000000000000000003 /* PopoverLayoutTests.swift */,
 				E20000000000000000000004 /* MenuBarGlyphTests.swift */,
+				E20000000000000000000005 /* SamplerBurstTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -339,6 +342,7 @@
 				E10000000000000000000002 /* GroupingEngineTests.swift in Sources */,
 				E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */,
 				E10000000000000000000004 /* MenuBarGlyphTests.swift in Sources */,
+				E10000000000000000000005 /* SamplerBurstTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

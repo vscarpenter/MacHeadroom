@@ -85,12 +85,17 @@ final class MonitorStore {
     }
   }
 
-  /// Sample immediately on open, per the brief, regardless of whether the
-  /// timer loop was already running for the menu bar text option.
+  /// Sample immediately on open, per the brief. Starting the timer already
+  /// refreshes at once, so the explicit refresh is only for the case where
+  /// the loop was running for the menu bar text option; issuing both would
+  /// stack two ticks back to back.
   func popoverDidAppear() {
     isPopoverOpen = true
-    start()
-    Task { await refreshNow() }
+    if timerTask == nil {
+      start()
+    } else {
+      Task { await refreshNow() }
+    }
   }
 
   func popoverDidDisappear() {
@@ -101,8 +106,7 @@ final class MonitorStore {
   }
 
   func refreshNow() async {
-    let tick = await sampler.tick(
-      now: DispatchTime.now().uptimeNanoseconds, convention: cpuConvention)
+    let tick = await sampler.tick(convention: cpuConvention)
     let metadata = Self.currentAppMetadata()
     let groups = GroupingEngine.group(measurements: tick.processes, metadataByPID: metadata)
 

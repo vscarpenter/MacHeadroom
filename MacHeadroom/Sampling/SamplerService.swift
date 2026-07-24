@@ -25,7 +25,13 @@ actor SamplerService {
     return info
   }
 
-  func tick(now: UInt64, convention: CPUConvention) -> MonitorTick {
+  /// The actor owns the clock: the timestamp is taken here, next to the
+  /// sweep, never passed in. A caller-captured timestamp goes stale while
+  /// the call waits its turn on the actor, and dividing a full sweep's CPU
+  /// accrual by that near-zero wall time inflated percentages a
+  /// thousandfold when two refreshes overlapped.
+  func tick(convention: CPUConvention) -> MonitorTick {
+    let now = DispatchTime.now().uptimeNanoseconds
     let snapshots = ProcessTableSampler.sampleReachableProcesses()
     let wallTime = previousTimestamp.flatMap { now > $0 ? now - $0 : nil } ?? 0
 
