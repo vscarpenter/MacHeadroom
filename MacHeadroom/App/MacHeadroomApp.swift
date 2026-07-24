@@ -20,10 +20,14 @@ struct MacHeadroomApp: App {
   @ViewBuilder
   private var menuBarLabel: some View {
     if store.showsMenuBarText, let cpuPercent = store.systemSummary.cpuPercent {
-      Label("\(Int(cpuPercent.rounded()))%", systemImage: "gauge.with.dots.needle.50percent")
-        .accessibilityLabel("\(AppIdentity.displayName), \(Int(cpuPercent.rounded())) percent CPU")
+      Label {
+        Text("\(Int(cpuPercent.rounded()))%")
+      } icon: {
+        Image("MenuBarGlyph")
+      }
+      .accessibilityLabel("\(AppIdentity.displayName), \(Int(cpuPercent.rounded())) percent CPU")
     } else {
-      Image(systemName: "gauge.with.dots.needle.50percent")
+      Image("MenuBarGlyph")
         .accessibilityLabel(AppIdentity.displayName)
     }
   }
