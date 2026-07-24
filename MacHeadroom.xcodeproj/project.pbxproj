@@ -10,6 +10,7 @@
         A10000000000000000000001 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppIdentity.swift */; };
         A10000000000000000000002 /* MacHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MacHeadroomApp.swift */; };
         A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
+        I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
         B10000000000000000000001 /* AppIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AppIdentityTests.swift */; };
         D10000000000000000000001 /* ProcessSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* ProcessSnapshot.swift */; };
         D10000000000000000000002 /* ProcessTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* ProcessTableSampler.swift */; };
@@ -47,6 +48,7 @@
         A20000000000000000000002 /* MacHeadroomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacHeadroomApp.swift; sourceTree = "<group>"; };
         A20000000000000000000005 /* MacHeadroom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacHeadroom.entitlements; sourceTree = "<group>"; };
         A20000000000000000000006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+        I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
         A20000000000000000000007 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
         A20000000000000000000008 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
         A20000000000000000000009 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
                 F40000000000000000000001 /* Grouping */,
                 H40000000000000000000001 /* UI */,
                 A40000000000000000000005 /* Resources */,
+                I20000000000000000000001 /* Assets.xcassets */,
                 A20000000000000000000005 /* MacHeadroom.entitlements */,
             );
             path = MacHeadroom;
@@ -281,6 +284,7 @@
             buildActionMask = 2147483647;
             files = (
                 A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */,
+                I10000000000000000000001 /* Assets.xcassets in Resources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };

@@ -57,11 +57,13 @@ investigation and the options considered live in
 
 ## Status
 
-Phase 0 through settings and polish are done. The sampler, the
-grouping engine, the popover, and the Settings window all build and
-pass their tests. Left to do: an app icon, a final accessibility and
-Reduce Motion pass in a running build, and the actual App Store
-Connect submission.
+Phase 0 through settings, polish, and the app icon are done. The
+sampler, the grouping engine, the popover, and the Settings window all
+build and pass their tests. The icon ships as a traditional flat
+iconset for now; see [Design/AppIcon](Design/AppIcon/README.md) for
+the source layers and how to upgrade it to Icon Composer. Left to do:
+a final accessibility and Reduce Motion pass in a running build, and
+the actual App Store Connect submission.
 
 ## If you don't see the menu bar icon
 
