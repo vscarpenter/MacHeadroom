@@ -29,6 +29,7 @@
         H10000000000000000000003 /* GroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000003 /* GroupRowView.swift */; };
         H10000000000000000000004 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000004 /* PopoverView.swift */; };
         H10000000000000000000005 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000005 /* SettingsView.swift */; };
+        H10000000000000000000006 /* PreviewFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000006 /* PreviewFixtures.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
         H20000000000000000000003 /* GroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRowView.swift; sourceTree = "<group>"; };
         H20000000000000000000004 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
         H20000000000000000000005 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+        H20000000000000000000006 /* PreviewFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFixtures.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +180,7 @@
                 H20000000000000000000003 /* GroupRowView.swift */,
                 H20000000000000000000004 /* PopoverView.swift */,
                 H20000000000000000000005 /* SettingsView.swift */,
+                H20000000000000000000006 /* PreviewFixtures.swift */,
             );
             path = UI;
             sourceTree = "<group>";
@@ -313,6 +316,7 @@
                 H10000000000000000000003 /* GroupRowView.swift in Sources */,
                 H10000000000000000000004 /* PopoverView.swift in Sources */,
                 H10000000000000000000005 /* SettingsView.swift in Sources */,
+                H10000000000000000000006 /* PreviewFixtures.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };

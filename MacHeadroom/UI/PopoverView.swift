@@ -24,11 +24,10 @@ struct PopoverView: View {
     .frame(width: 340)
     .background(.regularMaterial)
     .onAppear {
-      store.start()
-      Task { await store.refreshNow() }
+      store.popoverDidAppear()
     }
     .onDisappear {
-      store.stop()
+      store.popoverDidDisappear()
     }
   }
 
@@ -109,4 +108,14 @@ struct PopoverView: View {
     }
     .padding(12)
   }
+}
+
+#Preview("Popover - Light") {
+  PopoverView(store: PreviewFixtures.makeStore())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Popover - Dark") {
+  PopoverView(store: PreviewFixtures.makeStore())
+    .preferredColorScheme(.dark)
 }
