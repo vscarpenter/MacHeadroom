@@ -1,0 +1,471 @@
+{
+  "actualIntervalNanoseconds" : 2054084042,
+  "applicationName" : "Mac Headroom",
+  "architecture" : "arm64",
+  "buildConfiguration" : "Release",
+  "deltaClasses" : [
+    {
+      "classTransitions" : 0,
+      "counterRegressions" : 0,
+      "crossClassPIDReuse" : 0,
+      "enteredPIDs" : 0,
+      "exitedPIDs" : 0,
+      "firstPopulation" : 1,
+      "invalidOrReusedPIDs" : 0,
+      "positiveDeltas" : 1,
+      "processClass" : "own-app",
+      "secondPopulation" : 1,
+      "sharedPIDs" : 1,
+      "stablePairs" : 1,
+      "taskUnavailablePairs" : 0,
+      "zeroDeltas" : 0
+    },
+    {
+      "classTransitions" : 0,
+      "counterRegressions" : 0,
+      "crossClassPIDReuse" : 0,
+      "enteredPIDs" : 0,
+      "exitedPIDs" : 0,
+      "firstPopulation" : 679,
+      "invalidOrReusedPIDs" : 0,
+      "positiveDeltas" : 101,
+      "processClass" : "same-user",
+      "secondPopulation" : 679,
+      "sharedPIDs" : 679,
+      "stablePairs" : 679,
+      "taskUnavailablePairs" : 0,
+      "zeroDeltas" : 578
+    },
+    {
+      "classTransitions" : 0,
+      "counterRegressions" : 0,
+      "crossClassPIDReuse" : 0,
+      "enteredPIDs" : 0,
+      "exitedPIDs" : 0,
+      "firstPopulation" : 222,
+      "invalidOrReusedPIDs" : 0,
+      "positiveDeltas" : 0,
+      "processClass" : "system-root",
+      "secondPopulation" : 222,
+      "sharedPIDs" : 222,
+      "stablePairs" : 0,
+      "taskUnavailablePairs" : 222,
+      "zeroDeltas" : 0
+    },
+    {
+      "classTransitions" : 0,
+      "counterRegressions" : 0,
+      "crossClassPIDReuse" : 0,
+      "enteredPIDs" : 0,
+      "exitedPIDs" : 0,
+      "firstPopulation" : 146,
+      "invalidOrReusedPIDs" : 0,
+      "positiveDeltas" : 0,
+      "processClass" : "other-user",
+      "secondPopulation" : 146,
+      "sharedPIDs" : 146,
+      "stablePairs" : 0,
+      "taskUnavailablePairs" : 146,
+      "zeroDeltas" : 0
+    }
+  ],
+  "effectiveUserID" : 501,
+  "logicalProcessorCount" : 14,
+  "machTimebaseDenominator" : 3,
+  "machTimebaseNumerator" : 125,
+  "operatingSystemVersion" : "Version 26.5.2 (Build 25F84)",
+  "processID" : 3888,
+  "reportVersion" : 2,
+  "representativeFootprintProofs" : [
+    {
+      "iconAvailable" : false,
+      "identityRevalidated" : true,
+      "physicalFootprintBytes" : 7930432,
+      "pid" : 3888,
+      "processClass" : "own-app",
+      "processName" : "Mac Headroom",
+      "residentBytes" : 31113216,
+      "rusageProcessStartAbsoluteTime" : 1648470956711
+    }
+  ],
+  "representativeProofs" : [
+    {
+      "deltaCPUTimeNanoseconds" : 32344125,
+      "deltaCPUTimeTicks" : 776259,
+      "deltaWallTimeNanoseconds" : 2054084042,
+      "firstCPUTimeTicks" : 140554,
+      "iconAvailable" : false,
+      "machineCapacityPercent" : 0.11247322872961314,
+      "perCorePercent" : 1.574625202214584,
+      "physicalFootprintBytes" : 7930432,
+      "pid" : 3888,
+      "processClass" : "own-app",
+      "processName" : "Mac Headroom",
+      "residentBytes" : 31113216,
+      "rusageProcessStartAbsoluteTime" : 1648470956711,
+      "secondCPUTimeTicks" : 916813,
+      "stableIdentity" : true
+    },
+    {
+      "deltaCPUTimeNanoseconds" : 142774666,
+      "deltaCPUTimeTicks" : 3426592,
+      "deltaWallTimeNanoseconds" : 2054084042,
+      "firstCPUTimeTicks" : 15147229864,
+      "iconAvailable" : false,
+      "machineCapacityPercent" : 0.4964836014519521,
+      "perCorePercent" : 6.950770420327329,
+      "pid" : 50222,
+      "processClass" : "same-user",
+      "processName" : "Codex (Renderer)",
+      "residentBytes" : 726188032,
+      "rusageFailure" : "return=-1 errno=1 Operation not permitted",
+      "secondCPUTimeTicks" : 15150656456,
+      "stableIdentity" : true
+    }
+  ],
+  "requestedIntervalNanoseconds" : 2000000000,
+  "sameUserApplicationCPUProof" : {
+    "appName" : "Finder",
+    "bundleIdentifier" : "com.apple.finder",
+    "deltaCPUTimeNanoseconds" : 57910375,
+    "deltaCPUTimeTicks" : 1389849,
+    "deltaWallTimeNanoseconds" : 2054084042,
+    "firstCPUTimeTicks" : 48574845362,
+    "iconAvailable" : true,
+    "machineCapacityPercent" : 0.2013771234557333,
+    "perCorePercent" : 2.819279728380266,
+    "pid" : 714,
+    "processClass" : "same-user",
+    "processName" : "Finder",
+    "residentBytes" : 248954880,
+    "rusageFailure" : "return=-1 errno=1 Operation not permitted",
+    "secondCPUTimeTicks" : 48576235211,
+    "stableIdentity" : true
+  },
+  "snapshots" : [
+    {
+      "classes" : [
+        {
+          "enumeratedPIDs" : 1,
+          "footprintBytesNonzero" : 1,
+          "nonemptyNames" : 1,
+          "processClass" : "own-app",
+          "residentBytesNonzero" : 1,
+          "rusageAttempts" : 1,
+          "rusageFailures" : 0,
+          "rusageSuccesses" : 1,
+          "taskAttempts" : 1,
+          "taskFailures" : 0,
+          "taskSuccesses" : 1,
+          "workspaceMatches" : 0
+        },
+        {
+          "enumeratedPIDs" : 679,
+          "footprintBytesNonzero" : 0,
+          "nonemptyNames" : 679,
+          "processClass" : "same-user",
+          "residentBytesNonzero" : 679,
+          "rusageAttempts" : 679,
+          "rusageFailures" : 679,
+          "rusageSuccesses" : 0,
+          "taskAttempts" : 679,
+          "taskFailures" : 0,
+          "taskSuccesses" : 679,
+          "workspaceMatches" : 133
+        },
+        {
+          "enumeratedPIDs" : 222,
+          "footprintBytesNonzero" : 0,
+          "nonemptyNames" : 222,
+          "processClass" : "system-root",
+          "residentBytesNonzero" : 0,
+          "rusageAttempts" : 222,
+          "rusageFailures" : 222,
+          "rusageSuccesses" : 0,
+          "taskAttempts" : 222,
+          "taskFailures" : 222,
+          "taskSuccesses" : 0,
+          "workspaceMatches" : 2
+        },
+        {
+          "enumeratedPIDs" : 146,
+          "footprintBytesNonzero" : 0,
+          "nonemptyNames" : 146,
+          "processClass" : "other-user",
+          "residentBytesNonzero" : 0,
+          "rusageAttempts" : 146,
+          "rusageFailures" : 146,
+          "rusageSuccesses" : 0,
+          "taskAttempts" : 146,
+          "taskFailures" : 146,
+          "taskSuccesses" : 0,
+          "workspaceMatches" : 0
+        }
+      ],
+      "failures" : [
+        {
+          "api" : "proc_pid_rusage(RUSAGE_INFO_V4)",
+          "count" : 146,
+          "exampleName" : "mdworker_shared",
+          "examplePID" : 3659,
+          "processClass" : "other-user",
+          "reason" : "return=-1 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pidinfo(PROC_PIDTASKINFO)",
+          "count" : 146,
+          "exampleName" : "mdworker_shared",
+          "examplePID" : 3659,
+          "processClass" : "other-user",
+          "reason" : "return=0 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pid_rusage(RUSAGE_INFO_V4)",
+          "count" : 679,
+          "exampleName" : "zsh",
+          "examplePID" : 3886,
+          "processClass" : "same-user",
+          "reason" : "return=-1 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pid_rusage(RUSAGE_INFO_V4)",
+          "count" : 222,
+          "exampleName" : "wifivelocityd",
+          "examplePID" : 66306,
+          "processClass" : "system-root",
+          "reason" : "return=-1 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pidinfo(PROC_PIDTASKINFO)",
+          "count" : 222,
+          "exampleName" : "wifivelocityd",
+          "examplePID" : 66306,
+          "processClass" : "system-root",
+          "reason" : "return=0 errno=1 Operation not permitted"
+        }
+      ],
+      "identityChangedOrExitedPIDs" : 0,
+      "identityRevalidatedPIDs" : 1048,
+      "identityRevalidationSysctlCalls" : [
+        {
+          "attempt" : 1,
+          "bufferBytes" : 0,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 682344,
+          "returnValue" : 0,
+          "stage" : "size-query"
+        },
+        {
+          "attempt" : 1,
+          "bufferBytes" : 703080,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 679104,
+          "returnValue" : 0,
+          "stage" : "data-fetch"
+        }
+      ],
+      "label" : "T0",
+      "measurementSequence" : [
+        "sysctl(KERN_PROC_ALL) enumeration",
+        "proc_pidinfo(PROC_PIDTASKINFO) sweep",
+        "proc_pid_rusage(RUSAGE_INFO_V4) sweep",
+        "NSWorkspace.runningApplications",
+        "sysctl(KERN_PROC_ALL) identity revalidation"
+      ],
+      "monotonicNanoseconds" : 68686667822708,
+      "processCount" : 1048,
+      "sysctlCalls" : [
+        {
+          "attempt" : 1,
+          "bufferBytes" : 0,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 682344,
+          "returnValue" : 0,
+          "stage" : "size-query"
+        },
+        {
+          "attempt" : 1,
+          "bufferBytes" : 703080,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 679104,
+          "returnValue" : 0,
+          "stage" : "data-fetch"
+        }
+      ],
+      "workspace" : {
+        "bundleIdentifiersPresent" : 111,
+        "executableURLsPresent" : 135,
+        "iconsPresent" : 135,
+        "matchedEnumeratedPIDs" : 135,
+        "namesPresent" : 135,
+        "runningApplications" : 135
+      }
+    },
+    {
+      "classes" : [
+        {
+          "enumeratedPIDs" : 1,
+          "footprintBytesNonzero" : 1,
+          "nonemptyNames" : 1,
+          "processClass" : "own-app",
+          "residentBytesNonzero" : 1,
+          "rusageAttempts" : 1,
+          "rusageFailures" : 0,
+          "rusageSuccesses" : 1,
+          "taskAttempts" : 1,
+          "taskFailures" : 0,
+          "taskSuccesses" : 1,
+          "workspaceMatches" : 0
+        },
+        {
+          "enumeratedPIDs" : 679,
+          "footprintBytesNonzero" : 0,
+          "nonemptyNames" : 679,
+          "processClass" : "same-user",
+          "residentBytesNonzero" : 679,
+          "rusageAttempts" : 679,
+          "rusageFailures" : 679,
+          "rusageSuccesses" : 0,
+          "taskAttempts" : 679,
+          "taskFailures" : 0,
+          "taskSuccesses" : 679,
+          "workspaceMatches" : 133
+        },
+        {
+          "enumeratedPIDs" : 222,
+          "footprintBytesNonzero" : 0,
+          "nonemptyNames" : 222,
+          "processClass" : "system-root",
+          "residentBytesNonzero" : 0,
+          "rusageAttempts" : 222,
+          "rusageFailures" : 222,
+          "rusageSuccesses" : 0,
+          "taskAttempts" : 222,
+          "taskFailures" : 222,
+          "taskSuccesses" : 0,
+          "workspaceMatches" : 2
+        },
+        {
+          "enumeratedPIDs" : 146,
+          "footprintBytesNonzero" : 0,
+          "nonemptyNames" : 146,
+          "processClass" : "other-user",
+          "residentBytesNonzero" : 0,
+          "rusageAttempts" : 146,
+          "rusageFailures" : 146,
+          "rusageSuccesses" : 0,
+          "taskAttempts" : 146,
+          "taskFailures" : 146,
+          "taskSuccesses" : 0,
+          "workspaceMatches" : 0
+        }
+      ],
+      "failures" : [
+        {
+          "api" : "proc_pid_rusage(RUSAGE_INFO_V4)",
+          "count" : 146,
+          "exampleName" : "mdworker_shared",
+          "examplePID" : 3659,
+          "processClass" : "other-user",
+          "reason" : "return=-1 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pidinfo(PROC_PIDTASKINFO)",
+          "count" : 146,
+          "exampleName" : "mdworker_shared",
+          "examplePID" : 3659,
+          "processClass" : "other-user",
+          "reason" : "return=0 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pid_rusage(RUSAGE_INFO_V4)",
+          "count" : 679,
+          "exampleName" : "zsh",
+          "examplePID" : 3886,
+          "processClass" : "same-user",
+          "reason" : "return=-1 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pid_rusage(RUSAGE_INFO_V4)",
+          "count" : 222,
+          "exampleName" : "wifivelocityd",
+          "examplePID" : 66306,
+          "processClass" : "system-root",
+          "reason" : "return=-1 errno=1 Operation not permitted"
+        },
+        {
+          "api" : "proc_pidinfo(PROC_PIDTASKINFO)",
+          "count" : 222,
+          "exampleName" : "wifivelocityd",
+          "examplePID" : 66306,
+          "processClass" : "system-root",
+          "reason" : "return=0 errno=1 Operation not permitted"
+        }
+      ],
+      "identityChangedOrExitedPIDs" : 0,
+      "identityRevalidatedPIDs" : 1048,
+      "identityRevalidationSysctlCalls" : [
+        {
+          "attempt" : 1,
+          "bufferBytes" : 0,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 682344,
+          "returnValue" : 0,
+          "stage" : "size-query"
+        },
+        {
+          "attempt" : 1,
+          "bufferBytes" : 703080,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 679104,
+          "returnValue" : 0,
+          "stage" : "data-fetch"
+        }
+      ],
+      "label" : "T1",
+      "measurementSequence" : [
+        "sysctl(KERN_PROC_ALL) enumeration",
+        "proc_pidinfo(PROC_PIDTASKINFO) sweep",
+        "proc_pid_rusage(RUSAGE_INFO_V4) sweep",
+        "NSWorkspace.runningApplications",
+        "sysctl(KERN_PROC_ALL) identity revalidation"
+      ],
+      "monotonicNanoseconds" : 68688721906750,
+      "processCount" : 1048,
+      "sysctlCalls" : [
+        {
+          "attempt" : 1,
+          "bufferBytes" : 0,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 682344,
+          "returnValue" : 0,
+          "stage" : "size-query"
+        },
+        {
+          "attempt" : 1,
+          "bufferBytes" : 703080,
+          "errorName" : "none",
+          "errorNumber" : 0,
+          "resultBytes" : 679104,
+          "returnValue" : 0,
+          "stage" : "data-fetch"
+        }
+      ],
+      "workspace" : {
+        "bundleIdentifiersPresent" : 111,
+        "executableURLsPresent" : 135,
+        "iconsPresent" : 135,
+        "matchedEnumeratedPIDs" : 135,
+        "namesPresent" : 135,
+        "runningApplications" : 135
+      }
+    }
+  ]
+}
