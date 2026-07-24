@@ -23,6 +23,8 @@
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
 		E10000000000000000000004 /* MenuBarGlyphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000004 /* MenuBarGlyphTests.swift */; };
 		E10000000000000000000005 /* SamplerBurstTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000005 /* SamplerBurstTests.swift */; };
+		E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000006 /* SingleInstanceGuardTests.swift */; };
+		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -69,6 +71,8 @@
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000004 /* MenuBarGlyphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarGlyphTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000005 /* SamplerBurstTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerBurstTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000006 /* SingleInstanceGuardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuardTests.swift; sourceTree = "<group>"; };
+		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -130,6 +134,7 @@
 				A20000000000000000000001 /* AppIdentity.swift */,
 				A20000000000000000000002 /* MacHeadroomApp.swift */,
 				G20000000000000000000001 /* MonitorStore.swift */,
+				G20000000000000000000002 /* SingleInstanceGuard.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -170,6 +175,7 @@
 				E20000000000000000000003 /* PopoverLayoutTests.swift */,
 				E20000000000000000000004 /* MenuBarGlyphTests.swift */,
 				E20000000000000000000005 /* SamplerBurstTests.swift */,
+				E20000000000000000000006 /* SingleInstanceGuardTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -324,6 +330,7 @@
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
 				G10000000000000000000001 /* MonitorStore.swift in Sources */,
+				G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */,
 				H10000000000000000000001 /* MetricKind.swift in Sources */,
 				H10000000000000000000002 /* ValueFormatting.swift in Sources */,
 				H10000000000000000000003 /* GroupRowView.swift in Sources */,
@@ -343,6 +350,7 @@
 				E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */,
 				E10000000000000000000004 /* MenuBarGlyphTests.swift in Sources */,
 				E10000000000000000000005 /* SamplerBurstTests.swift in Sources */,
+				E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,6 +3,11 @@ import SwiftUI
 @main
 struct MacHeadroomApp: App {
   @State private var store = MonitorStore()
+  private static let instanceGuard = SingleInstanceGuard()
+
+  init() {
+    Self.instanceGuard.activate()
+  }
 
   var body: some Scene {
     MenuBarExtra {
