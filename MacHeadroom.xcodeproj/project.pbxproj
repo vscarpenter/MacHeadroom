@@ -19,6 +19,10 @@
         D10000000000000000000006 /* MonitorTick.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* MonitorTick.swift */; };
         D10000000000000000000007 /* SamplerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* SamplerService.swift */; };
         E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
+        E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
+        F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
+        F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
+        F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +54,10 @@
         D20000000000000000000006 /* MonitorTick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorTick.swift; sourceTree = "<group>"; };
         D20000000000000000000007 /* SamplerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerService.swift; sourceTree = "<group>"; };
         E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
+        E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
+        F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
+        F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+        F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +93,7 @@
             children = (
                 A40000000000000000000003 /* App */,
                 D40000000000000000000001 /* Sampling */,
+                F40000000000000000000001 /* Grouping */,
                 A40000000000000000000005 /* Resources */,
                 A20000000000000000000005 /* MacHeadroom.entitlements */,
             );
@@ -132,8 +141,19 @@
             children = (
                 B20000000000000000000001 /* AppIdentityTests.swift */,
                 E20000000000000000000001 /* CPUDeltaTests.swift */,
+                E20000000000000000000002 /* GroupingEngineTests.swift */,
             );
             path = MacHeadroomTests;
+            sourceTree = "<group>";
+        };
+        F40000000000000000000001 /* Grouping */ = {
+            isa = PBXGroup;
+            children = (
+                F20000000000000000000001 /* AppMetadata.swift */,
+                F20000000000000000000002 /* AppGroup.swift */,
+                F20000000000000000000003 /* GroupingEngine.swift */,
+            );
+            path = Grouping;
             sourceTree = "<group>";
         };
         D40000000000000000000001 /* Sampling */ = {
@@ -258,6 +278,9 @@
                 D10000000000000000000005 /* HostCPUDelta.swift in Sources */,
                 D10000000000000000000006 /* MonitorTick.swift in Sources */,
                 D10000000000000000000007 /* SamplerService.swift in Sources */,
+                F10000000000000000000001 /* AppMetadata.swift in Sources */,
+                F10000000000000000000002 /* AppGroup.swift in Sources */,
+                F10000000000000000000003 /* GroupingEngine.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -267,6 +290,7 @@
             files = (
                 B10000000000000000000001 /* AppIdentityTests.swift in Sources */,
                 E10000000000000000000001 /* CPUDeltaTests.swift in Sources */,
+                E10000000000000000000002 /* GroupingEngineTests.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
