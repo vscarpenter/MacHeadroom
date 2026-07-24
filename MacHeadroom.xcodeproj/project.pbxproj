@@ -14,6 +14,11 @@
         D10000000000000000000001 /* ProcessSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* ProcessSnapshot.swift */; };
         D10000000000000000000002 /* ProcessTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* ProcessTableSampler.swift */; };
         D10000000000000000000003 /* HostSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* HostSampler.swift */; };
+        D10000000000000000000004 /* CPUDelta.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000004 /* CPUDelta.swift */; };
+        D10000000000000000000005 /* HostCPUDelta.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* HostCPUDelta.swift */; };
+        D10000000000000000000006 /* MonitorTick.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* MonitorTick.swift */; };
+        D10000000000000000000007 /* SamplerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* SamplerService.swift */; };
+        E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +45,11 @@
         D20000000000000000000001 /* ProcessSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessSnapshot.swift; sourceTree = "<group>"; };
         D20000000000000000000002 /* ProcessTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTableSampler.swift; sourceTree = "<group>"; };
         D20000000000000000000003 /* HostSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostSampler.swift; sourceTree = "<group>"; };
+        D20000000000000000000004 /* CPUDelta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDelta.swift; sourceTree = "<group>"; };
+        D20000000000000000000005 /* HostCPUDelta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostCPUDelta.swift; sourceTree = "<group>"; };
+        D20000000000000000000006 /* MonitorTick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorTick.swift; sourceTree = "<group>"; };
+        D20000000000000000000007 /* SamplerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerService.swift; sourceTree = "<group>"; };
+        E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +131,7 @@
             isa = PBXGroup;
             children = (
                 B20000000000000000000001 /* AppIdentityTests.swift */,
+                E20000000000000000000001 /* CPUDeltaTests.swift */,
             );
             path = MacHeadroomTests;
             sourceTree = "<group>";
@@ -131,6 +142,10 @@
                 D20000000000000000000001 /* ProcessSnapshot.swift */,
                 D20000000000000000000002 /* ProcessTableSampler.swift */,
                 D20000000000000000000003 /* HostSampler.swift */,
+                D20000000000000000000004 /* CPUDelta.swift */,
+                D20000000000000000000005 /* HostCPUDelta.swift */,
+                D20000000000000000000006 /* MonitorTick.swift */,
+                D20000000000000000000007 /* SamplerService.swift */,
             );
             path = Sampling;
             sourceTree = "<group>";
@@ -239,6 +254,10 @@
                 D10000000000000000000001 /* ProcessSnapshot.swift in Sources */,
                 D10000000000000000000002 /* ProcessTableSampler.swift in Sources */,
                 D10000000000000000000003 /* HostSampler.swift in Sources */,
+                D10000000000000000000004 /* CPUDelta.swift in Sources */,
+                D10000000000000000000005 /* HostCPUDelta.swift in Sources */,
+                D10000000000000000000006 /* MonitorTick.swift in Sources */,
+                D10000000000000000000007 /* SamplerService.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -247,6 +266,7 @@
             buildActionMask = 2147483647;
             files = (
                 B10000000000000000000001 /* AppIdentityTests.swift in Sources */,
+                E10000000000000000000001 /* CPUDeltaTests.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
