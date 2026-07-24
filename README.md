@@ -62,3 +62,10 @@ grouping engine, the popover, and the Settings window all build and
 pass their tests. Left to do: an app icon, a final accessibility and
 Reduce Motion pass in a running build, and the actual App Store
 Connect submission.
+
+## If you don't see the menu bar icon
+
+On a crowded menu bar, macOS can tuck a newly launched item into Control
+Center's hidden overflow section instead of the visible strip. Hold Cmd
+and drag menu bar icons to check, or look for Mac Headroom in System
+Settings > Control Center before assuming the app didn't launch.
