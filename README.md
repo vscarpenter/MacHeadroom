@@ -38,8 +38,17 @@ The unit tests run hosted inside the app (`MacHeadroomTests`, wired to
 - `App/MonitorStore.swift` is the `@Observable` bridge between the
   sampler and the UI: it ticks, pulls live app metadata from
   `NSWorkspace`, and republishes the top-10 lists.
+- `App/SingleInstanceGuard.swift` keeps one copy running. A new launch
+  broadcasts a takeover notice and any older instance quits, so the
+  newest build always wins.
 - `UI/` is the SwiftUI popover: a segmented CPU/Memory header, the
-  list, and a footer.
+  list, and a footer. A built-in glossary gives system daemons like
+  `corespotlightd` a friendly name, the technical name as a subtitle,
+  and a one-line explanation on hover. Settings is a tabbed window:
+  General controls plus an About tab with version and links.
+- `Design/` holds the scripts that generate the app icon and the menu
+  bar glyph. Edit the script and re-run it instead of touching the
+  images.
 
 ## Why memory means resident size, not physical footprint
 
@@ -57,13 +66,16 @@ investigation and the options considered live in
 
 ## Status
 
-Phase 0 through settings, polish, and the app icon are done. The
-sampler, the grouping engine, the popover, and the Settings window all
-build and pass their tests. The icon ships as a traditional flat
-iconset for now; see [Design/AppIcon](Design/AppIcon/README.md) for
-the source layers and how to upgrade it to Icon Composer. Left to do:
-a final accessibility and Reduce Motion pass in a running build, and
-the actual App Store Connect submission.
+The core app is feature-complete and passes its 25-test suite. That
+covers the sampler, the grouping engine, the popover, the process
+glossary, the single-instance guard, the tabbed Settings window with
+its About screen, and the brand glyph in the menu bar. The icon ships
+as a traditional flat iconset for now; see
+[Design/AppIcon](Design/AppIcon/README.md) for the source layers and
+how to upgrade it to Icon Composer. Left to do: a final accessibility
+and Reduce Motion pass in a running build, the
+[macheadroom.com](https://macheadroom.com) landing page, and the
+actual App Store Connect submission.
 
 ## If you don't see the menu bar icon
 
