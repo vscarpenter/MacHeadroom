@@ -42,4 +42,28 @@ struct PopoverLayoutTests {
     // the list region collapsed instead of showing rows.
     #expect(idealHeight > 250)
   }
+
+  @Test("Max Headroom mode height is independent of list content")
+  @MainActor
+  func maxHeadroomModeHeightIndependentOfListContent() {
+    let emptySummary = SystemSummary(
+      cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
+    let emptyStore = MonitorStore.preview(
+      cpuGroups: [],
+      memoryGroups: [],
+      summary: emptySummary,
+      maxHeadroomModeEnabled: true
+    )
+    let populatedStore = PreviewFixtures.makeStore(maxHeadroomModeEnabled: true)
+
+    let emptyHeight = NSHostingView(
+      rootView: PopoverView(store: emptyStore)
+    ).intrinsicContentSize.height
+    let populatedHeight = NSHostingView(
+      rootView: PopoverView(store: populatedStore)
+    ).intrinsicContentSize.height
+
+    #expect(emptyHeight == populatedHeight)
+    #expect(populatedHeight > 350)
+  }
 }

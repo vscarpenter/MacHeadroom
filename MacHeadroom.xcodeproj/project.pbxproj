@@ -25,6 +25,7 @@
 		E10000000000000000000005 /* SamplerBurstTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000005 /* SamplerBurstTests.swift */; };
 		E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000006 /* SingleInstanceGuardTests.swift */; };
 		E10000000000000000000007 /* ProcessGlossaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000007 /* ProcessGlossaryTests.swift */; };
+		E10000000000000000000008 /* MonitorStorePreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000008 /* MonitorStorePreferencesTests.swift */; };
 		H10000000000000000000007 /* ProcessGlossary.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000007 /* ProcessGlossary.swift */; };
 		H10000000000000000000008 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000008 /* AboutView.swift */; };
 		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
@@ -76,6 +77,7 @@
 		E20000000000000000000005 /* SamplerBurstTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerBurstTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000006 /* SingleInstanceGuardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuardTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000007 /* ProcessGlossaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossaryTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000008 /* MonitorStorePreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStorePreferencesTests.swift; sourceTree = "<group>"; };
 		H20000000000000000000007 /* ProcessGlossary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossary.swift; sourceTree = "<group>"; };
 		H20000000000000000000008 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 				E20000000000000000000005 /* SamplerBurstTests.swift */,
 				E20000000000000000000006 /* SingleInstanceGuardTests.swift */,
 				E20000000000000000000007 /* ProcessGlossaryTests.swift */,
+				E20000000000000000000008 /* MonitorStorePreferencesTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -363,6 +366,7 @@
 				E10000000000000000000005 /* SamplerBurstTests.swift in Sources */,
 				E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */,
 				E10000000000000000000007 /* ProcessGlossaryTests.swift in Sources */,
+				E10000000000000000000008 /* MonitorStorePreferencesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,6 +13,7 @@ final class MonitorStore {
     static let samplingInterval = "samplingInterval"
     static let perCoreConvention = "perCoreConvention"
     static let showsMenuBarText = "showsMenuBarText"
+    static let maxHeadroomModeEnabled = "maxHeadroomModeEnabled"
   }
 
   private(set) var topCPUGroups: [AppGroup] = []
@@ -23,7 +24,7 @@ final class MonitorStore {
 
   var samplingInterval: TimeInterval {
     didSet {
-      UserDefaults.standard.set(samplingInterval, forKey: DefaultsKey.samplingInterval)
+      defaults.set(samplingInterval, forKey: DefaultsKey.samplingInterval)
       guard timerTask != nil else { return }
       stop()
       start()
@@ -32,7 +33,7 @@ final class MonitorStore {
 
   var cpuConvention: CPUConvention {
     didSet {
-      UserDefaults.standard.set(
+      defaults.set(
         cpuConvention == .perCore, forKey: DefaultsKey.perCoreConvention)
     }
   }
@@ -41,12 +42,20 @@ final class MonitorStore {
   /// while the popover is closed, since the menu bar label needs live data.
   var showsMenuBarText: Bool {
     didSet {
-      UserDefaults.standard.set(showsMenuBarText, forKey: DefaultsKey.showsMenuBarText)
+      defaults.set(showsMenuBarText, forKey: DefaultsKey.showsMenuBarText)
       if showsMenuBarText {
         start()
       } else if !isPopoverOpen {
         stop()
       }
+    }
+  }
+
+  /// Off by default. This changes only presentation; sampling behavior and
+  /// resource measurements remain identical to the standard appearance.
+  var maxHeadroomModeEnabled: Bool {
+    didSet {
+      defaults.set(maxHeadroomModeEnabled, forKey: DefaultsKey.maxHeadroomModeEnabled)
     }
   }
 
@@ -66,17 +75,22 @@ final class MonitorStore {
   }
 
   private let sampler: SamplerService
+  private let defaults: UserDefaults
   private let topListLimit = 10
   private var timerTask: Task<Void, Never>?
   private var isPopoverOpen = false
 
-  init(sampler: SamplerService = SamplerService()) {
+  init(
+    sampler: SamplerService = SamplerService(),
+    defaults: UserDefaults = .standard
+  ) {
     self.sampler = sampler
-    let defaults = UserDefaults.standard
+    self.defaults = defaults
     let storedInterval = defaults.double(forKey: DefaultsKey.samplingInterval)
     samplingInterval = storedInterval > 0 ? storedInterval : 5
     cpuConvention = defaults.bool(forKey: DefaultsKey.perCoreConvention) ? .perCore : .machineCapacity
     showsMenuBarText = defaults.bool(forKey: DefaultsKey.showsMenuBarText)
+    maxHeadroomModeEnabled = defaults.bool(forKey: DefaultsKey.maxHeadroomModeEnabled)
     launchAtLogin = SMAppService.mainApp.status == .enabled
     // Property observers don't run during init, so the menu bar text option
     // has to start its live sampling here on relaunch.
@@ -155,13 +169,15 @@ extension MonitorStore {
   static func preview(
     cpuGroups: [AppGroup],
     memoryGroups: [AppGroup],
-    summary: SystemSummary
+    summary: SystemSummary,
+    maxHeadroomModeEnabled: Bool = false
   ) -> MonitorStore {
     let store = MonitorStore()
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
     store.systemSummary = summary
     store.lastUpdated = Date()
+    store.maxHeadroomModeEnabled = maxHeadroomModeEnabled
     return store
   }
 }

@@ -17,23 +17,34 @@ struct SettingsView: View {
 
   private var general: some View {
     Form {
-      Picker("Sampling interval", selection: $store.samplingInterval) {
-        ForEach(intervalOptions, id: \.self) { interval in
-          Text("\(Int(interval))s").tag(interval)
+      Section("Monitoring") {
+        Picker("Sampling interval", selection: $store.samplingInterval) {
+          ForEach(intervalOptions, id: \.self) { interval in
+            Text("\(Int(interval))s").tag(interval)
+          }
         }
+
+        Toggle("Launch at login", isOn: $store.launchAtLogin)
+
+        Toggle("Show CPU percent in the menu bar", isOn: $store.showsMenuBarText)
+
+        Toggle(
+          "Use Activity Monitor's per-core convention",
+          isOn: Binding(
+            get: { store.cpuConvention == .perCore },
+            set: { store.cpuConvention = $0 ? .perCore : .machineCapacity }
+          )
+        )
       }
 
-      Toggle("Launch at login", isOn: $store.launchAtLogin)
+      Section("Appearance") {
+        Toggle("Turn on Max Headroom mode", isOn: $store.maxHeadroomModeEnabled)
+          .help("Use the Porcelain Native broadcast appearance in the menu bar popover.")
 
-      Toggle("Show CPU percent in the menu bar", isOn: $store.showsMenuBarText)
-
-      Toggle(
-        "Use Activity Monitor's per-core convention",
-        isOn: Binding(
-          get: { store.cpuConvention == .perCore },
-          set: { store.cpuConvention = $0 ? .perCore : .machineCapacity }
-        )
-      )
+        Text("Adds the porcelain interface, amber signal details, and synthetic host cameo.")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+      }
     }
     .padding(20)
   }
