@@ -31,9 +31,11 @@ struct MacHeadroomApp: App {
         Image("MenuBarGlyph")
       }
       .accessibilityLabel("\(AppIdentity.displayName), \(Int(cpuPercent.rounded())) percent CPU")
+      .help(AppIdentity.displayName)
     } else {
       Image("MenuBarGlyph")
         .accessibilityLabel(AppIdentity.displayName)
+        .help(AppIdentity.displayName)
     }
   }
 }
