@@ -3,7 +3,7 @@
 
   enum PreviewFixtures {
     @MainActor
-    static func makeStore(maxHeadroomModeEnabled: Bool = false) -> MonitorStore {
+    static func makeStore(usesPorcelainAppearance: Bool = true) -> MonitorStore {
       var chromeChildren: [ProcessMeasurement] = []
       for index in 1...14 {
         let name = index == 1 ? "Google Chrome" : "Google Chrome Helper (Renderer)"
@@ -102,7 +102,7 @@
         memoryGroups: memoryGroups,
         summary: SystemSummary(
           cpuPercent: 34.2, memoryUsedBytes: 12_800_000_000, memoryTotalBytes: 36_000_000_000),
-        maxHeadroomModeEnabled: maxHeadroomModeEnabled
+        usesPorcelainAppearance: usesPorcelainAppearance
       )
     }
   }

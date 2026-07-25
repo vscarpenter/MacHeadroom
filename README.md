@@ -44,10 +44,11 @@ The unit tests run hosted inside the app (`MacHeadroomTests`, wired to
 - `UI/` is the SwiftUI popover: a segmented CPU/Memory header, the
   list, and a footer. A built-in glossary gives system daemons like
   `corespotlightd` a friendly name, the technical name as a subtitle,
-  and a one-line explanation on hover. An optional Max Headroom mode
-  switches the popover to the Porcelain Native broadcast appearance
-  without changing its measurements. Settings is a tabbed window:
-  General controls plus an About tab with version and links.
+  and a one-line explanation on hover. Porcelain Native is the default
+  appearance, emphasizing headroom, app identity, and warm amber signal
+  details without changing measurements. A compact classic appearance
+  remains available in Settings, alongside General controls and an
+  About tab with version and links.
 - `Design/` holds the scripts that generate the app icon and the menu
   bar glyph. Edit the script and re-run it instead of touching the
   images.
@@ -68,7 +69,7 @@ investigation and the options considered live in
 
 ## Status
 
-The core app is feature-complete and passes its 33-test suite. That
+The core app is feature-complete and passes its test suite. That
 covers the sampler, the grouping engine, the popover, the process
 glossary, the single-instance guard, the tabbed Settings window with
 its About screen, and the brand glyph in the menu bar. The icon ships

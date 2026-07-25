@@ -13,7 +13,8 @@ final class MonitorStore {
     static let samplingInterval = "samplingInterval"
     static let perCoreConvention = "perCoreConvention"
     static let showsMenuBarText = "showsMenuBarText"
-    static let maxHeadroomModeEnabled = "maxHeadroomModeEnabled"
+    static let usesPorcelainAppearance = "usesPorcelainAppearance"
+    static let legacyMaxHeadroomModeEnabled = "maxHeadroomModeEnabled"
   }
 
   private(set) var topCPUGroups: [AppGroup] = []
@@ -51,11 +52,11 @@ final class MonitorStore {
     }
   }
 
-  /// Off by default. This changes only presentation; sampling behavior and
-  /// resource measurements remain identical to the standard appearance.
-  var maxHeadroomModeEnabled: Bool {
+  /// Porcelain Native is the default presentation. Users can still select
+  /// the classic compact view without changing sampling or measurements.
+  var usesPorcelainAppearance: Bool {
     didSet {
-      defaults.set(maxHeadroomModeEnabled, forKey: DefaultsKey.maxHeadroomModeEnabled)
+      defaults.set(usesPorcelainAppearance, forKey: DefaultsKey.usesPorcelainAppearance)
     }
   }
 
@@ -91,7 +92,18 @@ final class MonitorStore {
     cpuConvention =
       defaults.bool(forKey: DefaultsKey.perCoreConvention) ? .perCore : .machineCapacity
     showsMenuBarText = defaults.bool(forKey: DefaultsKey.showsMenuBarText)
-    maxHeadroomModeEnabled = defaults.bool(forKey: DefaultsKey.maxHeadroomModeEnabled)
+    if let storedAppearance = defaults.object(
+      forKey: DefaultsKey.usesPorcelainAppearance
+    ) as? Bool {
+      usesPorcelainAppearance = storedAppearance
+    } else if let legacyAppearance = defaults.object(
+      forKey: DefaultsKey.legacyMaxHeadroomModeEnabled
+    ) as? Bool {
+      usesPorcelainAppearance = legacyAppearance
+      defaults.set(legacyAppearance, forKey: DefaultsKey.usesPorcelainAppearance)
+    } else {
+      usesPorcelainAppearance = true
+    }
     launchAtLogin = SMAppService.mainApp.status == .enabled
     // Property observers don't run during init, so the menu bar text option
     // has to start its live sampling here on relaunch.
@@ -171,7 +183,7 @@ extension MonitorStore {
     cpuGroups: [AppGroup],
     memoryGroups: [AppGroup],
     summary: SystemSummary,
-    maxHeadroomModeEnabled: Bool = false
+    usesPorcelainAppearance: Bool = true
   ) -> MonitorStore {
     let suiteName = "com.vinnycarpenter.MacHeadroom.preview"
     guard let defaults = UserDefaults(suiteName: suiteName) else {
@@ -183,7 +195,7 @@ extension MonitorStore {
     store.topMemoryGroups = memoryGroups
     store.systemSummary = summary
     store.lastUpdated = Date()
-    store.maxHeadroomModeEnabled = maxHeadroomModeEnabled
+    store.usesPorcelainAppearance = usesPorcelainAppearance
     return store
   }
 }

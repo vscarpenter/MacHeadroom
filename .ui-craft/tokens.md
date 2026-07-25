@@ -1,6 +1,6 @@
 # Mac Headroom token spine
 
-Mac Headroom uses native SwiftUI semantic styles for platform behavior and a small custom layer for the optional Porcelain Native mode. Raw values live in `PorcelainTheme`; views consume semantic roles rather than introducing local colors or spacing.
+Mac Headroom uses native SwiftUI semantic styles for platform behavior and a small custom layer for its default Porcelain Native appearance. Raw values live in `PorcelainPalette`; views consume semantic roles rather than introducing local colors or spacing.
 
 ## Primitive tokens
 
@@ -64,10 +64,10 @@ The popover has only base content and native overlays. No custom numeric z-index
 
 ## Component tokens
 
-- Porcelain header padding: 16 points.
-- Porcelain list horizontal padding: 12 points.
+- Porcelain popover width: 460 points.
+- Porcelain header horizontal padding: 20 points.
+- Porcelain list horizontal padding: 20 points.
 - Porcelain list height: fixed and independent of content.
-- App icon: 24 points in a 28-point optical well.
-- Indicator: 2 points high; amber is limited to the leading notch and the highest-ranked row.
-- Host cameo: 82 by 58 points, decorative and hidden from accessibility.
+- App icon: 32 points in a softly bordered optical well.
+- Indicator: 3 points high; amber is limited to the header notch, selected metric, and highest-ranked row.
 - Footer controls: native buttons with at least a 28-point desktop hit target and accessible labels.

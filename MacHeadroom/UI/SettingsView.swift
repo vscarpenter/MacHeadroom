@@ -38,10 +38,13 @@ struct SettingsView: View {
       }
 
       Section("Appearance") {
-        Toggle("Turn on Max Headroom mode", isOn: $store.maxHeadroomModeEnabled)
-          .help("Use the Porcelain Native broadcast appearance in the menu bar popover.")
+        Picker("Popover appearance", selection: $store.usesPorcelainAppearance) {
+          Text("Porcelain Native").tag(true)
+          Text("Classic compact").tag(false)
+        }
+        .help("Choose the visual style used by the menu bar popover.")
 
-        Text("Adds the porcelain interface, amber signal details, and synthetic host cameo.")
+        Text("Porcelain Native is the default, with warmer surfaces and a clearer headroom view.")
           .font(.caption)
           .foregroundStyle(.secondary)
       }

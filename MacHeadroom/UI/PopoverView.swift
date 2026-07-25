@@ -15,13 +15,13 @@ struct PopoverView: View {
 
   var body: some View {
     Group {
-      if store.maxHeadroomModeEnabled {
-        MaxHeadroomPopoverView(store: store)
+      if store.usesPorcelainAppearance {
+        PorcelainPopoverView(store: store)
       } else {
         standardPopover
       }
     }
-    .frame(width: 340)
+    .frame(width: store.usesPorcelainAppearance ? 460 : 340)
     .onAppear {
       store.popoverDidAppear()
     }
@@ -134,13 +134,18 @@ struct PopoverView: View {
       .preferredColorScheme(.dark)
   }
 
-  #Preview("Max Headroom - Light") {
-    PopoverView(store: PreviewFixtures.makeStore(maxHeadroomModeEnabled: true))
+  #Preview("Porcelain Native - Light") {
+    PopoverView(store: PreviewFixtures.makeStore())
       .preferredColorScheme(.light)
   }
 
-  #Preview("Max Headroom - Dark") {
-    PopoverView(store: PreviewFixtures.makeStore(maxHeadroomModeEnabled: true))
+  #Preview("Porcelain Native - Dark") {
+    PopoverView(store: PreviewFixtures.makeStore())
       .preferredColorScheme(.dark)
+  }
+
+  #Preview("Classic Compact") {
+    PopoverView(store: PreviewFixtures.makeStore(usesPorcelainAppearance: false))
+      .preferredColorScheme(.light)
   }
 #endif

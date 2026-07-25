@@ -5,28 +5,45 @@ import Testing
 
 @Suite("Monitor store preferences", .serialized)
 struct MonitorStorePreferencesTests {
-  @Test("Max Headroom mode defaults off")
+  @Test("Porcelain Native defaults on")
   @MainActor
-  func maxHeadroomModeDefaultsOff() throws {
+  func porcelainNativeDefaultsOn() throws {
     let (suiteName, defaults) = try makeDefaults()
     defer { defaults.removePersistentDomain(forName: suiteName) }
 
     let store = MonitorStore(defaults: defaults)
 
-    #expect(store.maxHeadroomModeEnabled == false)
+    #expect(store.usesPorcelainAppearance)
   }
 
-  @Test("Max Headroom mode persists")
+  @Test("Classic appearance persists")
   @MainActor
-  func maxHeadroomModePersists() throws {
+  func classicAppearancePersists() throws {
     let (suiteName, defaults) = try makeDefaults()
     defer { defaults.removePersistentDomain(forName: suiteName) }
 
     let store = MonitorStore(defaults: defaults)
-    store.maxHeadroomModeEnabled = true
+    store.usesPorcelainAppearance = false
 
     let restoredStore = MonitorStore(defaults: defaults)
-    #expect(restoredStore.maxHeadroomModeEnabled)
+    #expect(restoredStore.usesPorcelainAppearance == false)
+  }
+
+  @Test("Legacy Max Headroom preference migrates")
+  @MainActor
+  func legacyMaxHeadroomPreferenceMigrates() throws {
+    for legacyValue in [false, true] {
+      let (suiteName, defaults) = try makeDefaults()
+      defer { defaults.removePersistentDomain(forName: suiteName) }
+      defaults.set(legacyValue, forKey: "maxHeadroomModeEnabled")
+
+      let store = MonitorStore(defaults: defaults)
+
+      #expect(store.usesPorcelainAppearance == legacyValue)
+      #expect(
+        defaults.object(forKey: "usesPorcelainAppearance") as? Bool == legacyValue
+      )
+    }
   }
 
   private func makeDefaults() throws -> (String, UserDefaults) {
