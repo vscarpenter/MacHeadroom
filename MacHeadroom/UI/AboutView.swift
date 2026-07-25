@@ -28,7 +28,7 @@ struct AboutView: View {
       .padding(.top, 8)
     }
     .padding(24)
-    .frame(width: 360)
+    .frame(width: 440)
   }
 }
 

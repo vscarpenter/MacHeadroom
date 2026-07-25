@@ -26,8 +26,11 @@
 		E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000006 /* SingleInstanceGuardTests.swift */; };
 		E10000000000000000000007 /* ProcessGlossaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000007 /* ProcessGlossaryTests.swift */; };
 		E10000000000000000000008 /* MonitorStorePreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000008 /* MonitorStorePreferencesTests.swift */; };
+		E10000000000000000000009 /* HeadroomPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000009 /* HeadroomPresentationTests.swift */; };
+		E1000000000000000000000A /* PopoverVisualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000A /* PopoverVisualTests.swift */; };
 		H10000000000000000000007 /* ProcessGlossary.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000007 /* ProcessGlossary.swift */; };
 		H10000000000000000000008 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000008 /* AboutView.swift */; };
+		H10000000000000000000009 /* MaxHeadroomPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000009 /* MaxHeadroomPopoverView.swift */; };
 		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
@@ -78,8 +81,11 @@
 		E20000000000000000000006 /* SingleInstanceGuardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuardTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000007 /* ProcessGlossaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossaryTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000008 /* MonitorStorePreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStorePreferencesTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000009 /* HeadroomPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadroomPresentationTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000000A /* PopoverVisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverVisualTests.swift; sourceTree = "<group>"; };
 		H20000000000000000000007 /* ProcessGlossary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossary.swift; sourceTree = "<group>"; };
 		H20000000000000000000008 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		H20000000000000000000009 /* MaxHeadroomPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxHeadroomPopoverView.swift; sourceTree = "<group>"; };
 		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
@@ -186,6 +192,8 @@
 				E20000000000000000000006 /* SingleInstanceGuardTests.swift */,
 				E20000000000000000000007 /* ProcessGlossaryTests.swift */,
 				E20000000000000000000008 /* MonitorStorePreferencesTests.swift */,
+				E20000000000000000000009 /* HeadroomPresentationTests.swift */,
+				E2000000000000000000000A /* PopoverVisualTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -225,6 +233,7 @@
 				H20000000000000000000006 /* PreviewFixtures.swift */,
 				H20000000000000000000007 /* ProcessGlossary.swift */,
 				H20000000000000000000008 /* AboutView.swift */,
+				H20000000000000000000009 /* MaxHeadroomPopoverView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -351,6 +360,7 @@
 				H10000000000000000000006 /* PreviewFixtures.swift in Sources */,
 				H10000000000000000000007 /* ProcessGlossary.swift in Sources */,
 				H10000000000000000000008 /* AboutView.swift in Sources */,
+				H10000000000000000000009 /* MaxHeadroomPopoverView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +377,8 @@
 				E10000000000000000000006 /* SingleInstanceGuardTests.swift in Sources */,
 				E10000000000000000000007 /* ProcessGlossaryTests.swift in Sources */,
 				E10000000000000000000008 /* MonitorStorePreferencesTests.swift in Sources */,
+				E10000000000000000000009 /* HeadroomPresentationTests.swift in Sources */,
+				E1000000000000000000000A /* PopoverVisualTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

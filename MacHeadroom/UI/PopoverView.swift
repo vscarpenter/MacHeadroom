@@ -14,6 +14,23 @@ struct PopoverView: View {
   }
 
   var body: some View {
+    Group {
+      if store.maxHeadroomModeEnabled {
+        MaxHeadroomPopoverView(store: store)
+      } else {
+        standardPopover
+      }
+    }
+    .frame(width: 340)
+    .onAppear {
+      store.popoverDidAppear()
+    }
+    .onDisappear {
+      store.popoverDidDisappear()
+    }
+  }
+
+  private var standardPopover: some View {
     VStack(spacing: 0) {
       header
       Divider()
@@ -21,14 +38,7 @@ struct PopoverView: View {
       Divider()
       footer
     }
-    .frame(width: 340)
     .background(.regularMaterial)
-    .onAppear {
-      store.popoverDidAppear()
-    }
-    .onDisappear {
-      store.popoverDidDisappear()
-    }
   }
 
   private var header: some View {
@@ -121,6 +131,16 @@ struct PopoverView: View {
 
   #Preview("Popover - Dark") {
     PopoverView(store: PreviewFixtures.makeStore())
+      .preferredColorScheme(.dark)
+  }
+
+  #Preview("Max Headroom - Light") {
+    PopoverView(store: PreviewFixtures.makeStore(maxHeadroomModeEnabled: true))
+      .preferredColorScheme(.light)
+  }
+
+  #Preview("Max Headroom - Dark") {
+    PopoverView(store: PreviewFixtures.makeStore(maxHeadroomModeEnabled: true))
       .preferredColorScheme(.dark)
   }
 #endif

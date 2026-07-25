@@ -88,7 +88,8 @@ final class MonitorStore {
     self.defaults = defaults
     let storedInterval = defaults.double(forKey: DefaultsKey.samplingInterval)
     samplingInterval = storedInterval > 0 ? storedInterval : 5
-    cpuConvention = defaults.bool(forKey: DefaultsKey.perCoreConvention) ? .perCore : .machineCapacity
+    cpuConvention =
+      defaults.bool(forKey: DefaultsKey.perCoreConvention) ? .perCore : .machineCapacity
     showsMenuBarText = defaults.bool(forKey: DefaultsKey.showsMenuBarText)
     maxHeadroomModeEnabled = defaults.bool(forKey: DefaultsKey.maxHeadroomModeEnabled)
     launchAtLogin = SMAppService.mainApp.status == .enabled
@@ -172,7 +173,12 @@ extension MonitorStore {
     summary: SystemSummary,
     maxHeadroomModeEnabled: Bool = false
   ) -> MonitorStore {
-    let store = MonitorStore()
+    let suiteName = "com.vinnycarpenter.MacHeadroom.preview"
+    guard let defaults = UserDefaults(suiteName: suiteName) else {
+      preconditionFailure("Could not create preview defaults")
+    }
+    defaults.removePersistentDomain(forName: suiteName)
+    let store = MonitorStore(defaults: defaults)
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
     store.systemSummary = summary
