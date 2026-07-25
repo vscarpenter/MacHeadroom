@@ -6,6 +6,16 @@ struct SettingsView: View {
   private let intervalOptions: [TimeInterval] = [2, 5, 10, 30]
 
   var body: some View {
+    TabView {
+      general
+        .tabItem { Label("General", systemImage: "gearshape") }
+      AboutView()
+        .tabItem { Label("About", systemImage: "info.circle") }
+    }
+    .frame(width: 360)
+  }
+
+  private var general: some View {
     Form {
       Picker("Sampling interval", selection: $store.samplingInterval) {
         ForEach(intervalOptions, id: \.self) { interval in
@@ -26,7 +36,6 @@ struct SettingsView: View {
       )
     }
     .padding(20)
-    .frame(width: 360)
   }
 }
 
