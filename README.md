@@ -68,7 +68,7 @@ investigation and the options considered live in
 
 ## Status
 
-The core app is feature-complete and passes its 32-test suite. That
+The core app is feature-complete and passes its 33-test suite. That
 covers the sampler, the grouping engine, the popover, the process
 glossary, the single-instance guard, the tabbed Settings window with
 its About screen, and the brand glyph in the menu bar. The icon ships

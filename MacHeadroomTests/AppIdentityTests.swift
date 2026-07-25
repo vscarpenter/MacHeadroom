@@ -18,4 +18,11 @@ struct AppIdentityTests {
       Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String)
     #expect(AppIdentity.versionDescription == "Version \(short) (\(build))")
   }
+
+  @Test("Declares that the app uses no non-exempt encryption")
+  func declaresNoNonExemptEncryption() throws {
+    let usesNonExemptEncryption = try #require(
+      Bundle.main.object(forInfoDictionaryKey: "ITSAppUsesNonExemptEncryption") as? Bool)
+    #expect(usesNonExemptEncryption == false)
+  }
 }
