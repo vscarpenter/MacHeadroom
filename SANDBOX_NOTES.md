@@ -306,3 +306,32 @@ build. It does not block Phase 1.
 Phase 1 starts from this commit. The `PhaseZero` probe target is retired: its
 findings are permanent above, and its source is recoverable from git history
 at `44ab12713a5f4a3fc1303cc82452176e5d80e953` if it is ever needed again.
+
+## Process termination spike (July 26, 2026)
+
+Same machine, macOS 26.5.2 (25F84). Probe source and raw results live in
+[`Evidence/termination-spike/`](Evidence/termination-spike/). The design
+that consumed these findings is
+`docs/superpowers/specs/2026-07-26-popover-quit-design.md`.
+
+A probe carrying only `com.apple.security.app-sandbox`, matching the
+shipping app, cannot terminate any non-child process:
+
+- `kill()` returned `EPERM` for signal 0, SIGTERM, and SIGKILL.
+- `NSRunningApplication` `terminate()` and `forceTerminate()` returned
+  `NO`, and the target survived.
+- Apple-event quit sends failed with `procNotFound` (-600) under both
+  pid and bundle-id addressing. The seatbelt logged
+  `deny(1) appleevent-send com.apple.textedit` (checker `appleeventsd`)
+  with and without `com.apple.security.automation.apple-events`. That
+  entitlement belongs to hardened runtime and does not open the sandbox.
+  The sandbox's own allowances, `scripting-targets` and per-app
+  temporary exceptions, cannot cover arbitrary apps.
+
+The identical unsandboxed binary quit TextEdit via `terminate()`, and so
+did a hardened-runtime signed copy, which notarization requires.
+
+Consequence: the popover quit feature is capability-gated. The Mac App
+Store build shows no quit UI, and only the unsandboxed Developer ID
+build terminates processes. Do not "fix" the sandboxed build by adding
+termination UI; the OS denies the operation itself.
