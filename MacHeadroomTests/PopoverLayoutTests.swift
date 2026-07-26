@@ -73,4 +73,20 @@ struct PopoverLayoutTests {
 
     #expect(offSize == onSize)
   }
+
+  @Test("Quit capability does not change Porcelain popover size")
+  @MainActor
+  func porcelainCapabilityDoesNotChangeSize() {
+    let gatedOff = PreviewFixtures.makeStore()
+    let gatedOn = PreviewFixtures.makeStore(canTerminate: true)
+
+    let offSize = NSHostingView(
+      rootView: PopoverView(store: gatedOff)
+    ).intrinsicContentSize
+    let onSize = NSHostingView(
+      rootView: PopoverView(store: gatedOn)
+    ).intrinsicContentSize
+
+    #expect(offSize == onSize)
+  }
 }

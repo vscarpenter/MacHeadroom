@@ -134,7 +134,8 @@ struct PorcelainPopoverView: View {
               metric: selectedMetric,
               maxValue: maxValue,
               isTopConsumer: index == 0,
-              palette: palette
+              palette: palette,
+              store: store
             )
 
             if group.id != groups.last?.id {
@@ -264,6 +265,7 @@ private struct PorcelainGroupRowView: View {
   let maxValue: Double
   let isTopConsumer: Bool
   let palette: PorcelainPalette
+  let store: MonitorStore
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var isExpanded = false
 
@@ -290,6 +292,7 @@ private struct PorcelainGroupRowView: View {
   var body: some View {
     VStack(spacing: 0) {
       rowControl
+        .quitContextMenu(for: group, store: store)
 
       if isExpanded {
         ForEach(group.children, id: \.snapshot.pid) { child in
@@ -306,17 +309,7 @@ private struct PorcelainGroupRowView: View {
   @ViewBuilder
   private var rowControl: some View {
     if group.processCount > 1 {
-      Button {
-        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
-          isExpanded.toggle()
-        }
-      } label: {
-        rowContent
-      }
-      .buttonStyle(.plain)
-      .accessibilityLabel(accessibilityLabel)
-      .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-      .accessibilityHint(isExpanded ? "Collapse process details" : "Expand process details")
+      expandableRowContent
     } else {
       rowContent
         .accessibilityElement(children: .combine)
@@ -324,67 +317,132 @@ private struct PorcelainGroupRowView: View {
     }
   }
 
-  private var rowContent: some View {
+  /// Multi-process row: the icon/title/spacer core toggles expand/collapse
+  /// inside its own button, the chevron is a second small button doing the
+  /// same toggle (mirroring `GroupRowView`), and the value text sits between
+  /// them outside any button so `QuitAffordanceView` never nests a button
+  /// inside a button.
+  private var expandableRowContent: some View {
     VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
       HStack(spacing: PorcelainSpacing.md) {
-        Image(nsImage: AppIconProvider.icon(for: group))
-          .resizable()
-          .aspectRatio(contentMode: .fit)
-          .frame(width: 32, height: 32)
-          .background(palette.raisedSurface, in: RoundedRectangle(cornerRadius: 8))
-          .overlay {
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(palette.iconBorder, lineWidth: 1)
+        Button {
+          withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+            isExpanded.toggle()
           }
-          .shadow(color: palette.iconShadowAmbient, radius: 4, y: 2)
-          .shadow(color: palette.iconShadowDirect, radius: 1, y: 1)
+        } label: {
+          rowCore
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+        .accessibilityHint(isExpanded ? "Collapse process details" : "Expand process details")
 
-        VStack(alignment: .leading, spacing: 2) {
-          Text(glossaryEntry?.friendlyName ?? group.name)
-            .font(.system(size: 15, weight: isTopConsumer ? .semibold : .medium))
-            .lineLimit(1)
-
-          Text(subtitle)
-            .font(.system(size: 13))
-            .foregroundStyle(palette.textSecondary)
-            .lineLimit(1)
+        QuitAffordanceView(
+          group: group, store: store,
+          accent: palette.accent, secondary: palette.textSecondary
+        ) {
+          Text(ValueFormatting.value(metric, for: group))
+            .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
+            .monospacedDigit()
+            .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
         }
 
-        Spacer(minLength: PorcelainSpacing.sm)
-
-        Text(ValueFormatting.value(metric, for: group))
-          .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
-          .monospacedDigit()
-          .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
-
-        if group.processCount > 1 {
+        Button {
+          withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+            isExpanded.toggle()
+          }
+        } label: {
           Image(systemName: "chevron.right")
             .rotationEffect(.degrees(isExpanded ? 90 : 0))
             .font(.system(size: 9, weight: .semibold))
             .foregroundStyle(palette.textSecondary)
             .frame(width: 10)
-            .accessibilityHidden(true)
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isExpanded ? "Collapse" : "Expand")
       }
 
-      GeometryReader { proxy in
-        ZStack(alignment: .leading) {
-          Capsule()
-            .fill(palette.indicatorTrack)
-
-          Capsule()
-            .fill(isTopConsumer ? palette.accent : palette.indicatorFill)
-            .frame(width: proxy.size.width * ratio)
-        }
-      }
-      .frame(height: 3)
-      .padding(.leading, 48)
+      indicatorBar
     }
     .padding(.horizontal, PorcelainSpacing.xs)
     .padding(.vertical, PorcelainSpacing.sm)
     .contentShape(Rectangle())
     .help(glossaryEntry?.blurb ?? "")
     .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
+  }
+
+  /// Single-process row: no expand button, plain layout, value text still
+  /// wrapped so hover-quit works identically to the expandable row.
+  private var rowContent: some View {
+    VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+      HStack(spacing: PorcelainSpacing.md) {
+        rowCore
+
+        QuitAffordanceView(
+          group: group, store: store,
+          accent: palette.accent, secondary: palette.textSecondary
+        ) {
+          Text(ValueFormatting.value(metric, for: group))
+            .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
+            .monospacedDigit()
+            .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
+        }
+      }
+
+      indicatorBar
+    }
+    .padding(.horizontal, PorcelainSpacing.xs)
+    .padding(.vertical, PorcelainSpacing.sm)
+    .contentShape(Rectangle())
+    .help(glossaryEntry?.blurb ?? "")
+    .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
+  }
+
+  /// Icon + two-line title + spacer, shared by both the expandable and
+  /// single-process rows. Excludes the value text and chevron so the
+  /// expand button (multi-process case) never wraps the quit affordance.
+  private var rowCore: some View {
+    HStack(spacing: PorcelainSpacing.md) {
+      Image(nsImage: AppIconProvider.icon(for: group))
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .frame(width: 32, height: 32)
+        .background(palette.raisedSurface, in: RoundedRectangle(cornerRadius: 8))
+        .overlay {
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(palette.iconBorder, lineWidth: 1)
+        }
+        .shadow(color: palette.iconShadowAmbient, radius: 4, y: 2)
+        .shadow(color: palette.iconShadowDirect, radius: 1, y: 1)
+
+      VStack(alignment: .leading, spacing: 2) {
+        Text(glossaryEntry?.friendlyName ?? group.name)
+          .font(.system(size: 15, weight: isTopConsumer ? .semibold : .medium))
+          .lineLimit(1)
+
+        Text(subtitle)
+          .font(.system(size: 13))
+          .foregroundStyle(palette.textSecondary)
+          .lineLimit(1)
+      }
+
+      Spacer(minLength: PorcelainSpacing.sm)
+    }
+  }
+
+  private var indicatorBar: some View {
+    GeometryReader { proxy in
+      ZStack(alignment: .leading) {
+        Capsule()
+          .fill(palette.indicatorTrack)
+
+        Capsule()
+          .fill(isTopConsumer ? palette.accent : palette.indicatorFill)
+          .frame(width: proxy.size.width * ratio)
+      }
+    }
+    .frame(height: 3)
+    .padding(.leading, 48)
   }
 
   private var accessibilityLabel: String {
