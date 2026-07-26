@@ -44,6 +44,7 @@
 		H10000000000000000000007 /* ProcessGlossary.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000007 /* ProcessGlossary.swift */; };
 		H10000000000000000000008 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000008 /* AboutView.swift */; };
 		H10000000000000000000009 /* MaxHeadroomPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000009 /* MaxHeadroomPopoverView.swift */; };
+		H1000000000000000000000A /* QuitAffordanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000A /* QuitAffordanceView.swift */; };
 		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -101,6 +102,7 @@
 		H20000000000000000000007 /* ProcessGlossary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGlossary.swift; sourceTree = "<group>"; };
 		H20000000000000000000008 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		H20000000000000000000009 /* MaxHeadroomPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxHeadroomPopoverView.swift; sourceTree = "<group>"; };
+		H2000000000000000000000A /* QuitAffordanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuitAffordanceView.swift; sourceTree = "<group>"; };
 		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -240,6 +242,7 @@
 				H20000000000000000000007 /* ProcessGlossary.swift */,
 				H20000000000000000000008 /* AboutView.swift */,
 				H20000000000000000000009 /* MaxHeadroomPopoverView.swift */,
+				H2000000000000000000000A /* QuitAffordanceView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				H10000000000000000000007 /* ProcessGlossary.swift in Sources */,
 				H10000000000000000000008 /* AboutView.swift in Sources */,
 				H10000000000000000000009 /* MaxHeadroomPopoverView.swift in Sources */,
+				H1000000000000000000000A /* QuitAffordanceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

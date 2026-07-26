@@ -74,7 +74,7 @@ struct PopoverView: View {
             .padding(.vertical, 20)
         } else {
           ForEach(groups) { group in
-            GroupRowView(group: group, metric: selectedMetric, maxValue: maxValue)
+            GroupRowView(group: group, metric: selectedMetric, maxValue: maxValue, store: store)
           }
         }
       }

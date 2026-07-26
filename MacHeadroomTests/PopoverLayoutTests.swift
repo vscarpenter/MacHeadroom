@@ -53,4 +53,24 @@ struct PopoverLayoutTests {
     #expect(emptyHeight == populatedHeight)
     #expect(populatedHeight > 250)
   }
+
+  /// The affordance replaces the value text only under hover, so its
+  /// presence in the hierarchy must never move layout: capability on and
+  /// off must produce identical intrinsic sizes.
+  @Test("Quit capability does not change classic popover size")
+  @MainActor
+  func classicCapabilityDoesNotChangeSize() {
+    let gatedOff = PreviewFixtures.makeStore(usesPorcelainAppearance: false)
+    let gatedOn = PreviewFixtures.makeStore(
+      usesPorcelainAppearance: false, canTerminate: true)
+
+    let offSize = NSHostingView(
+      rootView: PopoverView(store: gatedOff)
+    ).intrinsicContentSize
+    let onSize = NSHostingView(
+      rootView: PopoverView(store: gatedOn)
+    ).intrinsicContentSize
+
+    #expect(offSize == onSize)
+  }
 }

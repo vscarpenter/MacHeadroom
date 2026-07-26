@@ -5,6 +5,7 @@ struct GroupRowView: View {
   let group: AppGroup
   let metric: MetricKind
   let maxValue: Double
+  let store: MonitorStore
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var isExpanded = false
 
@@ -64,9 +65,14 @@ struct GroupRowView: View {
 
         Spacer()
 
-        Text(ValueFormatting.value(metric, for: group))
-          .font(.system(.body, design: .monospaced))
-          .foregroundStyle(.secondary)
+        QuitAffordanceView(
+          group: group, store: store,
+          accent: .accentColor, secondary: .secondary
+        ) {
+          Text(ValueFormatting.value(metric, for: group))
+            .font(.system(.body, design: .monospaced))
+            .foregroundStyle(.secondary)
+        }
       }
 
       Capsule()
@@ -84,6 +90,7 @@ struct GroupRowView: View {
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
     .help(glossaryEntry?.blurb ?? "")
+    .quitContextMenu(for: group, store: store)
     .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: value)
 
     if isExpanded {
