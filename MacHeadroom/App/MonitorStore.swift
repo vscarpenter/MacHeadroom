@@ -75,6 +75,8 @@ final class MonitorStore {
     }
   }
 
+  let canTerminate: Bool
+  private let terminator: ProcessTerminator
   private let sampler: SamplerService
   private let defaults: UserDefaults
   private let topListLimit = 10
@@ -83,8 +85,12 @@ final class MonitorStore {
 
   init(
     sampler: SamplerService = SamplerService(),
-    defaults: UserDefaults = .standard
+    defaults: UserDefaults = .standard,
+    capability: TerminationCapability = .current,
+    terminator: ProcessTerminator = .live()
   ) {
+    self.canTerminate = capability == .available
+    self.terminator = terminator
     self.sampler = sampler
     self.defaults = defaults
     let storedInterval = defaults.double(forKey: DefaultsKey.samplingInterval)
@@ -144,6 +150,25 @@ final class MonitorStore {
     lastUpdated = Date()
   }
 
+  /// Termination feedback is the next sample: the row disappearing (or
+  /// not) tells the truth better than a result state machine would.
+  func quit(_ group: AppGroup) {
+    performTermination { terminator.quit(group) }
+  }
+
+  func forceQuit(_ group: AppGroup) {
+    performTermination { terminator.forceQuit(group) }
+  }
+
+  private func performTermination(_ action: () -> TerminationOutcome) {
+    guard canTerminate else { return }
+    _ = action()
+    Task { [weak self] in
+      try? await Task.sleep(for: .seconds(1))
+      await self?.refreshNow()
+    }
+  }
+
   private func start() {
     guard timerTask == nil else { return }
     timerTask = Task { [weak self] in
@@ -183,14 +208,21 @@ extension MonitorStore {
     cpuGroups: [AppGroup],
     memoryGroups: [AppGroup],
     summary: SystemSummary,
-    usesPorcelainAppearance: Bool = true
+    usesPorcelainAppearance: Bool = true,
+    canTerminate: Bool = false
   ) -> MonitorStore {
     let suiteName = "com.vinnycarpenter.MacHeadroom.preview"
     guard let defaults = UserDefaults(suiteName: suiteName) else {
       preconditionFailure("Could not create preview defaults")
     }
     defaults.removePersistentDomain(forName: suiteName)
-    let store = MonitorStore(defaults: defaults)
+    let store = MonitorStore(
+      defaults: defaults,
+      capability: canTerminate ? .available : .sandboxed,
+      terminator: ProcessTerminator(
+        runningApplication: { _ in nil },
+        currentStartIdentity: { _ in nil },
+        sendSignal: { _, _ in 0 }))
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
     store.systemSummary = summary
