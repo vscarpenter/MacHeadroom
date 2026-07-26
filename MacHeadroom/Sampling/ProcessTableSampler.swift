@@ -24,6 +24,22 @@ enum ProcessTableSampler {
       }
   }
 
+  /// Re-reads one pid's start-time identity immediately before a signal
+  /// is sent. Rows can be a full sampling interval stale; a reused pid
+  /// must never be signaled. Nil means the pid is gone or unreadable.
+  static func startIdentity(of pid: Int32) -> String? {
+    var mib = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+    var info = kinfo_proc()
+    var size = MemoryLayout<kinfo_proc>.size
+    let result = mib.withUnsafeMutableBufferPointer { pointer in
+      sysctl(pointer.baseAddress, UInt32(pointer.count), &info, &size, nil, 0)
+    }
+    guard result == 0, size == MemoryLayout<kinfo_proc>.size,
+      info.kp_proc.p_pid == pid
+    else { return nil }
+    return ProcessIdentity(info).startIdentity
+  }
+
   private static func enumerateProcesses() -> [ProcessIdentity] {
     let mibTemplate = [CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0]
     let stride = MemoryLayout<kinfo_proc>.stride
