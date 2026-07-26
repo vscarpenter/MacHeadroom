@@ -21,7 +21,10 @@ Within two seconds of opening the popover, the user can identify both the availa
 
 # Out of scope
 
-- Does not terminate, throttle, or otherwise modify running processes.
+- The sandboxed Mac App Store build does not terminate, throttle, or
+  otherwise modify running processes. The unsandboxed Direct build may
+  gracefully quit or explicitly force quit a whole app group; it never
+  terminates individual child processes or auto-escalates.
 - Does not add historical charts or long-term resource tracking.
 - Does not require an account, network access, or third-party service.
 - Does not replace exact measurements with status language alone.
