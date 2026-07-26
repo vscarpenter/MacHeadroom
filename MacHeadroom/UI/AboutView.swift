@@ -18,6 +18,10 @@ struct AboutView: View {
         .font(.caption)
         .foregroundStyle(.secondary)
 
+      Text("Build: \(TerminationCapability.current.buildFlavorName)")
+        .font(.caption)
+        .foregroundStyle(.secondary)
+
       VStack(spacing: 4) {
         HStack(spacing: 4) {
           Text("Created by")

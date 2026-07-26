@@ -1,0 +1,8 @@
+// Direct-download (Developer ID) overlay. Applied at invocation time via
+// `xcodebuild -xcconfig`; the project's own configurations never change.
+// No sandbox: the popover quit feature exists only here. Hardened runtime
+// stays on from Shared.xcconfig for notarization.
+#include "Release.xcconfig"
+
+ENABLE_APP_SANDBOX = NO
+CODE_SIGN_ENTITLEMENTS = MacHeadroom/MacHeadroomDirect.entitlements

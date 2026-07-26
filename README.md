@@ -25,6 +25,17 @@ xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuratio
 The unit tests run hosted inside the app (`MacHeadroomTests`, wired to
 `TEST_HOST`), so they need a destination, not just a build.
 
+## Build flavors
+
+Mac Headroom ships as two flavors from the same source. The Mac App
+Store flavor is sandboxed, the distribution target above. A second,
+unsandboxed Direct flavor builds via `Scripts/build-direct.sh`, which
+applies `Configuration/Direct.xcconfig` as an invocation-time overlay
+without touching the Xcode project. The App Sandbox blocks every way
+to quit or kill another process, so the popover's quit-from-the-row
+feature only works in the Direct build; the About tab reports which
+flavor you're running.
+
 ## How it's built
 
 - `Sampling/` reads the process table through `sysctl` and
