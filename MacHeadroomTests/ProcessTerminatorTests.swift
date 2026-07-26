@@ -35,8 +35,9 @@ struct SinglePidIdentityTests {
 
   @Test("A dead pid returns nil")
   func deadPidReturnsNil() {
-    // PID_MAX on macOS is 99998; a just-above-range pid can't exist.
-    #expect(ProcessTableSampler.startIdentity(of: 99_999) == nil)
+    // xnu's PID_MAX is 99999, so a pid an order of magnitude above that
+    // is unattainable and can't exist.
+    #expect(ProcessTableSampler.startIdentity(of: 999_999) == nil)
   }
 }
 
@@ -156,5 +157,41 @@ struct ProcessTerminatorSuite {
       currentStartIdentity: { _ in "1:1" },
       sendSignal: { _, _ in 0 })
     #expect(terminator.quit(Self.group(pid: 500, identity: "1:1")) == .appRefused)
+  }
+
+  @Test("App group with stale identity aborts before reaching the app handle")
+  func appPathStaleIdentityAborts() {
+    var handleVended = false
+    var terminateInvoked = false
+    var forceTerminateInvoked = false
+    let terminator = ProcessTerminator(
+      runningApplication: { _ in
+        handleVended = true
+        return RunningAppHandle(
+          terminate: { terminateInvoked = true; return true },
+          forceTerminate: { forceTerminateInvoked = true; return true })
+      },
+      currentStartIdentity: { _ in "9:99" },
+      sendSignal: { _, _ in 0 })
+    let outcome = terminator.quit(Self.group(pid: 500, identity: "1:1"))
+    #expect(outcome == .staleIdentity)
+    #expect(handleVended == false)
+    #expect(terminateInvoked == false)
+    #expect(forceTerminateInvoked == false)
+  }
+
+  @Test("App group with vanished pid aborts before reaching the app handle")
+  func appPathVanishedPidAborts() {
+    var handleVended = false
+    let terminator = ProcessTerminator(
+      runningApplication: { _ in
+        handleVended = true
+        return RunningAppHandle(terminate: { true }, forceTerminate: { true })
+      },
+      currentStartIdentity: { _ in nil },
+      sendSignal: { _, _ in 0 })
+    let outcome = terminator.quit(Self.group(pid: 500, identity: "1:1"))
+    #expect(outcome == .processGone)
+    #expect(handleVended == false)
   }
 }

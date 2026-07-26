@@ -1,4 +1,6 @@
+import AppKit
 import Security
+import os
 
 /// Whether this build may terminate other processes. The App Sandbox
 /// denies every termination path (kill(2) EPERM, NSRunningApplication
@@ -25,9 +27,6 @@ enum TerminationCapability: Sendable, Equatable {
     }
   }
 }
-
-import AppKit
-import os
 
 enum TerminationOutcome: Sendable, Equatable {
   case requestedAppQuit
@@ -90,11 +89,10 @@ struct ProcessTerminator {
   }
 
   private func decide(group: AppGroup, force: Bool) -> TerminationOutcome {
-    if let app = runningApplication(group.representativePID) {
-      let accepted = force ? app.forceTerminate() : app.terminate()
-      return accepted ? .requestedAppQuit : .appRefused
-    }
     let pid = group.representativePID
+    // Defensive: representativePID always names one of group.children by
+    // construction (GroupingEngine invariant). A miss here fails safe as
+    // .processGone; it would only mislabel the log, never mis-terminate.
     guard let rowIdentity = group.children
       .first(where: { $0.snapshot.pid == pid })?.snapshot.startIdentity
     else { return .processGone }
@@ -102,6 +100,14 @@ struct ProcessTerminator {
       return .processGone
     }
     guard liveIdentity == rowIdentity else { return .staleIdentity }
+
+    // The identity check above is the single gate for every termination
+    // primitive: a pid that passed it IS the row's process, by
+    // construction, so the app handle below binds to the right instance.
+    if let app = runningApplication(pid) {
+      let accepted = force ? app.forceTerminate() : app.terminate()
+      return accepted ? .requestedAppQuit : .appRefused
+    }
     errno = 0
     let result = sendSignal(pid, force ? SIGKILL : SIGTERM)
     return result == 0 ? .signaled : .signalFailed(errno: errno)
