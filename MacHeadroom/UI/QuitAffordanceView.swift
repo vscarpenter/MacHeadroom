@@ -5,20 +5,24 @@ import SwiftUI
 /// "Quit?" confirm; a second click quits. Hover exit or four seconds
 /// disarms. The value keeps its frame (opacity swap, never removal), so
 /// row height and width cannot shift.
+///
+/// Hover is detected by the enclosing row (the spec's hover region is the
+/// whole padded row, not just this value strip) and handed in as
+/// `isRowHovered`; this view only reacts to it.
 struct QuitAffordanceView<Value: View>: View {
   let group: AppGroup
   let store: MonitorStore
   let accent: Color
   let secondary: Color
+  let isRowHovered: Bool
   @ViewBuilder let value: () -> Value
 
-  @State private var isHovering = false
   @State private var isConfirming = false
   @State private var disarmTask: Task<Void, Never>?
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   private var showsControls: Bool {
-    store.canTerminate && (isHovering || isConfirming)
+    store.canTerminate && (isRowHovered || isConfirming)
   }
 
   var body: some View {
@@ -28,11 +32,10 @@ struct QuitAffordanceView<Value: View>: View {
         controls
       }
     }
-    .onHover { hovering in
-      guard store.canTerminate else { return }
+    .onChange(of: isRowHovered) { _, hovering in
+      guard !hovering else { return }
       withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
-        isHovering = hovering
-        if !hovering { disarm() }
+        disarm()
       }
     }
   }
@@ -55,7 +58,11 @@ struct QuitAffordanceView<Value: View>: View {
         isConfirming = true
         disarmTask = Task {
           try? await Task.sleep(for: .seconds(4))
-          if !Task.isCancelled { isConfirming = false }
+          if !Task.isCancelled {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
+              isConfirming = false
+            }
+          }
         }
       } label: {
         Image(systemName: "xmark.circle")

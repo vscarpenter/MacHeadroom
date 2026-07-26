@@ -268,6 +268,7 @@ private struct PorcelainGroupRowView: View {
   let store: MonitorStore
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var isExpanded = false
+  @State private var isRowHovered = false
 
   private var value: Double? { metric.value(of: group) }
 
@@ -326,7 +327,11 @@ private struct PorcelainGroupRowView: View {
   /// inside its own button, the chevron is a second small button doing the
   /// same toggle (mirroring `GroupRowView`), and the value text sits between
   /// them outside any button so `QuitAffordanceView` never nests a button
-  /// inside a button.
+  /// inside a button. A row-level tap gesture restores the full-row expand
+  /// target the padded row had before the quit affordance was added: inner
+  /// buttons (rowCore, chevron, and the Direct build's quit button) win
+  /// inside their own bounds under SwiftUI's innermost-wins precedence, and
+  /// this gesture catches everything else in the row's contentShape.
   private var expandableRowContent: some View {
     rowChrome {
       VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
@@ -363,6 +368,11 @@ private struct PorcelainGroupRowView: View {
         indicatorBar
       }
     }
+    .onTapGesture {
+      withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+        isExpanded.toggle()
+      }
+    }
   }
 
   /// Single-process row: no expand button, plain layout, value text still
@@ -381,9 +391,11 @@ private struct PorcelainGroupRowView: View {
   }
 
   /// Shared trailing modifier chain for both row variants: idle padding,
-  /// the tappable/hoverable region, the glossary tooltip, and the value
-  /// crossfade animation. Identical in both branches so a future styling
-  /// change only needs to touch one place.
+  /// the tappable/hoverable region, the glossary tooltip, the value
+  /// crossfade animation, and row-level hover detection for the quit
+  /// affordance (per spec, the hover region is the whole padded row, not
+  /// just the value strip). Identical in both branches so a future
+  /// styling change only needs to touch one place.
   private func rowChrome<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
     content()
       .padding(.horizontal, PorcelainSpacing.xs)
@@ -391,6 +403,12 @@ private struct PorcelainGroupRowView: View {
       .contentShape(Rectangle())
       .help(glossaryEntry?.blurb ?? "")
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
+      .onHover { hovering in
+        guard store.canTerminate else { return }
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
+          isRowHovered = hovering
+        }
+      }
   }
 
   /// Row value text wrapped in the shared hover-quit affordance. Hidden from
@@ -401,7 +419,8 @@ private struct PorcelainGroupRowView: View {
   private var valueControl: some View {
     QuitAffordanceView(
       group: group, store: store,
-      accent: palette.accent, secondary: palette.textSecondary
+      accent: palette.accent, secondary: palette.textSecondary,
+      isRowHovered: isRowHovered
     ) {
       Text(ValueFormatting.value(metric, for: group))
         .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
