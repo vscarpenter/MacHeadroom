@@ -309,7 +309,12 @@ private struct PorcelainGroupRowView: View {
   @ViewBuilder
   private var rowControl: some View {
     if group.processCount > 1 {
+      // .contain groups the expand button and the chevron button into one
+      // row-level VoiceOver entry point while still letting each be reached
+      // and activated individually — unlike .combine, which would flatten
+      // them into a single non-interactive element.
       expandableRowContent
+        .accessibilityElement(children: .contain)
     } else {
       rowContent
         .accessibilityElement(children: .combine)
@@ -323,79 +328,87 @@ private struct PorcelainGroupRowView: View {
   /// them outside any button so `QuitAffordanceView` never nests a button
   /// inside a button.
   private var expandableRowContent: some View {
-    VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
-      HStack(spacing: PorcelainSpacing.md) {
-        Button {
-          withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
-            isExpanded.toggle()
+    rowChrome {
+      VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+        HStack(spacing: PorcelainSpacing.md) {
+          Button {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+              isExpanded.toggle()
+            }
+          } label: {
+            rowCore
           }
-        } label: {
-          rowCore
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(accessibilityLabel)
-        .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-        .accessibilityHint(isExpanded ? "Collapse process details" : "Expand process details")
+          .buttonStyle(.plain)
+          .accessibilityLabel(accessibilityLabel)
+          .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+          .accessibilityHint(isExpanded ? "Collapse process details" : "Expand process details")
 
-        QuitAffordanceView(
-          group: group, store: store,
-          accent: palette.accent, secondary: palette.textSecondary
-        ) {
-          Text(ValueFormatting.value(metric, for: group))
-            .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
-            .monospacedDigit()
-            .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
-        }
+          valueControl
 
-        Button {
-          withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
-            isExpanded.toggle()
+          Button {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+              isExpanded.toggle()
+            }
+          } label: {
+            Image(systemName: "chevron.right")
+              .rotationEffect(.degrees(isExpanded ? 90 : 0))
+              .font(.system(size: 9, weight: .semibold))
+              .foregroundStyle(palette.textSecondary)
+              .frame(width: 10)
           }
-        } label: {
-          Image(systemName: "chevron.right")
-            .rotationEffect(.degrees(isExpanded ? 90 : 0))
-            .font(.system(size: 9, weight: .semibold))
-            .foregroundStyle(palette.textSecondary)
-            .frame(width: 10)
+          .buttonStyle(.plain)
+          .accessibilityLabel(isExpanded ? "Collapse" : "Expand")
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(isExpanded ? "Collapse" : "Expand")
+
+        indicatorBar
       }
-
-      indicatorBar
     }
-    .padding(.horizontal, PorcelainSpacing.xs)
-    .padding(.vertical, PorcelainSpacing.sm)
-    .contentShape(Rectangle())
-    .help(glossaryEntry?.blurb ?? "")
-    .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
   }
 
   /// Single-process row: no expand button, plain layout, value text still
   /// wrapped so hover-quit works identically to the expandable row.
   private var rowContent: some View {
-    VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
-      HStack(spacing: PorcelainSpacing.md) {
-        rowCore
-
-        QuitAffordanceView(
-          group: group, store: store,
-          accent: palette.accent, secondary: palette.textSecondary
-        ) {
-          Text(ValueFormatting.value(metric, for: group))
-            .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
-            .monospacedDigit()
-            .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
+    rowChrome {
+      VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+        HStack(spacing: PorcelainSpacing.md) {
+          rowCore
+          valueControl
         }
-      }
 
-      indicatorBar
+        indicatorBar
+      }
     }
-    .padding(.horizontal, PorcelainSpacing.xs)
-    .padding(.vertical, PorcelainSpacing.sm)
-    .contentShape(Rectangle())
-    .help(glossaryEntry?.blurb ?? "")
-    .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
+  }
+
+  /// Shared trailing modifier chain for both row variants: idle padding,
+  /// the tappable/hoverable region, the glossary tooltip, and the value
+  /// crossfade animation. Identical in both branches so a future styling
+  /// change only needs to touch one place.
+  private func rowChrome<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    content()
+      .padding(.horizontal, PorcelainSpacing.xs)
+      .padding(.vertical, PorcelainSpacing.sm)
+      .contentShape(Rectangle())
+      .help(glossaryEntry?.blurb ?? "")
+      .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
+  }
+
+  /// Row value text wrapped in the shared hover-quit affordance. Hidden from
+  /// accessibility because the expand button's label (multi-process row) or
+  /// the row's combined accessibility label (single-process row) already
+  /// states the metric value; without this, VoiceOver would announce the
+  /// value a second time as a bare, unlabeled element.
+  private var valueControl: some View {
+    QuitAffordanceView(
+      group: group, store: store,
+      accent: palette.accent, secondary: palette.textSecondary
+    ) {
+      Text(ValueFormatting.value(metric, for: group))
+        .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
+        .monospacedDigit()
+        .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
+    }
+    .accessibilityHidden(true)
   }
 
   /// Icon + two-line title + spacer, shared by both the expandable and
