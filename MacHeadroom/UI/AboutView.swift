@@ -27,7 +27,10 @@ struct AboutView: View {
           Text("Created by")
           Link("Vinny Carpenter", destination: URL(string: "https://vinny.dev/")!)
         }
-        Link("macheadroom.com", destination: URL(string: "https://macheadroom.com")!)
+        HStack(spacing: 12) {
+          Link("Website", destination: AppIdentity.websiteURL)
+          Link("Privacy Policy", destination: AppIdentity.privacyPolicyURL)
+        }
       }
       .padding(.top, 8)
     }

@@ -114,4 +114,35 @@ struct PopoverVisualTests {
     try data.write(to: url)
     print("UI_RENDER settings \(url.path)")
   }
+
+  @Test("About renders release identity and support links")
+  @MainActor
+  func aboutRendersReleaseIdentity() throws {
+    let hosting = NSHostingView(
+      rootView: ZStack {
+        Color(nsColor: .windowBackgroundColor)
+        AboutView()
+      }
+      .environment(\.colorScheme, .light)
+    )
+
+    let size = hosting.fittingSize
+    #expect(size.width >= 440)
+    #expect(size.height > 160)
+
+    hosting.frame = CGRect(origin: .zero, size: size)
+    hosting.layoutSubtreeIfNeeded()
+
+    let bitmap = try #require(
+      hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
+    )
+    hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
+    let data = try #require(bitmap.representation(using: .png, properties: [:]))
+    #expect(data.count > 10_000)
+
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent("MacHeadroom-About.png")
+    try data.write(to: url)
+    print("UI_RENDER about \(url.path)")
+  }
 }

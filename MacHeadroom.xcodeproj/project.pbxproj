@@ -446,9 +446,7 @@
 			baseConfigurationReference = A20000000000000000000007 /* Debug.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 52HVJ3VDSM;
-				MARKETING_VERSION = 0.4.0;
 			};
 			name = Debug;
 		};
@@ -457,9 +455,7 @@
 			baseConfigurationReference = A20000000000000000000008 /* Release.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 52HVJ3VDSM;
-				MARKETING_VERSION = 0.4.0;
 			};
 			name = Release;
 		};

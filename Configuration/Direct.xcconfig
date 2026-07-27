@@ -1,7 +1,7 @@
 // Direct-download (Developer ID) overlay. Applied on top of the selected
-// Release configuration via `xcodebuild -xcconfig`; repeating its base
-// config here would override the project's current version with Shared's
-// fallback values. No sandbox: the popover quit feature exists only here.
+// Release configuration via `xcodebuild -xcconfig`; the Release target's
+// Shared.xcconfig remains the single source for version and bundle metadata.
+// No sandbox: the popover quit feature exists only here.
 
 ENABLE_APP_SANDBOX = NO
 CODE_SIGN_ENTITLEMENTS = MacHeadroom/MacHeadroomDirect.entitlements
