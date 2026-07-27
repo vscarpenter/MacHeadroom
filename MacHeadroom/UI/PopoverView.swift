@@ -2,8 +2,13 @@ import SwiftUI
 
 struct PopoverView: View {
   let store: MonitorStore
-  @State private var selectedMetric: MetricKind = .cpu
+  @State private var selectedMetric: MetricKind
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+  init(store: MonitorStore, initialMetric: MetricKind = .cpu) {
+    self.store = store
+    _selectedMetric = State(initialValue: initialMetric)
+  }
 
   private var groups: [AppGroup] {
     selectedMetric == .cpu ? store.topCPUGroups : store.topMemoryGroups
@@ -16,7 +21,7 @@ struct PopoverView: View {
   var body: some View {
     Group {
       if store.usesPorcelainAppearance {
-        PorcelainPopoverView(store: store)
+        PorcelainPopoverView(store: store, initialMetric: selectedMetric)
       } else {
         standardPopover
       }

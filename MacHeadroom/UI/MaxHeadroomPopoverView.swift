@@ -3,9 +3,14 @@ import SwiftUI
 
 struct PorcelainPopoverView: View {
   let store: MonitorStore
-  @State private var selectedMetric: MetricKind = .cpu
+  @State private var selectedMetric: MetricKind
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.colorScheme) private var colorScheme
+
+  init(store: MonitorStore, initialMetric: MetricKind = .cpu) {
+    self.store = store
+    _selectedMetric = State(initialValue: initialMetric)
+  }
 
   private var palette: PorcelainPalette {
     PorcelainPalette(colorScheme: colorScheme)
