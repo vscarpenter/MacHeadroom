@@ -1,0 +1,39 @@
+name: Xcode - Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and test
+        # Ad-hoc signing needs no certificate but still embeds the sandbox
+        # entitlement, so the TEST_HOST suite exercises the real sandboxed
+        # syscalls and both bundles satisfy the same-team constraint.
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project MacHeadroom.xcodeproj \
+            -scheme MacHeadroom \
+            -configuration Debug \
+            -destination 'platform=macOS,arch=arm64' \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY=- \
+            DEVELOPMENT_TEAM= \
+            2>&1 | tee xcodebuild.log | xcbeautify
+      - name: Guard against a zero-test pass
+        # A test bundle that fails to load still reports TEST SUCCEEDED
+        # with 0 tests executed; require the Swift Testing summary line.
+        run: grep -E "Test run with [1-9][0-9]* tests .* passed" xcodebuild.log
