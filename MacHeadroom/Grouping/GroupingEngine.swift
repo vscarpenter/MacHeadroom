@@ -60,22 +60,24 @@ enum GroupingEngine {
 
   /// Deterministic top-N ordering: primary metric descending, then name
   /// ascending so equal-valued groups never reorder from run to run.
+  /// Groups with no reading yet are excluded, not ranked: a nil metric is
+  /// unknown, not zero, and ranking unknowns once filled the CPU list with
+  /// an alphabetical placeholder top-10 on the priming tick.
   static func topGroups(
     from groups: [AppGroup],
     by metric: (AppGroup) -> Double?,
     limit: Int
   ) -> [AppGroup] {
     groups
+      .compactMap { group in metric(group).map { (group: group, value: $0) } }
       .sorted { lhs, rhs in
-        let lhsValue = metric(lhs) ?? -1
-        let rhsValue = metric(rhs) ?? -1
-        if lhsValue != rhsValue {
-          return lhsValue > rhsValue
+        if lhs.value != rhs.value {
+          return lhs.value > rhs.value
         }
-        return lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
+        return lhs.group.name.localizedStandardCompare(rhs.group.name) == .orderedAscending
       }
       .prefix(limit)
-      .map { $0 }
+      .map(\.group)
   }
 
   private static func summedCPUPercent(of measurements: [ProcessMeasurement]) -> Double? {

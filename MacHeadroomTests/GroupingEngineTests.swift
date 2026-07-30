@@ -97,6 +97,30 @@ struct GroupingEngineTests {
     #expect(top.count == 10)
     #expect(top.first?.name == "App19")
   }
+
+  @Test("Groups without a metric reading are excluded from the top list")
+  func topGroupsExcludesNilMetrics() {
+    let groups = [
+      appGroup(key: "com.example.Idle", name: "Idle", cpuPercent: 0),
+      appGroup(key: "com.example.Unknown", name: "Unknown", cpuPercent: nil),
+      appGroup(key: "com.example.Busy", name: "Busy", cpuPercent: 12),
+    ]
+
+    let top = GroupingEngine.topGroups(from: groups, by: \.cpuPercent, limit: 10)
+
+    #expect(top.map(\.name) == ["Busy", "Idle"])
+  }
+
+  @Test("A priming tick with no CPU readings yields an empty top list, not an alphabetical one")
+  func primingTickYieldsEmptyTopList() {
+    let groups = (0..<12).map { index in
+      appGroup(key: "pid:\(index)", name: "App\(index)", cpuPercent: nil)
+    }
+
+    let top = GroupingEngine.topGroups(from: groups, by: \.cpuPercent, limit: 10)
+
+    #expect(top.isEmpty)
+  }
 }
 
 private func measurement(
