@@ -1,8 +1,15 @@
 import Foundation
 
 enum ValueFormatting {
+  /// Under the machine-capacity convention one full core is only ~7% on
+  /// current Apple Silicon, so whole-number rounding rendered nearly every
+  /// row as "0%". Keep one decimal below 10 so light usage stays legible.
   static func percent(_ value: Double?) -> String {
     guard let value else { return "—" }
+    let tenths = (value * 10).rounded() / 10
+    if tenths < 10 {
+      return String(format: "%.1f%%", tenths)
+    }
     return "\(Int(value.rounded()))%"
   }
 
