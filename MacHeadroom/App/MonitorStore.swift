@@ -172,10 +172,23 @@ final class MonitorStore {
   private func start() {
     guard timerTask == nil else { return }
     timerTask = Task { [weak self] in
+      // The first tick after launch only primes the CPU baseline (every
+      // delta needs two samples), so it publishes no CPU numbers. Follow
+      // it with one quick sample so real data lands in about a second
+      // instead of a full interval later. Once only: if the host reading
+      // ever failed outright, this must not tighten the loop to 1s forever.
+      var usedQuickFollowUp = false
       while let self, !Task.isCancelled {
         await self.refreshNow()
         guard !Task.isCancelled else { return }
-        try? await Task.sleep(for: .seconds(self.samplingInterval))
+        let delay: TimeInterval
+        if !usedQuickFollowUp, self.systemSummary.cpuPercent == nil {
+          usedQuickFollowUp = true
+          delay = min(1, self.samplingInterval)
+        } else {
+          delay = self.samplingInterval
+        }
+        try? await Task.sleep(for: .seconds(delay))
       }
     }
   }

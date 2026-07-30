@@ -54,6 +54,35 @@ struct MonitorStorePreferencesTests {
   }
 }
 
+@Suite("Store sampling cadence")
+struct StoreSamplingCadenceTests {
+  /// The first tick after launch can only prime the CPU baseline (every
+  /// delta needs two samples). The store must follow it with a quick
+  /// second sample so the popover shows real CPU numbers in about a
+  /// second, not a full sampling interval later. The 3-second deadline
+  /// sits well below the 5-second default interval, so this fails if the
+  /// quick follow-up ever regresses to normal cadence.
+  @Test("Opening the popover publishes CPU data well before the first full interval")
+  @MainActor
+  func quickSecondSampleAfterPriming() async throws {
+    let suiteName = "com.vinnycarpenter.MacHeadroomTests.cadence.\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defaults.removePersistentDomain(forName: suiteName)
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let store = MonitorStore(defaults: defaults)
+    store.popoverDidAppear()
+    defer { store.popoverDidDisappear() }
+
+    let deadline = ContinuousClock.now.advanced(by: .seconds(3))
+    while store.systemSummary.cpuPercent == nil, ContinuousClock.now < deadline {
+      try await Task.sleep(for: .milliseconds(50))
+    }
+
+    #expect(store.systemSummary.cpuPercent != nil)
+  }
+}
+
 @Suite("Store termination gating")
 @MainActor
 struct StoreTerminationTests {
