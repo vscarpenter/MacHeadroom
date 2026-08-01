@@ -35,9 +35,12 @@
 		E1000000000000000000000C /* PortTableABITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000C /* PortTableABITests.swift */; };
 		E1000000000000000000000D /* PortTableParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000D /* PortTableParserTests.swift */; };
 		E1000000000000000000000E /* PortsSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000E /* PortsSamplerLiveTests.swift */; };
+		E1000000000000000000000F /* PortGroupBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000F /* PortGroupBuilderTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
+		F10000000000000000000004 /* PortGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000004 /* PortGroup.swift */; };
+		F10000000000000000000005 /* PortGroupBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000005 /* PortGroupBuilder.swift */; };
 		G10000000000000000000001 /* MonitorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* MonitorStore.swift */; };
 		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
 		G10000000000000000000003 /* ProcessTerminator.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000003 /* ProcessTerminator.swift */; };
@@ -100,9 +103,12 @@
 		E2000000000000000000000C /* PortTableABITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableABITests.swift; sourceTree = "<group>"; };
 		E2000000000000000000000D /* PortTableParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableParserTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000000E /* PortsSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortsSamplerLiveTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000000F /* PortGroupBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroupBuilderTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
+		F20000000000000000000004 /* PortGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroup.swift; sourceTree = "<group>"; };
+		F20000000000000000000005 /* PortGroupBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroupBuilder.swift; sourceTree = "<group>"; };
 		G20000000000000000000001 /* MonitorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStore.swift; sourceTree = "<group>"; };
 		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
 		G20000000000000000000003 /* ProcessTerminator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTerminator.swift; sourceTree = "<group>"; };
@@ -218,6 +224,7 @@
 				E2000000000000000000000C /* PortTableABITests.swift */,
 				E2000000000000000000000D /* PortTableParserTests.swift */,
 				E2000000000000000000000E /* PortsSamplerLiveTests.swift */,
+				E2000000000000000000000F /* PortGroupBuilderTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -246,6 +253,8 @@
 				F20000000000000000000001 /* AppMetadata.swift */,
 				F20000000000000000000002 /* AppGroup.swift */,
 				F20000000000000000000003 /* GroupingEngine.swift */,
+				F20000000000000000000004 /* PortGroup.swift */,
+				F20000000000000000000005 /* PortGroupBuilder.swift */,
 			);
 			path = Grouping;
 			sourceTree = "<group>";
@@ -382,6 +391,8 @@
 				F10000000000000000000001 /* AppMetadata.swift in Sources */,
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
+				F10000000000000000000004 /* PortGroup.swift in Sources */,
+				F10000000000000000000005 /* PortGroupBuilder.swift in Sources */,
 				G10000000000000000000001 /* MonitorStore.swift in Sources */,
 				G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */,
 				G10000000000000000000003 /* ProcessTerminator.swift in Sources */,
@@ -417,6 +428,7 @@
 				E1000000000000000000000C /* PortTableABITests.swift in Sources */,
 				E1000000000000000000000D /* PortTableParserTests.swift in Sources */,
 				E1000000000000000000000E /* PortsSamplerLiveTests.swift in Sources */,
+				E1000000000000000000000F /* PortGroupBuilderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
