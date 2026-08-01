@@ -105,8 +105,41 @@
         summary: SystemSummary(
           cpuPercent: 34.2, memoryUsedBytes: 12_800_000_000, memoryTotalBytes: 36_000_000_000),
         usesPorcelainAppearance: usesPorcelainAppearance,
-        canTerminate: canTerminate
+        canTerminate: canTerminate,
+        portGroups: makePortGroups(from: cpuGroups)
       )
+    }
+
+    /// Port fixtures shaped to exercise every row variant: app rows
+    /// with tcp+udp badges, one row crowded enough for the +N overflow
+    /// chip, and one system row.
+    @MainActor
+    static func makePortGroups(from groups: [AppGroup]) -> [PortGroup] {
+      var rows = groups.prefix(2).enumerated().map { index, group in
+        PortGroup(
+          groupKey: group.groupKey, name: group.name,
+          bundleIdentifier: group.bundleIdentifier,
+          representativePID: group.representativePID,
+          ports: [
+            ListeningPort(number: UInt16(3000 + index), transport: .tcp),
+            ListeningPort(number: UInt16(5300 + index), transport: .udp),
+          ],
+          appGroup: group)
+      }
+      if let crowded = groups.first {
+        rows.append(
+          PortGroup(
+            groupKey: "preview-crowded", name: "crowded",
+            bundleIdentifier: nil, representativePID: crowded.representativePID,
+            ports: (1...7).map { ListeningPort(number: UInt16(9000 + $0), transport: .tcp) },
+            appGroup: crowded))
+      }
+      rows.append(
+        PortGroup(
+          groupKey: "port-pid:1", name: "launchd", bundleIdentifier: nil,
+          representativePID: 1, ports: [ListeningPort(number: 445, transport: .tcp)],
+          appGroup: nil))
+      return rows
     }
   }
 #endif

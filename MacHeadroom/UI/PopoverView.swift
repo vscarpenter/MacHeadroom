@@ -2,26 +2,29 @@ import SwiftUI
 
 struct PopoverView: View {
   let store: MonitorStore
-  @State private var selectedMetric: MetricKind
+  @State private var selectedTab: PopoverTab
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-  init(store: MonitorStore, initialMetric: MetricKind = .cpu) {
+  init(store: MonitorStore, initialTab: PopoverTab = .cpu) {
     self.store = store
-    _selectedMetric = State(initialValue: initialMetric)
+    _selectedTab = State(initialValue: initialTab)
   }
 
   private var groups: [AppGroup] {
-    selectedMetric == .cpu ? store.topCPUGroups : store.topMemoryGroups
+    selectedTab == .cpu ? store.topCPUGroups : store.topMemoryGroups
   }
 
   private var maxValue: Double {
-    groups.first.flatMap { selectedMetric.value(of: $0) } ?? 0
+    guard let metric = selectedTab.metricKind else { return 0 }
+    return groups.first.flatMap { metric.value(of: $0) } ?? 0
   }
 
   var body: some View {
     Group {
       if store.usesPorcelainAppearance {
-        PorcelainPopoverView(store: store, initialMetric: selectedMetric)
+        // Task 8 threads the full tab through; until then Porcelain
+        // keeps its metric-only picker.
+        PorcelainPopoverView(store: store, initialMetric: selectedTab.metricKind ?? .cpu)
       } else {
         standardPopover
       }
@@ -48,9 +51,9 @@ struct PopoverView: View {
 
   private var header: some View {
     VStack(alignment: .leading, spacing: 8) {
-      Picker("Metric", selection: $selectedMetric) {
-        ForEach(MetricKind.allCases) { metric in
-          Text(metric.rawValue).tag(metric)
+      Picker("Metric", selection: $selectedTab) {
+        ForEach(PopoverTab.allCases) { tab in
+          Text(tab.rawValue).tag(tab)
         }
       }
       .pickerStyle(.segmented)
@@ -73,18 +76,23 @@ struct PopoverView: View {
   private var list: some View {
     ScrollView {
       LazyVStack(spacing: 10) {
-        if groups.isEmpty {
-          Text("No data yet")
-            .foregroundStyle(.secondary)
-            .padding(.vertical, 20)
-        } else {
-          ForEach(groups) { group in
-            GroupRowView(group: group, metric: selectedMetric, maxValue: maxValue, store: store)
+        if let metric = selectedTab.metricKind {
+          if groups.isEmpty {
+            Text("No data yet")
+              .foregroundStyle(.secondary)
+              .padding(.vertical, 20)
+          } else {
+            ForEach(groups) { group in
+              GroupRowView(group: group, metric: metric, maxValue: maxValue, store: store)
+            }
           }
+        } else {
+          PortsPaneView(store: store)
         }
       }
       .padding(12)
       .animation(reduceMotion ? nil : .default, value: groups)
+      .animation(reduceMotion ? nil : .default, value: store.portGroups)
     }
     // A fixed height, not maxHeight: the MenuBarExtra window sizes itself
     // once, at open, before the first sample lands. The ideal height must

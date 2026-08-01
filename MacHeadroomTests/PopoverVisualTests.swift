@@ -9,17 +9,19 @@ struct PopoverVisualTests {
   @Test("Default Porcelain Native appearance renders CPU and memory fixtures")
   @MainActor
   func porcelainNativeRendersFixtures() throws {
-    let fixtures: [(name: String, metric: MetricKind, scheme: ColorScheme)] = [
+    let fixtures: [(name: String, tab: PopoverTab, scheme: ColorScheme)] = [
       ("cpu-light", .cpu, .light),
       ("memory-light", .memory, .light),
       ("cpu-dark", .cpu, .dark),
       ("memory-dark", .memory, .dark),
+      ("ports-light", .ports, .light),
+      ("ports-dark", .ports, .dark),
     ]
 
     for fixture in fixtures {
       let store = PreviewFixtures.makeStore()
       let hosting = NSHostingView(
-        rootView: PopoverView(store: store, initialMetric: fixture.metric)
+        rootView: PopoverView(store: store, initialTab: fixture.tab)
           .environment(\.colorScheme, fixture.scheme)
       )
 
