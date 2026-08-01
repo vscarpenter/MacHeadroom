@@ -96,6 +96,14 @@ logic fixture-testable:
   `MonitorStore.canTerminate` and only the unsandboxed Direct build
   (`Scripts/build-direct.sh`) has it. Do not add termination UI to the
   Mac App Store build.
+- **Port enumeration is sysctl-only.** Under the App Sandbox,
+  `proc_pidinfo(PROC_PIDLISTFDS)` is EPERM for every non-self process
+  and `bind()` is EPERM outright, so ports come from
+  `net.inet.{tcp,udp}.pcblist_n` — hand-copied xnu layouts in
+  `PortTableABI.h`, which MUST stay inside `#pragma pack(4)` and whose
+  entries emit INPCB-first — and the live test's oracle is netstat, not
+  a self-bound listener. Measured Aug 1, 2026; see the SANDBOX_NOTES.md
+  ports addendum before "fixing" any of this.
 
 ## Verifying UI changes on this machine
 

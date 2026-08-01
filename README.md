@@ -6,6 +6,11 @@ process that belongs to one app into a single row. Fourteen Chrome
 processes show up as one "Chrome" row, with a process count and a tap
 to expand.
 
+A third Ports tab lists every local listening port grouped the same
+way — one row per app with its ports as badges — so a runaway `node`
+or `python` dev server still squatting on port 3000 is one glance (and,
+in the Direct build, one click) from gone.
+
 ## Requirements
 
 - macOS 14.0 or later to run
@@ -52,8 +57,8 @@ flavor you're running.
 - `App/SingleInstanceGuard.swift` keeps one copy running. A new launch
   broadcasts a takeover notice and any older instance quits, so the
   newest build always wins.
-- `UI/` is the SwiftUI popover: a segmented CPU/Memory header, the
-  list, and a footer. A built-in glossary gives system daemons like
+- `UI/` is the SwiftUI popover: a segmented CPU/Memory/Ports header,
+  the list, and a footer. A built-in glossary gives system daemons like
   `corespotlightd` a friendly name, the technical name as a subtitle,
   and a one-line explanation on hover. Porcelain Native is the default
   appearance, emphasizing headroom, app identity, and warm amber signal
