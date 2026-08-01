@@ -19,6 +19,10 @@ final class MonitorStore {
 
   private(set) var topCPUGroups: [AppGroup] = []
   private(set) var topMemoryGroups: [AppGroup] = []
+  /// nil = ports unavailable this tick (sysctl or parse failure);
+  /// [] = genuinely nothing listening. Starts [] so launch shows the
+  /// empty state, not the failure state, before the first sample.
+  private(set) var portGroups: [PortGroup]? = []
   private(set) var systemSummary = SystemSummary(
     cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
   private(set) var lastUpdated: Date?
@@ -146,6 +150,9 @@ final class MonitorStore {
     topCPUGroups = GroupingEngine.topGroups(from: groups, by: \.cpuPercent, limit: topListLimit)
     topMemoryGroups = GroupingEngine.topGroups(
       from: groups, by: { Double($0.memoryBytes) }, limit: topListLimit)
+    portGroups = PortGroupBuilder.build(
+      sockets: tick.sockets, groups: groups,
+      fallbackNamesByPID: tick.socketFallbackNames)
     systemSummary = tick.system
     lastUpdated = Date()
   }
@@ -222,7 +229,8 @@ extension MonitorStore {
     memoryGroups: [AppGroup],
     summary: SystemSummary,
     usesPorcelainAppearance: Bool = true,
-    canTerminate: Bool = false
+    canTerminate: Bool = false,
+    portGroups: [PortGroup]? = []
   ) -> MonitorStore {
     let suiteName = "com.vinnycarpenter.MacHeadroom.preview"
     guard let defaults = UserDefaults(suiteName: suiteName) else {
@@ -238,6 +246,7 @@ extension MonitorStore {
         sendSignal: { _, _ in 0 }))
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
+    store.portGroups = portGroups
     store.systemSummary = summary
     store.lastUpdated = Date()
     store.usesPorcelainAppearance = usesPorcelainAppearance

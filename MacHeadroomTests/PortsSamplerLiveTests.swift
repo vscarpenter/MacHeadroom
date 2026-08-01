@@ -74,6 +74,22 @@ struct PortsSamplerLiveTests {
     #expect(uncovered.count < max(1, sockets.count / 4))
   }
 
+  @Test("Store publishes port groups after a refresh")
+  @MainActor
+  func storePublishesPortGroups() async throws {
+    let suiteName = "com.vinnycarpenter.MacHeadroom.ports-tests"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defaults.removePersistentDomain(forName: suiteName)
+    let store = MonitorStore(defaults: defaults, capability: .sandboxed)
+    await store.refreshNow()
+    let rows = try #require(store.portGroups)
+    #expect(!rows.isEmpty)
+    // User rows sort before system rows; once system starts, it stays.
+    if let firstSystem = rows.firstIndex(where: { $0.isSystem }) {
+      #expect(rows[firstSystem...].allSatisfy { $0.isSystem })
+    }
+  }
+
   private static func netstatTCPListeners() throws -> Set<String> {
     try netstatPairs(protoArg: "tcp") { fields in
       fields.count > 5 && fields[5] == "LISTEN"
