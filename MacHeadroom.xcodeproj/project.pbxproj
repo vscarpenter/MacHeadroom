@@ -19,6 +19,7 @@
 		D10000000000000000000006 /* MonitorTick.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* MonitorTick.swift */; };
 		D10000000000000000000007 /* SamplerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* SamplerService.swift */; };
 		D10000000000000000000008 /* PortTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000008 /* PortTypes.swift */; };
+		D1000000000000000000000A /* PortTableParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000A /* PortTableParser.swift */; };
 		E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
 		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
@@ -31,6 +32,7 @@
 		E1000000000000000000000A /* PopoverVisualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000A /* PopoverVisualTests.swift */; };
 		E1000000000000000000000B /* ProcessTerminatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000B /* ProcessTerminatorTests.swift */; };
 		E1000000000000000000000C /* PortTableABITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000C /* PortTableABITests.swift */; };
+		E1000000000000000000000D /* PortTableParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000D /* PortTableParserTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -80,6 +82,7 @@
 		D20000000000000000000007 /* SamplerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerService.swift; sourceTree = "<group>"; };
 		D20000000000000000000008 /* PortTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTypes.swift; sourceTree = "<group>"; };
 		D20000000000000000000009 /* PortTableABI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PortTableABI.h; sourceTree = "<group>"; };
+		D2000000000000000000000A /* PortTableParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableParser.swift; sourceTree = "<group>"; };
 		E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
@@ -92,6 +95,7 @@
 		E2000000000000000000000A /* PopoverVisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverVisualTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000000B /* ProcessTerminatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTerminatorTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000000C /* PortTableABITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableABITests.swift; sourceTree = "<group>"; };
+		E2000000000000000000000D /* PortTableParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableParserTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -208,6 +212,7 @@
 				E2000000000000000000000A /* PopoverVisualTests.swift */,
 				E2000000000000000000000B /* ProcessTerminatorTests.swift */,
 				E2000000000000000000000C /* PortTableABITests.swift */,
+				E2000000000000000000000D /* PortTableParserTests.swift */,
 			);
 			path = MacHeadroomTests;
 			sourceTree = "<group>";
@@ -224,6 +229,7 @@
 				D20000000000000000000007 /* SamplerService.swift */,
 				D20000000000000000000008 /* PortTypes.swift */,
 				D20000000000000000000009 /* PortTableABI.h */,
+				D2000000000000000000000A /* PortTableParser.swift */,
 			);
 			path = Sampling;
 			sourceTree = "<group>";
@@ -365,6 +371,7 @@
 				D10000000000000000000006 /* MonitorTick.swift in Sources */,
 				D10000000000000000000007 /* SamplerService.swift in Sources */,
 				D10000000000000000000008 /* PortTypes.swift in Sources */,
+				D1000000000000000000000A /* PortTableParser.swift in Sources */,
 				F10000000000000000000001 /* AppMetadata.swift in Sources */,
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
@@ -401,6 +408,7 @@
 				E1000000000000000000000A /* PopoverVisualTests.swift in Sources */,
 				E1000000000000000000000B /* ProcessTerminatorTests.swift in Sources */,
 				E1000000000000000000000C /* PortTableABITests.swift in Sources */,
+				E1000000000000000000000D /* PortTableParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
