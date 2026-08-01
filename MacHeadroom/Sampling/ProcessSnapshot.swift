@@ -1,5 +1,10 @@
 import Foundation
 
+struct ProcessTable: Sendable {
+  let snapshots: [ProcessSnapshot]
+  let commandNamesByPID: [Int32: String]
+}
+
 struct ProcessSnapshot: Sendable, Equatable {
   let pid: Int32
   let parentPID: Int32

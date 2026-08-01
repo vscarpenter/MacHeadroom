@@ -1,5 +1,6 @@
 import Darwin
 import Foundation
+import os
 
 /// Owns the sampling loop's mutable state: the previous tick's process and
 /// host readings, used to compute this tick's deltas. One tick, one
@@ -8,8 +9,12 @@ actor SamplerService {
   private var previousSnapshotsByPID: [Int32: ProcessSnapshot] = [:]
   private var previousHostTicks: HostCPUTicks?
   private var previousTimestamp: UInt64?
+  private var lastSocketsFailed = false
   private let timebase: mach_timebase_info_data_t
   private let logicalCoreCount: Int
+
+  private static let log = Logger(
+    subsystem: "com.vinnycarpenter.MacHeadroom", category: "ports")
 
   init(
     timebase: mach_timebase_info_data_t = SamplerService.currentTimebase(),
@@ -32,8 +37,25 @@ actor SamplerService {
   /// thousandfold when two refreshes overlapped.
   func tick(convention: CPUConvention) -> MonitorTick {
     let now = DispatchTime.now().uptimeNanoseconds
-    let snapshots = ProcessTableSampler.sampleReachableProcesses()
+    let table = ProcessTableSampler.sampleTable()
+    let snapshots = table.snapshots
     let wallTime = previousTimestamp.flatMap { now > $0 ? now - $0 : nil } ?? 0
+
+    let sockets = PortTableParser.listeningSockets(
+      tcpTable: PortTableSampler.fetchTCPTable(),
+      udpTable: PortTableSampler.fetchUDPTable())
+    // Log the failure transition once, not every tick: a persistent
+    // seatbelt or layout change would otherwise spam a fault per tick.
+    if sockets == nil, !lastSocketsFailed {
+      Self.log.fault("port table fetch or parse failed; ports pane unavailable")
+    }
+    lastSocketsFailed = sockets == nil
+
+    let snapshotPIDs = Set(snapshots.map(\.pid))
+    var socketFallbackNames: [Int32: String] = [:]
+    for record in sockets ?? [] where !snapshotPIDs.contains(record.pid) {
+      socketFallbackNames[record.pid] = table.commandNamesByPID[record.pid]
+    }
 
     let measurements = snapshots.map { snapshot -> ProcessMeasurement in
       let previous = previousSnapshotsByPID[snapshot.pid]
@@ -71,7 +93,9 @@ actor SamplerService {
         cpuPercent: hostPercent,
         memoryUsedBytes: hostMemory?.usedBytes ?? 0,
         memoryTotalBytes: hostMemory?.totalBytes ?? 0
-      )
+      ),
+      sockets: sockets,
+      socketFallbackNames: socketFallbackNames
     )
   }
 }

@@ -55,6 +55,25 @@ struct PortsSamplerLiveTests {
     #expect(ours.intersection(theirs).count * 2 >= theirs.count)
   }
 
+  @Test("Tick carries sockets and fallback names for non-snapshot owners")
+  func tickCarriesSockets() async throws {
+    let service = SamplerService()
+    _ = await service.tick(convention: .machineCapacity)  // priming tick
+    let tick = await service.tick(convention: .machineCapacity)
+    let sockets = try #require(tick.sockets)
+    #expect(!sockets.isEmpty)
+    let snapshotPIDs = Set(tick.processes.map(\.snapshot.pid))
+    for (pid, name) in tick.socketFallbackNames {
+      #expect(!snapshotPIDs.contains(pid))
+      #expect(!name.isEmpty)
+    }
+    // Every socket owner is accounted for: in the snapshot set, in the
+    // fallback names, or gone since the sweep (rare churn; bounded).
+    let coveredPIDs = snapshotPIDs.union(tick.socketFallbackNames.keys)
+    let uncovered = sockets.filter { !coveredPIDs.contains($0.pid) }
+    #expect(uncovered.count < max(1, sockets.count / 4))
+  }
+
   private static func netstatTCPListeners() throws -> Set<String> {
     try netstatPairs(protoArg: "tcp") { fields in
       fields.count > 5 && fields[5] == "LISTEN"

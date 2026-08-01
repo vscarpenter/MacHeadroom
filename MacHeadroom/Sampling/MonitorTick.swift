@@ -12,4 +12,10 @@ struct SystemSummary: Sendable, Equatable {
 struct MonitorTick: Sendable, Equatable {
   let processes: [ProcessMeasurement]
   let system: SystemSummary
+  /// nil when the port tables could not be fetched or parsed this tick;
+  /// the ports pane shows its unavailable state rather than stale rows.
+  let sockets: [SocketRecord]?
+  /// p_comm names for socket-owning pids outside the snapshot set (root
+  /// listeners). A vanished process may be absent here.
+  let socketFallbackNames: [Int32: String]
 }

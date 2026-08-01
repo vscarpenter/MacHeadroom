@@ -7,10 +7,22 @@ import Foundation
 /// other-user processes never appear here.
 enum ProcessTableSampler {
   static func sampleReachableProcesses() -> [ProcessSnapshot] {
+    sampleTable().snapshots
+  }
+
+  /// One enumeration pass serving both consumers: metric snapshots for
+  /// same-user processes, and p_comm names for every pid — root and
+  /// other-user rows expose their name in kinfo_proc even though their
+  /// task info is EPERM, and the ports view needs names for the root
+  /// listeners the pcblist sysctl reveals.
+  static func sampleTable() -> ProcessTable {
     let ownUID = geteuid()
-    return enumerateProcesses()
+    let identities = enumerateProcesses()
+    let names = Dictionary(
+      identities.map { ($0.pid, $0.name) }, uniquingKeysWith: { first, _ in first })
+    let snapshots = identities
       .filter { $0.userID == ownUID }
-      .compactMap { identity in
+      .compactMap { identity -> ProcessSnapshot? in
         guard let task = taskMeasurement(for: identity.pid) else { return nil }
         return ProcessSnapshot(
           pid: identity.pid,
@@ -22,6 +34,7 @@ enum ProcessTableSampler {
           residentBytes: task.residentBytes
         )
       }
+    return ProcessTable(snapshots: snapshots, commandNamesByPID: names)
   }
 
   /// Re-reads one pid's start-time identity immediately before a signal
