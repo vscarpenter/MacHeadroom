@@ -105,6 +105,35 @@ struct PopoverLayoutTests {
     #expect(portsPopulated == metricHeight)
   }
 
+  @Test("Porcelain ports pane height matches the metric panes, all states")
+  @MainActor
+  func porcelainPortsPaneHeightInvariant() {
+    let emptySummary = SystemSummary(
+      cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
+    let emptyStore = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [], summary: emptySummary, portGroups: [])
+    let unavailableStore = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [], summary: emptySummary, portGroups: nil)
+    let populatedStore = PreviewFixtures.makeStore()
+
+    let metricHeight = NSHostingView(
+      rootView: PopoverView(store: populatedStore, initialTab: .cpu)
+    ).intrinsicContentSize.height
+    let portsEmpty = NSHostingView(
+      rootView: PopoverView(store: emptyStore, initialTab: .ports)
+    ).intrinsicContentSize.height
+    let portsUnavailable = NSHostingView(
+      rootView: PopoverView(store: unavailableStore, initialTab: .ports)
+    ).intrinsicContentSize.height
+    let portsPopulated = NSHostingView(
+      rootView: PopoverView(store: populatedStore, initialTab: .ports)
+    ).intrinsicContentSize.height
+
+    #expect(portsEmpty == metricHeight)
+    #expect(portsUnavailable == metricHeight)
+    #expect(portsPopulated == metricHeight)
+  }
+
   @Test("Quit capability does not change Porcelain popover size")
   @MainActor
   func porcelainCapabilityDoesNotChangeSize() {

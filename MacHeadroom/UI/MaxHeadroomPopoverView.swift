@@ -3,13 +3,13 @@ import SwiftUI
 
 struct PorcelainPopoverView: View {
   let store: MonitorStore
-  @State private var selectedMetric: MetricKind
+  @State private var selectedTab: PopoverTab
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.colorScheme) private var colorScheme
 
-  init(store: MonitorStore, initialMetric: MetricKind = .cpu) {
+  init(store: MonitorStore, initialTab: PopoverTab = .cpu) {
     self.store = store
-    _selectedMetric = State(initialValue: initialMetric)
+    _selectedTab = State(initialValue: initialTab)
   }
 
   private var palette: PorcelainPalette {
@@ -17,15 +17,22 @@ struct PorcelainPopoverView: View {
   }
 
   private var groups: [AppGroup] {
-    selectedMetric == .cpu ? store.topCPUGroups : store.topMemoryGroups
+    selectedTab == .cpu ? store.topCPUGroups : store.topMemoryGroups
   }
 
   private var maxValue: Double {
-    groups.first.flatMap { selectedMetric.value(of: $0) } ?? 0
+    guard let metric = selectedTab.metricKind else { return 0 }
+    return groups.first.flatMap { metric.value(of: $0) } ?? 0
   }
 
-  private var headroomPercent: Int? {
-    switch selectedMetric {
+  private var headerTitle: String {
+    selectedTab == .ports ? "Local ports" : "\(selectedTab.rawValue) headroom"
+  }
+
+  /// The header's big number: headroom percent for the metric tabs,
+  /// total listening-port count for the ports tab, nil when unknown.
+  private var headlineNumber: Int? {
+    switch selectedTab {
     case .cpu:
       ValueFormatting.headroomPercent(
         used: store.systemSummary.cpuPercent,
@@ -36,15 +43,27 @@ struct PorcelainPopoverView: View {
         used: Double(store.systemSummary.memoryUsedBytes),
         capacity: Double(store.systemSummary.memoryTotalBytes)
       )
+    case .ports:
+      store.portGroups.map { $0.reduce(0) { $0 + $1.ports.count } }
     }
   }
 
-  private var headroomText: String {
-    headroomPercent.map(String.init) ?? "—"
+  private var headlineText: String {
+    headlineNumber.map(String.init) ?? "—"
+  }
+
+  private var headlineAccessibilityLabel: String {
+    switch selectedTab {
+    case .cpu, .memory:
+      return headlineNumber.map { "\($0) percent \(selectedTab.rawValue) headroom" }
+        ?? "\(selectedTab.rawValue) headroom unavailable"
+    case .ports:
+      return headlineNumber.map { "\($0) listening ports" } ?? "Ports unavailable"
+    }
   }
 
   private var usageDetail: String {
-    switch selectedMetric {
+    switch selectedTab {
     case .cpu:
       let cpu = ValueFormatting.percent(store.systemSummary.cpuPercent)
       return "\(cpu) in use · "
@@ -53,6 +72,10 @@ struct PorcelainPopoverView: View {
     case .memory:
       return "\(ValueFormatting.bytes(store.systemSummary.memoryUsedBytes)) in use · "
         + "\(ValueFormatting.bytes(store.systemSummary.memoryTotalBytes)) total"
+    case .ports:
+      guard let rows = store.portGroups else { return "Ports unavailable" }
+      let processWord = rows.count == 1 ? "process" : "processes"
+      return "\(rows.count) \(processWord) listening"
     }
   }
 
@@ -77,25 +100,22 @@ struct PorcelainPopoverView: View {
 
       HStack(alignment: .center, spacing: PorcelainSpacing.lg) {
         VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
-          Text("\(selectedMetric.rawValue) headroom")
+          Text(headerTitle)
             .font(.system(size: 20, weight: .regular))
 
           HStack(alignment: .firstTextBaseline, spacing: 2) {
-            Text(headroomText)
+            Text(headlineText)
               .font(.system(size: 54, weight: .regular, design: .rounded))
               .monospacedDigit()
               .contentTransition(.numericText())
 
-            if headroomPercent != nil {
+            if headlineNumber != nil, selectedTab != .ports {
               Text("%")
                 .font(.system(size: 30, weight: .regular, design: .rounded))
             }
           }
           .accessibilityElement(children: .combine)
-          .accessibilityLabel(
-            headroomPercent.map { "\($0) percent \(selectedMetric.rawValue) headroom" }
-              ?? "\(selectedMetric.rawValue) headroom unavailable"
-          )
+          .accessibilityLabel(headlineAccessibilityLabel)
 
           Text(usageDetail)
             .font(.system(size: 13))
@@ -106,59 +126,90 @@ struct PorcelainPopoverView: View {
 
         Spacer(minLength: 0)
 
-        PorcelainMetricPicker(selection: $selectedMetric, palette: palette)
-          .frame(width: 174)
+        PorcelainMetricPicker(selection: $selectedTab, palette: palette)
+          .frame(width: 240)
       }
     }
     .padding(.horizontal, PorcelainSpacing.lg)
     .padding(.top, PorcelainSpacing.lg)
     .padding(.bottom, PorcelainSpacing.md)
     .frame(height: 172, alignment: .topLeading)
-    .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: selectedMetric)
+    .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: selectedTab)
   }
 
   private var list: some View {
     ScrollView {
       LazyVStack(spacing: 0) {
-        if groups.isEmpty {
-          VStack(spacing: PorcelainSpacing.sm) {
-            Image(systemName: "waveform.path")
-              .font(.title3)
-            Text("Waiting for a signal…")
-              .font(.system(size: 13, weight: .medium))
-            Text("The first sample will appear in a moment.")
-              .font(.caption)
-              .foregroundStyle(palette.textSecondary)
-          }
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 52)
-        } else {
-          ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
-            PorcelainGroupRowView(
-              group: group,
-              metric: selectedMetric,
-              maxValue: maxValue,
-              isTopConsumer: index == 0,
-              palette: palette,
-              store: store
-            )
+        if let metric = selectedTab.metricKind {
+          if groups.isEmpty {
+            emptyState(
+              icon: "waveform.path", title: "Waiting for a signal…",
+              detail: "The first sample will appear in a moment.")
+          } else {
+            ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
+              PorcelainGroupRowView(
+                group: group,
+                metric: metric,
+                maxValue: maxValue,
+                isTopConsumer: index == 0,
+                palette: palette,
+                store: store
+              )
 
-            if group.id != groups.last?.id {
-              Rectangle()
-                .fill(palette.borderSubtle)
-                .frame(height: 1)
-                .padding(.leading, 48)
+              if group.id != groups.last?.id {
+                porcelainRowDivider
+              }
             }
           }
+        } else if let rows = store.portGroups {
+          if rows.isEmpty {
+            emptyState(
+              icon: "app.connected.to.app.below.fill", title: "No listening ports",
+              detail: "Nothing is serving on this Mac right now.")
+          } else {
+            ForEach(rows) { row in
+              PorcelainPortRowView(group: row, palette: palette, store: store)
+
+              if row.id != rows.last?.id {
+                porcelainRowDivider
+              }
+            }
+          }
+        } else {
+          emptyState(
+            icon: "exclamationmark.triangle", title: "Ports unavailable",
+            detail: "The port tables could not be read this sample.")
         }
       }
       .padding(.horizontal, PorcelainSpacing.lg)
       .padding(.vertical, PorcelainSpacing.xs)
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: groups)
+      .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: store.portGroups)
     }
     // MenuBarExtra(.window) fixes its size at presentation time. Keep this
     // independent of list contents so the first live sample cannot collapse it.
     .frame(height: 468)
+  }
+
+  private var porcelainRowDivider: some View {
+    Rectangle()
+      .fill(palette.borderSubtle)
+      .frame(height: 1)
+      .padding(.leading, 48)
+  }
+
+  private func emptyState(icon: String, title: String, detail: String) -> some View {
+    VStack(spacing: PorcelainSpacing.sm) {
+      Image(systemName: icon)
+        .font(.title3)
+      Text(title)
+        .font(.system(size: 13, weight: .medium))
+      Text(detail)
+        .font(.caption)
+        .foregroundStyle(palette.textSecondary)
+    }
+    .frame(maxWidth: .infinity)
+    .padding(.vertical, 52)
   }
 
   private var footer: some View {
@@ -217,12 +268,12 @@ struct PorcelainPopoverView: View {
 }
 
 private struct PorcelainMetricPicker: View {
-  @Binding var selection: MetricKind
+  @Binding var selection: PopoverTab
   let palette: PorcelainPalette
 
   var body: some View {
     HStack(spacing: 0) {
-      ForEach(MetricKind.allCases) { metric in
+      ForEach(PopoverTab.allCases) { metric in
         Button {
           selection = metric
         } label: {
@@ -530,6 +581,89 @@ private enum PorcelainSpacing {
   static let sm = 8.0
   static let md = 16.0
   static let lg = 20.0
+}
+
+private struct PorcelainPortRowView: View {
+  let group: PortGroup
+  let palette: PorcelainPalette
+  let store: MonitorStore
+  @State private var isRowHovered = false
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+  private static let maxBadges = 4
+
+  var body: some View {
+    HStack(spacing: PorcelainSpacing.sm) {
+      Image(nsImage: icon)
+        .resizable()
+        .frame(width: 18, height: 18)
+
+      Text(group.name)
+        .font(.system(size: 13, weight: .medium))
+        .foregroundStyle(palette.textPrimary)
+        .lineLimit(1)
+
+      if group.isSystem {
+        Text("system")
+          .font(.caption2)
+          .foregroundStyle(palette.textSecondary)
+      }
+
+      Spacer(minLength: PorcelainSpacing.sm)
+
+      if let appGroup = group.appGroup {
+        QuitAffordanceView(
+          group: appGroup, store: store,
+          accent: palette.accent, secondary: palette.textSecondary,
+          isRowHovered: isRowHovered
+        ) {
+          badges
+        }
+      } else {
+        badges
+      }
+    }
+    .padding(.vertical, PorcelainSpacing.xs)
+    .frame(height: 44)
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(accessibilityLabel)
+    .onHover { hovering in
+      guard store.canTerminate, group.appGroup != nil else { return }
+      withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
+        isRowHovered = hovering
+      }
+    }
+  }
+
+  private var badges: some View {
+    HStack(spacing: 4) {
+      ForEach(group.ports.prefix(Self.maxBadges), id: \.self) { port in
+        PortBadge(port: port)
+      }
+      if group.ports.count > Self.maxBadges {
+        Text("+\(group.ports.count - Self.maxBadges)")
+          .font(.system(.caption2, design: .monospaced))
+          .foregroundStyle(palette.textSecondary)
+      }
+    }
+  }
+
+  private var icon: NSImage {
+    if let appGroup = group.appGroup {
+      return AppIconProvider.icon(for: appGroup)
+    }
+    return NSImage(
+      systemSymbolName: "gearshape.fill", accessibilityDescription: group.name)
+      ?? NSImage()
+  }
+
+  private var accessibilityLabel: String {
+    let portsText = group.ports
+      .map { "\(String($0.number)) \($0.transport.rawValue.uppercased())" }
+      .joined(separator: ", ")
+    let origin = group.isSystem ? ", system process" : ""
+    return "\(group.name)\(origin), listening on \(portsText)"
+  }
 }
 
 private struct PorcelainPalette {

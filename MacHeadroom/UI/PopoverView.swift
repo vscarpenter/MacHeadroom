@@ -22,9 +22,7 @@ struct PopoverView: View {
   var body: some View {
     Group {
       if store.usesPorcelainAppearance {
-        // Task 8 threads the full tab through; until then Porcelain
-        // keeps its metric-only picker.
-        PorcelainPopoverView(store: store, initialMetric: selectedTab.metricKind ?? .cpu)
+        PorcelainPopoverView(store: store, initialTab: selectedTab)
       } else {
         standardPopover
       }
