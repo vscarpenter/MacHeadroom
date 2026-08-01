@@ -78,7 +78,7 @@ struct PortTableParserTests {
   @Test("One IPv4 TCP listener parses with owner pid")
   func tcpListener() {
     let tcp = table(
-      socketRecord(lastPid: 4242) + inpcbRecord(localPort: 3000)
+      inpcbRecord(localPort: 3000) + socketRecord(lastPid: 4242)
         + tcpcbRecord(state: MH_TCPS_LISTEN))
     let records = PortTableParser.listeningSockets(tcpTable: tcp, udpTable: emptyUDP)
     #expect(records == [
@@ -88,10 +88,28 @@ struct PortTableParserTests {
     ])
   }
 
+  @Test("Two consecutive entries keep their own pid-port association")
+  func noCrossEntryShift() {
+    let tcp = table(
+      inpcbRecord(localPort: 80) + socketRecord(lastPid: 874)
+        + tcpcbRecord(state: MH_TCPS_LISTEN),
+      inpcbRecord(localPort: 58906) + socketRecord(lastPid: 913)
+        + tcpcbRecord(state: MH_TCPS_LISTEN))
+    let records = PortTableParser.listeningSockets(tcpTable: tcp, udpTable: table())
+    #expect(records == [
+      SocketRecord(
+        transport: .tcp, portNumber: 80, pid: 874, effectivePid: 0,
+        tcpState: MH_TCPS_LISTEN),
+      SocketRecord(
+        transport: .tcp, portNumber: 58906, pid: 913, effectivePid: 0,
+        tcpState: MH_TCPS_LISTEN),
+    ])
+  }
+
   @Test("Established TCP sockets are filtered out")
   func establishedFiltered() {
     let tcp = table(
-      socketRecord(lastPid: 4242) + inpcbRecord(localPort: 3000, foreignPort: 443)
+      inpcbRecord(localPort: 3000, foreignPort: 443) + socketRecord(lastPid: 4242)
         + tcpcbRecord(state: 4))
     #expect(
       PortTableParser.listeningSockets(tcpTable: tcp, udpTable: emptyUDP) == [])
@@ -100,8 +118,8 @@ struct PortTableParserTests {
   @Test("Bound unconnected UDP socket parses; connected UDP is filtered")
   func udpFilter() {
     let udp = table(
-      socketRecord(lastPid: 99) + inpcbRecord(localPort: 5353),
-      socketRecord(lastPid: 99) + inpcbRecord(localPort: 60000, foreignPort: 443))
+      inpcbRecord(localPort: 5353) + socketRecord(lastPid: 99),
+      inpcbRecord(localPort: 60000, foreignPort: 443) + socketRecord(lastPid: 99))
     let records = PortTableParser.listeningSockets(tcpTable: table(), udpTable: udp)
     #expect(records == [
       SocketRecord(
@@ -112,7 +130,7 @@ struct PortTableParserTests {
   @Test("IPv4 and IPv6 twins of the same listener dedupe to one record")
   func dualStackDedupe() {
     let twin =
-      socketRecord(lastPid: 7) + inpcbRecord(localPort: 8080)
+      inpcbRecord(localPort: 8080) + socketRecord(lastPid: 7)
       + tcpcbRecord(state: MH_TCPS_LISTEN)
     let records = PortTableParser.listeningSockets(
       tcpTable: table(twin, twin), udpTable: emptyUDP)
@@ -122,7 +140,7 @@ struct PortTableParserTests {
   @Test("Unknown record kinds are skipped, not fatal")
   func unknownKindSkipped() {
     let tcp = table(
-      socketRecord(lastPid: 4242) + unknownRecord() + inpcbRecord(localPort: 3000)
+      inpcbRecord(localPort: 3000) + unknownRecord() + socketRecord(lastPid: 4242)
         + tcpcbRecord(state: MH_TCPS_LISTEN))
     #expect(
       PortTableParser.listeningSockets(tcpTable: tcp, udpTable: emptyUDP)?.count == 1)
@@ -137,7 +155,7 @@ struct PortTableParserTests {
     let grown = padded8(
       withUnsafeBytes(of: sock) { Data($0) } + Data(repeating: 0, count: 16))
     let tcp = table(
-      grown + inpcbRecord(localPort: 3000) + tcpcbRecord(state: MH_TCPS_LISTEN))
+      inpcbRecord(localPort: 3000) + grown + tcpcbRecord(state: MH_TCPS_LISTEN))
     #expect(
       PortTableParser.listeningSockets(tcpTable: tcp, udpTable: emptyUDP)?.count == 1)
   }
@@ -150,14 +168,14 @@ struct PortTableParserTests {
     let shrunken = padded8(
       withUnsafeBytes(of: gen) { Data($0) } + Data(repeating: 0, count: 24))
     let tcp = table(
-      shrunken + inpcbRecord(localPort: 3000) + tcpcbRecord(state: MH_TCPS_LISTEN))
+      inpcbRecord(localPort: 3000) + shrunken + tcpcbRecord(state: MH_TCPS_LISTEN))
     #expect(PortTableParser.listeningSockets(tcpTable: tcp, udpTable: emptyUDP) == nil)
   }
 
   @Test("Truncated buffer is rejected, empty table parses as empty")
   func truncationAndEmpty() {
     let tcp = table(
-      socketRecord(lastPid: 1) + inpcbRecord(localPort: 80)
+      inpcbRecord(localPort: 80) + socketRecord(lastPid: 1)
         + tcpcbRecord(state: MH_TCPS_LISTEN))
     #expect(
       PortTableParser.listeningSockets(

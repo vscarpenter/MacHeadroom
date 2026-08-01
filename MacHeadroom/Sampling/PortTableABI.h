@@ -18,6 +18,14 @@
 
 #define MH_TCPS_LISTEN 1
 
+// xnu declares every one of these structures inside #pragma pack(4)
+// regions (bsd/netinet/in_pcb.h line ~554, bsd/sys/socketvar.h,
+// bsd/netinet/tcp_var.h). Without it, natural alignment pads so_pcb to
+// an 8-byte boundary and every later field — including so_last_pid —
+// shifts by 4, silently reading zeros. Found live by the netstat
+// cross-check test.
+#pragma pack(4)
+
 struct mh_xinpgen {
   u_int32_t xig_len;
   u_int32_t xig_count;
@@ -75,5 +83,7 @@ struct mh_xtcpcb_n_prefix {
   int t_timer[4];
   int t_state;
 };
+
+#pragma pack()
 
 #endif

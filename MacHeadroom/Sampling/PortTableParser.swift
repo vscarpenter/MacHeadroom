@@ -18,11 +18,15 @@ enum PortTableParser {
     return (tcp + udp).filter { seen.insert($0).inserted }
   }
 
+  /// One socket's records as they stream past. The kernel emits each
+  /// entry as INPCB, SOCKET, rcv/snd bufs, stats, then TCPCB for TCP
+  /// (xnu get_pcblist_n), so INPCB is the entry boundary and the pids
+  /// arrive after the ports.
   private struct PendingEntry {
-    var pid: Int32
-    var effectivePid: Int32
-    var localPort: UInt16?
-    var foreignPort: UInt16?
+    var localPort: UInt16
+    var foreignPort: UInt16
+    var pid: Int32?
+    var effectivePid: Int32?
     var tcpState: Int32?
   }
 
@@ -47,20 +51,21 @@ enum PortTableParser {
       if length <= genSize { break }
 
       switch Int32(header.xgn_kind) {
-      case MH_XSO_SOCKET:
-        guard length >= MemoryLayout<mh_xsocket_n>.size,
-          let sock = load(mh_xsocket_n.self, from: table, at: offset)
-        else { return nil }
-        if let done = pending { append(done, transport: transport, to: &records) }
-        pending = PendingEntry(
-          pid: sock.so_last_pid, effectivePid: sock.so_e_pid,
-          localPort: nil, foreignPort: nil, tcpState: nil)
       case MH_XSO_INPCB:
         guard length >= MemoryLayout<mh_xinpcb_n_prefix>.size,
           let inp = load(mh_xinpcb_n_prefix.self, from: table, at: offset)
         else { return nil }
-        pending?.localPort = UInt16(bigEndian: inp.inp_lport)
-        pending?.foreignPort = UInt16(bigEndian: inp.inp_fport)
+        if let done = pending { append(done, transport: transport, to: &records) }
+        pending = PendingEntry(
+          localPort: UInt16(bigEndian: inp.inp_lport),
+          foreignPort: UInt16(bigEndian: inp.inp_fport),
+          pid: nil, effectivePid: nil, tcpState: nil)
+      case MH_XSO_SOCKET:
+        guard length >= MemoryLayout<mh_xsocket_n>.size,
+          let sock = load(mh_xsocket_n.self, from: table, at: offset)
+        else { return nil }
+        pending?.pid = sock.so_last_pid
+        pending?.effectivePid = sock.so_e_pid
       case MH_XSO_TCPCB:
         guard length >= MemoryLayout<mh_xtcpcb_n_prefix>.size,
           let tcp = load(mh_xtcpcb_n_prefix.self, from: table, at: offset)
@@ -79,7 +84,9 @@ enum PortTableParser {
   private static func append(
     _ entry: PendingEntry, transport: PortTransport, to records: inout [SocketRecord]
   ) {
-    guard let localPort = entry.localPort, localPort != 0 else { return }
+    // An entry without its SOCKET record has no owner; never fabricate
+    // a pid. An lport of 0 is an unbound socket.
+    guard let pid = entry.pid, entry.localPort != 0 else { return }
     switch transport {
     case .tcp:
       guard entry.tcpState == MH_TCPS_LISTEN else { return }
@@ -88,8 +95,8 @@ enum PortTableParser {
     }
     records.append(
       SocketRecord(
-        transport: transport, portNumber: localPort, pid: entry.pid,
-        effectivePid: entry.effectivePid, tcpState: entry.tcpState))
+        transport: transport, portNumber: entry.localPort, pid: pid,
+        effectivePid: entry.effectivePid ?? 0, tcpState: entry.tcpState))
   }
 
   private static func load<T>(_ type: T.Type, from data: Data, at offset: Int) -> T? {

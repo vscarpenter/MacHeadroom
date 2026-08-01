@@ -10,10 +10,12 @@ struct PortTableABITests {
   /// layouts against the live kernel.
   @Test("Copied xnu layouts have the expected sizes")
   func abiSizes() {
+    // pack(4) sizes: without the pragma, xsocket_n pads to 80 and the
+    // pid fields land 4 bytes off. 76 is the canary.
     #expect(MemoryLayout<mh_xinpgen>.size == 24)
     #expect(MemoryLayout<mh_xgen_n>.size == 8)
-    #expect(MemoryLayout<mh_xsocket_n>.size == 80)
-    #expect(MemoryLayout<mh_xinpcb_n_prefix>.size == 24)
+    #expect(MemoryLayout<mh_xsocket_n>.size == 76)
+    #expect(MemoryLayout<mh_xinpcb_n_prefix>.size == 20)
     #expect(MemoryLayout<mh_xtcpcb_n_prefix>.size == 40)
   }
 
