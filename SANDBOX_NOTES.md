@@ -361,8 +361,17 @@ ports to owning processes:
 - `com.apple.security.network.client` changed nothing in either
   direction.
 
+Two follow-up measurements the same day (`bindprobe.c` in the evidence
+directory): the sandbox also denies `bind()` outright — TCP and UDP,
+wildcard and loopback, EPERM without `com.apple.security.network.server`
+— so a test cannot create its own listener inside the sandboxed test
+host; and `/usr/sbin/netstat` execs fine from the sandbox (the child
+inherits the profile and the sysctl is allowed), so netstat's own
+parse of the same table is available as a live cross-check oracle.
+
 Caveat carried into the design: the `pcblist_n` record layouts are not
 in the public SDK (xnu source only), so the app hand-copies them —
 contained by the records' self-framing (`xgn_len`/`xgn_kind`), a
-defensive parser, and a live self-listener test inside the sandboxed
-test host that re-proves the path on every run.
+defensive parser, and a live test inside the sandboxed test host that
+cross-checks the parsed (port, pid) listener set against
+`netstat -anv` on every run.

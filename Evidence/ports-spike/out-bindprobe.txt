@@ -1,0 +1,14 @@
+--- UNSANDBOXED ---
+tcp-wildcard: bind rc=0 errno=0 (ok); listen rc=0 errno=0 (ok)
+tcp-loopback: bind rc=0 errno=0 (ok); listen rc=0 errno=0 (ok)
+udp-wildcard: bind rc=0 errno=0 (ok)
+--- SANDBOXED ---
+tcp-wildcard: bind rc=-1 errno=1 (Operation not permitted)
+tcp-loopback: bind rc=-1 errno=1 (Operation not permitted)
+udp-wildcard: bind rc=-1 errno=1 (Operation not permitted)
+udp-loopback: bind rc=-1 errno=1 (Operation not permitted)
+netstat| Active Internet connections (including servers)
+netstat| Proto Recv-Q Send-Q  Local Address                                 Foreign Address                               (state)          rxbytes      txbytes  rhiwat  shiwat          process:pid    state  options           gencnt    flags   flags1 usecnt rtncnt fltrs
+netstat| tcp4       0      0  192.168.40.245.63865   172.217.116.4.443      ESTABLISHED        11398         6280  131072  131600     Google Drive:14766  00102 00000008 00000000004aaccd 20000081 04000900      3      0 000004
+netstat| tcp4       0      0  192.168.40.245.63863   150.171.110.211.443    ESTABLISHED        22240         2912  131072  131376      Code Helper:42373  00102 00000008 00000000004aab97 20000080 04000900      3      0 000004
+netstat: lines=4 exit-status=36096

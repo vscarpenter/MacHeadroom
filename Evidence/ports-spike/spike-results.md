@@ -60,3 +60,21 @@ fields.
 The unsandboxed control also proves the Direct build can use the
 lsof-style fd walk with SDK-declared `libproc` calls, and can therefore
 avoid the hand-copied structs entirely if it wants to.
+
+## Follow-up: test-oracle measurements (same day)
+
+`bindprobe.c` / `out-bindprobe.txt`, same signing matrix. Two facts that
+shape the live test in the sandboxed test host:
+
+| Probe context | Call | Result |
+| --- | --- | --- |
+| Sandboxed | `bind()` TCP or UDP, wildcard or loopback, ephemeral port | **EPERM, all four** (no `network.server`) |
+| Sandboxed | `popen("/usr/sbin/netstat -anv -p tcp")` | **runs**, prints the `process:pid` column (child inherits the sandbox; the sysctl is allowed) |
+| Control | all of the above | bind+listen ok; netstat ok |
+
+So a self-listener test inside the sandboxed test host is impossible —
+the sandbox denies creating the listener itself. The live-test oracle is
+instead a cross-check against `netstat -anv` output, which exercises the
+same sysctl through Apple's own parser. (Exec of non-system binaries,
+e.g. Homebrew coreutils in `PATH`, is denied — the test must invoke
+`/usr/sbin/netstat` by absolute path with no shell pipeline.)

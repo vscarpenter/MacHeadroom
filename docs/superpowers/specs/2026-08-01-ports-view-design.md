@@ -47,6 +47,13 @@ the records are self-framing (`xgn_len`/`xgn_kind`), so the parser
 skips what it does not recognize; and a live test inside the sandboxed
 test host re-proves the whole path on every CI run (see Testing).
 
+A follow-up measurement closed one test avenue: the sandbox denies
+`bind()` itself (EPERM, TCP and UDP, wildcard and loopback) without
+`com.apple.security.network.server`, so no test in the sandboxed host
+can create its own listener. `/usr/sbin/netstat` does exec from the
+sandbox and prints owning pids, so the live oracle is a cross-check
+against Apple's own parser of the same table.
+
 ## Data layer
 
 Two units in `Sampling/`, split at the house purity boundary:
@@ -123,10 +130,14 @@ anywhere, exactly as today.
   appended-field cases. A wrong hand-copied offset fails here at the
   exact byte.
 - `PortsSamplerLiveTests`, inside the sandboxed test host (the ABI
-  tripwire): bind a TCP listener and a UDP socket on ephemeral ports,
-  run the real sampler and parser, assert our own pid and ports appear.
-  Layout drift or a seatbelt policy change fails CI loudly instead of
-  shipping silently.
+  tripwire): run the real sampler and parser, then cross-check the
+  parsed TCP-listener (port, pid) set against `/usr/sbin/netstat -anv`
+  invoked by absolute path (it execs fine sandboxed; the child inherits
+  the profile). Retry both sides once on mismatch to absorb churn, then
+  assert set equality. Layout drift or a seatbelt policy change fails
+  CI loudly instead of shipping silently. Binding our own listener is
+  impossible in the sandboxed host — measured EPERM, see the evidence
+  addendum.
 - `PortGroupBuilderTests`: pid resolution into app groups, fallback
   naming under truncation, v4/v6 dedupe, sort order, `canQuit` gating.
 - `PopoverLayoutTests`: equal intrinsic height, empty versus populated
