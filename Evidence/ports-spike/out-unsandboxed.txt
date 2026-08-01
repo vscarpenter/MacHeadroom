@@ -1,0 +1,19 @@
+sandbox-proof: finder plist OPENED (unsandboxed)
+
+== Path A: proc_pidinfo(PROC_PIDLISTFDS) fd walk ==
+KERN_PROC_ALL: 1048 processes, euid=501 self=77534
+LISTFDS self:       ok=1 eperm=0 other=0 of 1
+LISTFDS same-user:  ok=678 eperm=0 esrch=0 other=0 of 678
+LISTFDS root:       ok=0 eperm=219 esrch=0 other=0 of 219
+LISTFDS other-user: ok=0 eperm=149 esrch=0 other=0 of 149
+TCP LISTEN sockets discovered: 22 across 14 pids
+ground truth pid 77444 LISTFDS rc=360 errno=0; port 8123 FOUND with owner
+
+== Path B: sysctl pcblist_n (netstat -anv path) ==
+net.inet.tcp.pcblist_n size query: rc=0 errno=0 len=122632
+net.inet.tcp.pcblist_n fetch: rc=0 errno=0 bytes=106616
+  scan: port-byte hits=1 pid-byte hits=1 pid-within-512B-after-port=1
+net.inet.udp.pcblist_n size query: rc=0 errno=0 len=37992
+net.inet.udp.pcblist_n fetch: rc=0 errno=0 bytes=26976
+
+done

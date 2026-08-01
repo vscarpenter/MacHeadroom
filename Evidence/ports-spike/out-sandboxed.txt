@@ -1,0 +1,19 @@
+sandbox-proof: finder plist DENIED errno=2 (No such file or directory)
+
+== Path A: proc_pidinfo(PROC_PIDLISTFDS) fd walk ==
+KERN_PROC_ALL: 1050 processes, euid=501 self=77800
+LISTFDS self:       ok=1 eperm=0 other=0 of 1
+LISTFDS same-user:  ok=0 eperm=679 esrch=0 other=0 of 679
+LISTFDS root:       ok=0 eperm=219 esrch=0 other=0 of 219
+LISTFDS other-user: ok=0 eperm=150 esrch=0 other=0 of 150
+TCP LISTEN sockets discovered: 0 across 0 pids
+ground truth pid 77444 LISTFDS rc=0 errno=1; port 8123 NOT FOUND
+
+== Path B: sysctl pcblist_n (netstat -anv path) ==
+net.inet.tcp.pcblist_n size query: rc=0 errno=0 len=120168
+net.inet.tcp.pcblist_n fetch: rc=0 errno=0 bytes=106000
+  scan: port-byte hits=1 pid-byte hits=1 pid-within-512B-after-port=1
+net.inet.udp.pcblist_n size query: rc=0 errno=0 len=34320
+net.inet.udp.pcblist_n fetch: rc=0 errno=0 bytes=27792
+
+done

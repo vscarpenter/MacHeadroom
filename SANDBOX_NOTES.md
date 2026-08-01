@@ -335,3 +335,34 @@ Consequence: the popover quit feature is capability-gated. The Mac App
 Store build shows no quit UI, and only the unsandboxed Developer ID
 build terminates processes. Do not "fix" the sandboxed build by adding
 termination UI; the OS denies the operation itself.
+
+## Port enumeration spike (August 1, 2026)
+
+Same machine, macOS 26.6 (25G72). Probe source and raw results live in
+[`Evidence/ports-spike/`](Evidence/ports-spike/). The design that
+consumed these findings is
+`docs/superpowers/specs/2026-08-01-ports-view-design.md`.
+
+A probe carrying only `com.apple.security.app-sandbox`, matching the
+shipping app, measured the two candidate paths for mapping listening
+ports to owning processes:
+
+- The lsof-style walk is closed: `proc_pidinfo(PROC_PIDLISTFDS)`
+  returned `EPERM` for every one of 679 non-self same-user processes
+  (and for root and other-user), succeeding only on self. Same boundary
+  shape as `proc_pid_rusage` in Phase 0 — task info is same-user
+  readable, fd info is not.
+- The netstat-style path is open: `sysctlbyname` for
+  `net.inet.tcp.pcblist_n` and `net.inet.udp.pcblist_n` returned the
+  full global tables, byte-for-byte comparable to the unsandboxed
+  control, including owning pids (`so_last_pid`/`so_e_pid`). The table
+  is not uid-filtered, so root listeners are visible — the only place
+  in the app where non-same-user process facts are readable.
+- `com.apple.security.network.client` changed nothing in either
+  direction.
+
+Caveat carried into the design: the `pcblist_n` record layouts are not
+in the public SDK (xnu source only), so the app hand-copies them —
+contained by the records' self-framing (`xgn_len`/`xgn_kind`), a
+defensive parser, and a live self-listener test inside the sandboxed
+test host that re-proves the path on every run.
