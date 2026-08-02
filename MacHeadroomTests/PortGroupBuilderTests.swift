@@ -87,4 +87,17 @@ struct PortGroupBuilderTests {
     #expect(
       PortGroupBuilder.build(sockets: nil, groups: [], fallbackNamesByPID: [:]) == nil)
   }
+
+  @Test("Port row identity never collides with the owning app group's identity")
+  func idDisjointFromAppGroupID() throws {
+    // Both popover skins render the metric rows and the port rows inside one
+    // shared LazyVStack, which caches row views by explicit ForEach identity
+    // across tab switches. An app present in both lists with a colliding id
+    // gets the stale cached row from the other tab.
+    let node = appGroup(key: "pid:100", name: "node", pids: [100])
+    let rows = try #require(
+      PortGroupBuilder.build(
+        sockets: [tcp(3000, pid: 100)], groups: [node], fallbackNamesByPID: [:]))
+    #expect(rows[0].id != node.id)
+  }
 }
