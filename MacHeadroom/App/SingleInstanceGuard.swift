@@ -1,7 +1,7 @@
 import AppKit
 import Foundation
 
-/// Keeps a single Mac Headroom instance alive: each new instance broadcasts
+/// Keeps a single Headroom Monitor instance alive: each new instance broadcasts
 /// a takeover notice, and any instance hearing a notice from a different
 /// sender quits, so the newest launch always wins. LaunchServices already
 /// blocks double-launches from Finder and `open`; this covers what it

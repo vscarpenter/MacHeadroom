@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Mac Headroom is a sandboxed, Mac App Store-targeted macOS menu bar app
+Headroom Monitor is a sandboxed, Mac App Store-targeted macOS menu bar app
 (SwiftUI `MenuBarExtra`, macOS 14+, Swift 6 strict concurrency, zero
 dependencies, no network) that shows top-10 CPU and memory consumers,
 collapsing every process that belongs to one app into a single row. The
@@ -110,8 +110,8 @@ logic fixture-testable:
 This dev environment has no Screen Recording or Accessibility
 permission: no screenshots, no synthetic clicks. What works:
 
-- `lsappinfo info -only pid "Mac Headroom"` and `ps` for liveness;
-  `/usr/bin/log show --info --debug --predicate 'process == "Mac Headroom"'`
+- `lsappinfo info -only pid "Headroom Monitor"` and `ps` for liveness;
+  `/usr/bin/log show --info --debug --predicate 'process == "Headroom Monitor"'`
   for the unified log (plain `log` is shadowed by a zsh builtin).
 - To exercise the sampling loop headless, direct-exec the binary from
   the shell (sandbox still applies; env vars inherit). `print()` output

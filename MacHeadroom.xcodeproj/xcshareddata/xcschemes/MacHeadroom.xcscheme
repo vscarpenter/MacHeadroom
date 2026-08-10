@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A50000000000000000000001"
-               BuildableName = "Mac Headroom.app"
+               BuildableName = "Headroom Monitor.app"
                BlueprintName = "MacHeadroom"
                ReferencedContainer = "container:MacHeadroom.xcodeproj">
             </BuildableReference>
@@ -69,7 +69,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A50000000000000000000001"
-            BuildableName = "Mac Headroom.app"
+            BuildableName = "Headroom Monitor.app"
             BlueprintName = "MacHeadroom"
             ReferencedContainer = "container:MacHeadroom.xcodeproj">
          </BuildableReference>
@@ -86,7 +86,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A50000000000000000000001"
-            BuildableName = "Mac Headroom.app"
+            BuildableName = "Headroom Monitor.app"
             BlueprintName = "MacHeadroom"
             ReferencedContainer = "container:MacHeadroom.xcodeproj">
          </BuildableReference>

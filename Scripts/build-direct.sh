@@ -8,7 +8,7 @@ xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom \
   -xcconfig Configuration/Direct.xcconfig \
   -derivedDataPath build/direct build
 
-app="build/direct/Build/Products/Release/Mac Headroom.app"
+app="build/direct/Build/Products/Release/Headroom Monitor.app"
 entitlements="$(codesign -d --entitlements - "$app" 2>/dev/null)" || {
   echo "FAIL: codesign could not read entitlements from $app" >&2
   exit 1

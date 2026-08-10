@@ -5,9 +5,9 @@ import Testing
 
 @Suite("App identity")
 struct AppIdentityTests {
-  @Test("Resolves the Mac Headroom display name from the app bundle")
+  @Test("Resolves the Headroom Monitor display name from the app bundle")
   func resolvesDisplayName() {
-    #expect(AppIdentity.displayName == "Mac Headroom")
+    #expect(AppIdentity.displayName == "Headroom Monitor")
   }
 
   @Test("Version description carries the bundle's marketing version and build")
@@ -29,7 +29,7 @@ struct AppIdentityTests {
       Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String)
 
     #expect(short == "1.0")
-    #expect(build == "10")
+    #expect(build == "11")
     #expect(copyright == "Copyright © 2026 Vinny Carpenter")
   }
 

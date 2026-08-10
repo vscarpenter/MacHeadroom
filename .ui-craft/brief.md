@@ -1,6 +1,6 @@
 # Product purpose
 
-Mac Headroom is a native macOS menu bar utility that reveals the apps using the most CPU and memory after collapsing each app's related processes into one understandable row.
+Headroom Monitor is a native macOS menu bar utility that reveals the apps using the most CPU and memory after collapsing each app's related processes into one understandable row.
 
 # Primary user
 
@@ -33,5 +33,6 @@ Within two seconds of opening the popover, the user can identify both the availa
 # Learned constraints
 
 - ~~**2026-07-25** — The existing native popover remains the default; the Porcelain Native broadcast treatment is an explicit Settings opt-in named “Turn on Max Headroom mode.”~~ — deprecated 2026-07-25 when the approved Porcelain direction became the default.
-- **2026-07-25** — “Mac” and “Headroom” always use equal size, weight, and color. *Why:* the product name is one identity and should not visually imitate a split-word logo.
+- ~~**2026-07-25** — “Mac” and “Headroom” always use equal size, weight, and color. *Why:* the product name is one identity and should not visually imitate a split-word logo.~~ — deprecated 2026-08-10 when Apple rejected “Mac” in the product name under Guideline 5.2.5.
 - **2026-07-25** — Porcelain Native is the default popover appearance, while the compact classic surface remains an explicit fallback. *Why:* the warm, spacious hierarchy makes headroom and top consumers easier to scan and gives the app a distinctive product identity without decorative broadcast imagery.
+- **2026-08-10** — The customer-facing product name is “Headroom Monitor”; internal target, module, and bundle identifiers remain `MacHeadroom`. *Why:* Apple required removing “Mac” from the product name while preserving the submitted bundle identifier.

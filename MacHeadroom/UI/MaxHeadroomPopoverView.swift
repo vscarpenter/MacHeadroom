@@ -243,7 +243,7 @@ struct PorcelainPopoverView: View {
         Button {
           NSApp.terminate(nil)
         } label: {
-          Label("Quit Mac Headroom", systemImage: "power")
+          Label("Quit Headroom Monitor", systemImage: "power")
         }
       } label: {
         Image(systemName: "ellipsis.circle")

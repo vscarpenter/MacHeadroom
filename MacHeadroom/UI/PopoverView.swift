@@ -128,7 +128,7 @@ struct PopoverView: View {
         Image(systemName: "power")
       }
       .buttonStyle(.plain)
-      .accessibilityLabel("Quit Mac Headroom")
+      .accessibilityLabel("Quit Headroom Monitor")
     }
     .padding(12)
   }

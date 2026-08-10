@@ -77,7 +77,7 @@
 		A20000000000000000000007 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		A20000000000000000000008 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		A20000000000000000000009 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
-		A2000000000000000000000A /* Mac Headroom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Headroom.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000000000000000000000A /* Headroom Monitor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Headroom Monitor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000001 /* AppIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* MacHeadroomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacHeadroomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D20000000000000000000001 /* ProcessSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessSnapshot.swift; sourceTree = "<group>"; };
@@ -204,7 +204,7 @@
 		A40000000000000000000007 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A2000000000000000000000A /* Mac Headroom.app */,
+				A2000000000000000000000A /* Headroom Monitor.app */,
 				B20000000000000000000002 /* MacHeadroomTests.xctest */,
 			);
 			name = Products;
@@ -299,7 +299,7 @@
 			);
 			name = MacHeadroom;
 			productName = MacHeadroom;
-			productReference = A2000000000000000000000A /* Mac Headroom.app */;
+			productReference = A2000000000000000000000A /* Headroom Monitor.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B50000000000000000000001 /* MacHeadroomTests */ = {
@@ -521,7 +521,7 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_VERSION = 6.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Headroom Monitor.app/Contents/MacOS/Headroom Monitor";
 			};
 			name = Debug;
 		};
@@ -541,7 +541,7 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_VERSION = 6.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac Headroom.app/Contents/MacOS/Mac Headroom";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Headroom Monitor.app/Contents/MacOS/Headroom Monitor";
 			};
 			name = Release;
 		};
