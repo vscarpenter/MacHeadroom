@@ -1,4 +1,4 @@
-# Mac Headroom menu bar glyph
+# System Headroom menu bar glyph
 
 `render_glyph.swift` draws the menu bar's template glyph with Core
 Graphics: the app icon's four ascending bars, shortened, under a thin
@@ -10,7 +10,7 @@ baked-in black.
 Regenerate with:
 
 ```bash
-swift render_glyph.swift ../../MacHeadroom/Assets.xcassets/MenuBarGlyph.imageset
+swift render_glyph.swift ../../SystemHeadroom/Assets.xcassets/MenuBarGlyph.imageset
 ```
 
 The bars keep the icon's proportions (10.5% margins, 16% widths, 5%

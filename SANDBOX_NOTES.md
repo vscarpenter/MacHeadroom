@@ -1,4 +1,4 @@
-# Mac Headroom sandbox feasibility spike
+# System Headroom sandbox feasibility spike
 
 **Decision:** STOP. On macOS 26.5.2, sandboxed `proc_pid_rusage` returned
 `EPERM` for every non-self same-user process, and no approved public
@@ -25,7 +25,7 @@ is unblocked.
 - `NSWorkspace.shared.runningApplications` returned usable names, bundle IDs,
   icons, and executable URLs.
 - `proc_pid_rusage(RUSAGE_INFO_V4)` failed with `EPERM` for every one of the
-  679 non-self same-user processes. Only Mac Headroom could read its own
+  679 non-self same-user processes. Only System Headroom could read its own
   `phys_footprint`.
 
 CPU and resident set size are available for same-user processes. The required
@@ -45,7 +45,7 @@ Activity Monitor-style memory value is not.
 - Sample interval measured: 2.054084042 seconds
 - Mach timebase: 125 / 3
 - Signed product:
-  `DerivedData/Build/Products/Release/Mac Headroom.app`
+  `DerivedData/Build/Products/Release/System Headroom.app`
 - Launch method: direct execution of the signed app bundle's executable with
   `--phase-zero-probe`
 
@@ -65,7 +65,7 @@ contained only the sandbox entitlement:
 `codesign -dvvv` reported:
 
 ```text
-Identifier=com.vinnycarpenter.MacHeadroom
+Identifier=com.vinnycarpenter.SystemHeadroom
 flags=0x10000(runtime)
 Runtime Version=26.5.0
 ```
@@ -197,7 +197,7 @@ regressions, or invalid/reused identities.
 
 | Class | Process | Rusage result | `phys_footprint` |
 | --- | --- | --- | ---: |
-| Own app | Mac Headroom | Success | 7,930,432 bytes |
+| Own app | System Headroom | Success | 7,930,432 bytes |
 | Same-user app | Finder | `EPERM` | Unavailable |
 | System/root | Representative root process | `EPERM` | Unavailable |
 | Other-user | Representative other-user process | `EPERM` | Unavailable |

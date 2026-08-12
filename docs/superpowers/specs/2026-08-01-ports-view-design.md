@@ -6,7 +6,7 @@ Status: approved by Vinny on August 1, 2026. Spike evidence lives in
 ## Summary
 
 A third segment in the popover — CPU | Memory | Ports — lists every
-process that is listening on a local port, grouped the way Mac Headroom
+process that is listening on a local port, grouped the way System Headroom
 always groups: one row per app or standalone process, its ports shown
 as badges. Both builds get the view. Only the Direct build gets quit
 buttons on the rows, through the existing capability gate; the

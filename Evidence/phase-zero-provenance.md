@@ -18,8 +18,8 @@ TASK_TEAM_ID=$(
 )
 
 xcodebuild \
-  -project MacHeadroom.xcodeproj \
-  -scheme MacHeadroom \
+  -project SystemHeadroom.xcodeproj \
+  -scheme SystemHeadroom \
   -configuration Release \
   -destination 'platform=macOS,arch=arm64' \
   -derivedDataPath DerivedData \
@@ -36,7 +36,7 @@ or `error:` lines.
 Built product:
 
 ```text
-DerivedData/Build/Products/Release/Mac Headroom.app
+DerivedData/Build/Products/Release/System Headroom.app
 ```
 
 Sandboxed executable and signature:
@@ -44,7 +44,7 @@ Sandboxed executable and signature:
 ```text
 SHA-256: 51cabd87439b548b77e0d65495fd7bb68c027d738f2ce67ed411a61929d27684
 CDHash: b46a891151afe01a04e87b011226453b0f3560dc
-Identifier: com.vinnycarpenter.MacHeadroom
+Identifier: com.vinnycarpenter.SystemHeadroom
 Signing class: Apple Development
 CodeDirectory flags: 0x10000(runtime)
 Runtime version: 26.5.0
@@ -54,7 +54,7 @@ Entitlements: {"com.apple.security.app-sandbox":true}
 The sandbox report was captured by executing:
 
 ```sh
-'DerivedData/Build/Products/Release/Mac Headroom.app/Contents/MacOS/Mac Headroom' \
+'DerivedData/Build/Products/Release/System Headroom.app/Contents/MacOS/System Headroom' \
   --phase-zero-probe
 ```
 
@@ -77,14 +77,14 @@ codesign \
   --sign 'Apple Development' \
   --options runtime \
   --timestamp=none \
-  '/tmp/<control-directory>/Mac Headroom.app'
+  '/tmp/<control-directory>/System Headroom.app'
 ```
 
 Control executable and signature at the evidence run:
 
 ```text
 SHA-256: e2eff1fb06d678cd92b1a87d96b937c9896e17df0d5186a46d43dd8983a1e11c
-Identifier: com.vinnycarpenter.MacHeadroom
+Identifier: com.vinnycarpenter.SystemHeadroom
 Signing class: Apple Development
 CodeDirectory flags: 0x10000(runtime)
 Runtime version: 26.5.0

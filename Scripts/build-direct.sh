@@ -3,12 +3,12 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom \
+xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom \
   -configuration Release \
   -xcconfig Configuration/Direct.xcconfig \
   -derivedDataPath build/direct build
 
-app="build/direct/Build/Products/Release/Headroom Monitor.app"
+app="build/direct/Build/Products/Release/System Headroom.app"
 entitlements="$(codesign -d --entitlements - "$app" 2>/dev/null)" || {
   echo "FAIL: codesign could not read entitlements from $app" >&2
   exit 1
@@ -22,7 +22,7 @@ fi
 # Guard against an overlay accidentally packaging Shared.xcconfig's
 # fallback version instead of the current Release version.
 release_settings="$(
-  xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom \
+  xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom \
     -configuration Release -showBuildSettings 2>/dev/null
 )"
 expected_version="$(

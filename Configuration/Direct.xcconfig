@@ -4,4 +4,4 @@
 // No sandbox: the popover quit feature exists only here.
 
 ENABLE_APP_SANDBOX = NO
-CODE_SIGN_ENTITLEMENTS = MacHeadroom/MacHeadroomDirect.entitlements
+CODE_SIGN_ENTITLEMENTS = SystemHeadroom/SystemHeadroomDirect.entitlements

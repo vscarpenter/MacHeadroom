@@ -1,6 +1,6 @@
-# Headroom Monitor App Review rename plan
+# System Headroom App Review rename plan
 
-1. Change the identity test to expect `Headroom Monitor` and confirm it fails
+1. Change the identity test to expect `System Headroom` and confirm it fails
    against the current bundle metadata.
 2. Update the shared display-name setting, Xcode product references/test host,
    scheme product references, Direct-build path, fallback identity, and the

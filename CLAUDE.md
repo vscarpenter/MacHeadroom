@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Headroom Monitor is a sandboxed, Mac App Store-targeted macOS menu bar app
+System Headroom is a sandboxed, Mac App Store-targeted macOS menu bar app
 (SwiftUI `MenuBarExtra`, macOS 14+, Swift 6 strict concurrency, zero
 dependencies, no network) that shows top-10 CPU and memory consumers,
 collapsing every process that belongs to one app into a single row. The
@@ -15,10 +15,10 @@ sandbox constraints and why memory means resident size (not
 ## Build and test
 
 ```bash
-xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug build
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'
+xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug build
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'
 # One suite:
-xcodebuild test ... -only-testing:MacHeadroomTests/GroupingEngineTests
+xcodebuild test ... -only-testing:SystemHeadroomTests/GroupingEngineTests
 ```
 
 - Tests are hosted inside the app (`TEST_HOST`), so `xcodebuild test`
@@ -110,16 +110,16 @@ logic fixture-testable:
 This dev environment has no Screen Recording or Accessibility
 permission: no screenshots, no synthetic clicks. What works:
 
-- `lsappinfo info -only pid "Headroom Monitor"` and `ps` for liveness;
-  `/usr/bin/log show --info --debug --predicate 'process == "Headroom Monitor"'`
+- `lsappinfo info -only pid "System Headroom"` and `ps` for liveness;
+  `/usr/bin/log show --info --debug --predicate 'process == "System Headroom"'`
   for the unified log (plain `log` is shadowed by a zsh builtin).
 - To exercise the sampling loop headless, direct-exec the binary from
   the shell (sandbox still applies; env vars inherit). `print()` output
   is block-buffered when redirected — quit the app gracefully via
   AppleScript so stdio flushes; `kill` drops it.
-- `defaults write com.vinnycarpenter.MacHeadroom …` from the shell hits
+- `defaults write com.vinnycarpenter.SystemHeadroom …` from the shell hits
   `~/Library/Preferences`, which the sandboxed app never reads; its real
-  prefs are in `~/Library/Containers/com.vinnycarpenter.MacHeadroom/`.
+  prefs are in `~/Library/Containers/com.vinnycarpenter.SystemHeadroom/`.
 - Final visual confirmation is Vinny's — ask rather than guess. A newly
   launched menu bar icon can land in Control Center's hidden overflow
   area on a crowded menu bar (README documents this gotcha).

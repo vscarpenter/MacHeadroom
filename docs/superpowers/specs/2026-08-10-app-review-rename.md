@@ -1,20 +1,19 @@
-# Headroom Monitor App Review rename
+# System Headroom App Review rename
 
 ## Context
 
-Apple rejected Mac Headroom 1.0 (10) under Guideline 5.2.5 because the
-submitted app name uses the Apple trademark “Mac” in a product name. The
+Apple rejected the previously submitted 1.0 (10) build under Guideline 5.2.5
+because its app name uses the Apple trademark “Mac” in a product name. The
 reviewer did not cite the icon, screenshots, functionality, sandbox behavior,
 or binary quality.
 
 ## Approved product identity
 
-- App Store name: **Headroom Monitor**
-- Installed application display name: **Headroom Monitor**
-- Existing bundle identifier: `com.vinnycarpenter.MacHeadroom` (unchanged)
-- Existing internal project, target, module, and source names remain
-  `MacHeadroom`; they are implementation identifiers, not customer-facing
-  metadata.
+- App Store name: **System Headroom**
+- Installed application display name: **System Headroom**
+- Existing bundle identifier: `com.vinnycarpenter.MacHeadroom` (unchanged for
+  App Store update compatibility)
+- Project, target, module, and source names: `SystemHeadroom`
 
 ## Required changes
 
@@ -22,8 +21,8 @@ or binary quality.
    through the shared `APP_DISPLAY_NAME` setting.
 2. Update build/test paths and the Direct-build verifier for the renamed app
    bundle.
-3. Replace hard-coded customer-facing “Mac Headroom” labels with
-   “Headroom Monitor.”
+3. Replace all hard-coded customer-facing product labels with
+   “System Headroom.”
 4. Update identity tests before implementation and retain the existing stable
    bundle identifier.
 5. Upload a new build and update App Store Connect metadata and review notes.
@@ -31,8 +30,8 @@ or binary quality.
 
 ## Acceptance criteria
 
-- The app bundle and executable are named `Headroom Monitor`.
-- `CFBundleDisplayName` and `CFBundleName` are `Headroom Monitor`.
+- The app bundle and executable are named `System Headroom`.
+- `CFBundleDisplayName` and `CFBundleName` are `System Headroom`.
 - `CFBundleIdentifier` remains `com.vinnycarpenter.MacHeadroom`.
 - The full test suite passes with no skipped or failed tests.
 - App Store Connect shows the new name and a newly uploaded build.

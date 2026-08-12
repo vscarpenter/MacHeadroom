@@ -84,7 +84,7 @@ the store. Rules:
 ## Build and distribution
 
 - New `Release-Direct` build configuration: no sandbox entitlement (new
-  `MacHeadroomDirect.entitlements`), hardened runtime on, same team and
+  `SystemHeadroomDirect.entitlements`), hardened runtime on, same team and
   xcconfig structure. The Mac App Store `Release` configuration does not
   change.
 - The About tab gains one line naming the build flavor, App Store or

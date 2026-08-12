@@ -1,4 +1,4 @@
-# Mac Headroom app icon
+# System Headroom app icon
 
 `render_icon.swift` draws the icon with Core Graphics: a graphite gradient
 background and four amber bars, flat and full-bleed, no baked-in corner
@@ -12,7 +12,7 @@ swift render_icon.swift .
 ```
 
 That produces three files. `AppIcon-1024.png` is the composite, already
-downsized into `MacHeadroom/Assets.xcassets/AppIcon.appiconset` at all ten
+downsized into `SystemHeadroom/Assets.xcassets/AppIcon.appiconset` at all ten
 required sizes. `layer-background-1024.png` and `layer-bars-1024.png` are
 the same two layers, separated, for Icon Composer.
 

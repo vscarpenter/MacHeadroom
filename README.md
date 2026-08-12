@@ -1,6 +1,6 @@
-# Headroom Monitor
+# System Headroom
 
-Headroom Monitor is a native macOS menu bar app that shows your top CPU and
+System Headroom is a native macOS menu bar app that shows your top CPU and
 memory consumers at a glance. Its one real trick: it collapses every
 process that belongs to one app into a single row. Fourteen Chrome
 processes show up as one "Chrome" row, with a process count and a tap
@@ -19,20 +19,20 @@ in the Direct build, one click) from gone.
 
 ## Building and testing
 
-Open `MacHeadroom.xcodeproj` in Xcode and run the MacHeadroom scheme, or
+Open `SystemHeadroom.xcodeproj` in Xcode and run the SystemHeadroom scheme, or
 build from the command line:
 
 ```bash
-xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug build
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'
+xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug build
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'
 ```
 
-The unit tests run hosted inside the app (`MacHeadroomTests`, wired to
+The unit tests run hosted inside the app (`SystemHeadroomTests`, wired to
 `TEST_HOST`), so they need a destination, not just a build.
 
 ## Build flavors
 
-Headroom Monitor ships as two flavors from the same source. The Mac App
+System Headroom ships as two flavors from the same source. The Mac App
 Store flavor is sandboxed, the distribution target above. A second,
 unsandboxed Direct flavor builds via `Scripts/build-direct.sh`, which
 applies `Configuration/Direct.xcconfig` as an invocation-time overlay
@@ -76,7 +76,7 @@ blocks reading any other process's physical footprint, even processes
 owned by the same user; only a process's own footprint is readable.
 CPU and resident size stay readable for same-user processes.
 
-Headroom Monitor keeps the Sandbox and Mac App Store distribution, and
+System Headroom keeps the Sandbox and Mac App Store distribution, and
 shows resident size instead. That number runs higher than Activity
 Monitor's for apps with many helper processes. Resident size counts
 shared framework pages once per process, not once per app. The full
@@ -100,5 +100,5 @@ actual App Store Connect submission.
 
 On a crowded menu bar, macOS can tuck a newly launched item into Control
 Center's hidden overflow section instead of the visible strip. Hold Cmd
-and drag menu bar icons to check, or look for Headroom Monitor in System
+and drag menu bar icons to check, or look for System Headroom in System
 Settings > Control Center before assuming the app didn't launch.

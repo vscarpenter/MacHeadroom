@@ -32,7 +32,7 @@ flip below, from the byte-identical binary, is the operative proof.
 
 ## Conclusion
 
-On macOS 26.6, an App Sandbox app with Mac Headroom's entitlement set:
+On macOS 26.6, an App Sandbox app with System Headroom's entitlement set:
 
 - **Cannot** walk other processes' file descriptors. `PROC_PIDLISTFDS` is
   EPERM for every non-self process, even same-user — the same boundary

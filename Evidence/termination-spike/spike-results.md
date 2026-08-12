@@ -41,7 +41,7 @@ checker: appleeventsd, primary-filter: appleevent-destination, errno: 1
 
 ## Conclusion
 
-On macOS 26.5.2, an App Sandbox app with Mac Headroom's entitlement set
+On macOS 26.5.2, an App Sandbox app with System Headroom's entitlement set
 cannot terminate any non-child process by any public path: BSD signals are
 EPERM, both `NSRunningApplication` terminators are refused, and
 Apple-event quit sends are denied per-destination by the seatbelt even

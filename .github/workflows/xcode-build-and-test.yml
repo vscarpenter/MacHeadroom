@@ -25,8 +25,8 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild test \
-            -project MacHeadroom.xcodeproj \
-            -scheme MacHeadroom \
+            -project SystemHeadroom.xcodeproj \
+            -scheme SystemHeadroom \
             -configuration Debug \
             -destination 'platform=macOS,arch=arm64' \
             CODE_SIGN_STYLE=Manual \

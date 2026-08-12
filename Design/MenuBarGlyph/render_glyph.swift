@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-// Renders the Mac Headroom menu bar glyph: the app icon's four ascending
+// Renders the System Headroom menu bar glyph: the app icon's four ascending
 // round-topped bars, shortened, under a thin ceiling line. The gap between
 // the tallest bar and the line is the "headroom." Output is an 18x18 point
 // vector PDF for the asset catalog's MenuBarGlyph imageset, which marks it

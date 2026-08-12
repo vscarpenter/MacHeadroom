@@ -1,6 +1,6 @@
 {
   "actualIntervalNanoseconds" : 2203462958,
-  "applicationName" : "Mac Headroom",
+  "applicationName" : "System Headroom",
   "architecture" : "arm64",
   "buildConfiguration" : "Release",
   "deltaClasses" : [
@@ -83,7 +83,7 @@
       "physicalFootprintBytes" : 8045192,
       "pid" : 3934,
       "processClass" : "own-app",
-      "processName" : "Mac Headroom",
+      "processName" : "System Headroom",
       "residentBytes" : 32096256,
       "rusageProcessStartAbsoluteTime" : 1648782614836
     },
@@ -110,7 +110,7 @@
       "physicalFootprintBytes" : 8045192,
       "pid" : 3934,
       "processClass" : "own-app",
-      "processName" : "Mac Headroom",
+      "processName" : "System Headroom",
       "residentBytes" : 32096256,
       "rusageProcessStartAbsoluteTime" : 1648782614836,
       "secondCPUTimeTicks" : 1046133,

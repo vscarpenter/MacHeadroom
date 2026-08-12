@@ -15,8 +15,8 @@
 - Popover ideal height must never depend on list content (`PopoverLayoutTests` invariant). Ports rows are uniform height; badge overflow uses a `+N` chip, never wrapping.
 - Process names are 16-char truncated (`p_comm`); `ProcessGlossary` keys are truncated form.
 - The Mac App Store build must show no quit UI. Quit affordances stay behind `store.canTerminate` (existing pattern) and appear only on rows whose `PortGroup.appGroup != nil`.
-- Build: `xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug build`
-- Test: `xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'` (append `-only-testing:MacHeadroomTests/<Suite>` for one suite). Tests run inside the real sandboxed app (TEST_HOST) — live tests exercise real seatbelt policy.
+- Build: `xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug build`
+- Test: `xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'` (append `-only-testing:SystemHeadroomTests/<Suite>` for one suite). Tests run inside the real sandboxed app (TEST_HOST) — live tests exercise real seatbelt policy.
 - **Adding files to the project**: classic PBXGroups, hand-rolled IDs. Each new `.swift` file needs 4 pbxproj edits: PBXBuildFile, PBXFileReference, owning group's `children`, target Sources phase. ID series: Sampling `D1…`/`D2…` (next free: `…0008`), Grouping `F1…`/`F2…` (next: `…0004`), UI `H1…`/`H2…` (next: `…000B`), tests `E1…`/`E2…` (next: `…000C`). A `.h` file needs only PBXFileReference + group child (headers are not compiled into a Sources phase).
 - Commit after every task with a Conventional Commit message ending in the trailer `Claude-Session: https://claude.ai/code/session_01MvodFnpySRf38GBntDqizw` and no Co-Authored-By footer.
 
@@ -25,11 +25,11 @@
 ### Task 1: ABI header, bridging wiring, and port value types
 
 **Files:**
-- Create: `MacHeadroom/Sampling/PortTableABI.h` (C structs copied from xnu)
-- Create: `MacHeadroom/Sampling/PortTypes.swift`
+- Create: `SystemHeadroom/Sampling/PortTableABI.h` (C structs copied from xnu)
+- Create: `SystemHeadroom/Sampling/PortTypes.swift`
 - Modify: `Configuration/Shared.xcconfig` (bridging header setting — see Step 3 fallback)
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj` (file references + Sources entries)
-- Test: `MacHeadroomTests/PortTableABITests.swift`
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj` (file references + Sources entries)
+- Test: `SystemHeadroomTests/PortTableABITests.swift`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -155,10 +155,10 @@ struct SocketRecord: Sendable, Equatable, Hashable {
 Check whether `Configuration/Shared.xcconfig` is attached to both the app and test targets (look at `baseConfigurationReference` in the pbxproj). If yes, add one line to it:
 
 ```
-SWIFT_OBJC_BRIDGING_HEADER = MacHeadroom/Sampling/PortTableABI.h
+SWIFT_OBJC_BRIDGING_HEADER = SystemHeadroom/Sampling/PortTableABI.h
 ```
 
-If the xcconfig is not attached to both targets, instead add `SWIFT_OBJC_BRIDGING_HEADER = MacHeadroom/Sampling/PortTableABI.h;` to all four XCBuildConfiguration blocks (app Debug/Release, tests Debug/Release) in the pbxproj.
+If the xcconfig is not attached to both targets, instead add `SWIFT_OBJC_BRIDGING_HEADER = SystemHeadroom/Sampling/PortTableABI.h;` to all four XCBuildConfiguration blocks (app Debug/Release, tests Debug/Release) in the pbxproj.
 
 - [ ] **Step 4: Register files in pbxproj**
 
@@ -169,7 +169,7 @@ Per Global Constraints: `PortTypes.swift` gets `D10000000000000000000008`/`D2000
 ```swift
 import Testing
 
-@testable import MacHeadroom
+@testable import SystemHeadroom
 
 @Suite("Port table ABI")
 struct PortTableABITests {
@@ -203,7 +203,7 @@ If `abiSizes` fails on the `mh_xsocket_n` line, the C compiler computed a differ
 
 - [ ] **Step 6: Run test to verify it fails**
 
-Run: `xcodebuild test … -only-testing:MacHeadroomTests/PortTableABITests`
+Run: `xcodebuild test … -only-testing:SystemHeadroomTests/PortTableABITests`
 Expected: build FAILS (types not yet in project) or tests fail — either confirms red.
 
 - [ ] **Step 7: Build, run test to verify it passes**
@@ -213,7 +213,7 @@ Expected: PASS. If the bridging header breaks the build for unrelated files, the
 - [ ] **Step 8: Commit**
 
 ```bash
-git add MacHeadroom/Sampling/PortTableABI.h MacHeadroom/Sampling/PortTypes.swift MacHeadroomTests/PortTableABITests.swift MacHeadroom.xcodeproj/project.pbxproj Configuration/Shared.xcconfig
+git add SystemHeadroom/Sampling/PortTableABI.h SystemHeadroom/Sampling/PortTypes.swift SystemHeadroomTests/PortTableABITests.swift SystemHeadroom.xcodeproj/project.pbxproj Configuration/Shared.xcconfig
 git commit -m "feat(sampling): add pcblist_n ABI header and port value types"
 ```
 
@@ -222,9 +222,9 @@ git commit -m "feat(sampling): add pcblist_n ABI header and port value types"
 ### Task 2: PortTableParser (pure) with synthetic-buffer tests
 
 **Files:**
-- Create: `MacHeadroom/Sampling/PortTableParser.swift`
-- Test: `MacHeadroomTests/PortTableParserTests.swift`
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj` (`D…000A` for parser, `E…000D` for tests)
+- Create: `SystemHeadroom/Sampling/PortTableParser.swift`
+- Test: `SystemHeadroomTests/PortTableParserTests.swift`
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj` (`D…000A` for parser, `E…000D` for tests)
 
 **Interfaces:**
 - Consumes: Task 1's C types and `SocketRecord`.
@@ -238,7 +238,7 @@ The builder composes buffers from the real C structs so field offsets in tests a
 import Foundation
 import Testing
 
-@testable import MacHeadroom
+@testable import SystemHeadroom
 
 private func padded8(_ data: Data) -> Data {
   let remainder = data.count % 8
@@ -507,13 +507,13 @@ enum PortTableParser {
 
 - [ ] **Step 4: Run the suite, verify all PortTableParserTests pass**
 
-Run: `xcodebuild test … -only-testing:MacHeadroomTests/PortTableParserTests`
+Run: `xcodebuild test … -only-testing:SystemHeadroomTests/PortTableParserTests`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/Sampling/PortTableParser.swift MacHeadroomTests/PortTableParserTests.swift MacHeadroom.xcodeproj/project.pbxproj
+git add SystemHeadroom/Sampling/PortTableParser.swift SystemHeadroomTests/PortTableParserTests.swift SystemHeadroom.xcodeproj/project.pbxproj
 git commit -m "feat(sampling): parse pcblist_n tables into listening socket records"
 ```
 
@@ -522,9 +522,9 @@ git commit -m "feat(sampling): parse pcblist_n tables into listening socket reco
 ### Task 3: PortTableSampler fetch + live sandbox tests (the ABI tripwire)
 
 **Files:**
-- Create: `MacHeadroom/Sampling/PortTableSampler.swift` (`D…000B`)
-- Test: `MacHeadroomTests/PortsSamplerLiveTests.swift` (`E…000E`)
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj`
+- Create: `SystemHeadroom/Sampling/PortTableSampler.swift` (`D…000B`)
+- Test: `SystemHeadroomTests/PortsSamplerLiveTests.swift` (`E…000E`)
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj`
 
 **Interfaces:**
 - Consumes: `PortTableParser.listeningSockets(tcpTable:udpTable:)`, `SocketRecord`.
@@ -542,7 +542,7 @@ Process names can contain spaces (`Google Chrome He:33693`), and IPv6 addresses 
 import Foundation
 import Testing
 
-@testable import MacHeadroom
+@testable import SystemHeadroom
 
 @Suite("Ports sampler live", .serialized)
 struct PortsSamplerLiveTests {
@@ -669,13 +669,13 @@ enum PortTableSampler {
 
 - [ ] **Step 4: Run the live suite, verify it passes**
 
-Run: `xcodebuild test … -only-testing:MacHeadroomTests/PortsSamplerLiveTests`
+Run: `xcodebuild test … -only-testing:SystemHeadroomTests/PortsSamplerLiveTests`
 Expected: PASS. **If `netstatCrossCheck` fails while `fetchAndParse` passes, the hand-copied ABI in Task 1's header is wrong — diff our (port, pid) set against netstat's, fix the header against xnu source, and do not proceed until this passes.** This test is the whole risk-containment story; it must be green, not skipped.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/Sampling/PortTableSampler.swift MacHeadroomTests/PortsSamplerLiveTests.swift MacHeadroom.xcodeproj/project.pbxproj
+git add SystemHeadroom/Sampling/PortTableSampler.swift SystemHeadroomTests/PortsSamplerLiveTests.swift SystemHeadroom.xcodeproj/project.pbxproj
 git commit -m "feat(sampling): fetch pcblist_n tables with netstat cross-check tests"
 ```
 
@@ -684,10 +684,10 @@ git commit -m "feat(sampling): fetch pcblist_n tables with netstat cross-check t
 ### Task 4: Thread sockets through ProcessTableSampler, MonitorTick, SamplerService
 
 **Files:**
-- Modify: `MacHeadroom/Sampling/ProcessTableSampler.swift` (add `sampleTable()`)
-- Modify: `MacHeadroom/Sampling/MonitorTick.swift`
-- Modify: `MacHeadroom/Sampling/SamplerService.swift`
-- Test: extend `MacHeadroomTests/PortsSamplerLiveTests.swift`
+- Modify: `SystemHeadroom/Sampling/ProcessTableSampler.swift` (add `sampleTable()`)
+- Modify: `SystemHeadroom/Sampling/MonitorTick.swift`
+- Modify: `SystemHeadroom/Sampling/SamplerService.swift`
+- Test: extend `SystemHeadroomTests/PortsSamplerLiveTests.swift`
 
 **Interfaces:**
 - Consumes: Tasks 1–3.
@@ -782,14 +782,14 @@ struct MonitorTick: Sendable, Equatable {
     }
 ```
 
-with `private static let log = Logger(subsystem: "com.vinnycarpenter.MacHeadroom", category: "ports")` (`import os`) and both new fields added to the returned `MonitorTick`.
+with `private static let log = Logger(subsystem: "com.vinnycarpenter.SystemHeadroom", category: "ports")` (`import os`) and both new fields added to the returned `MonitorTick`.
 
 - [ ] **Step 4: Run the full suite** — `SamplerBurstTests` and everything else must stay green (they construct ticks only through `SamplerService`, so no fixture updates are expected; if any test constructs `MonitorTick` directly, add `sockets: nil, socketFallbackNames: [:]`).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/Sampling/ProcessTableSampler.swift MacHeadroom/Sampling/MonitorTick.swift MacHeadroom/Sampling/SamplerService.swift MacHeadroomTests/PortsSamplerLiveTests.swift
+git add SystemHeadroom/Sampling/ProcessTableSampler.swift SystemHeadroom/Sampling/MonitorTick.swift SystemHeadroom/Sampling/SamplerService.swift SystemHeadroomTests/PortsSamplerLiveTests.swift
 git commit -m "feat(sampling): carry listening sockets and fallback names in each tick"
 ```
 
@@ -798,10 +798,10 @@ git commit -m "feat(sampling): carry listening sockets and fallback names in eac
 ### Task 5: PortGroupBuilder (pure) + PortGroup
 
 **Files:**
-- Create: `MacHeadroom/Grouping/PortGroup.swift` (`F…0004`)
-- Create: `MacHeadroom/Grouping/PortGroupBuilder.swift` (`F…0005`)
-- Test: `MacHeadroomTests/PortGroupBuilderTests.swift` (`E…000F`)
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj`
+- Create: `SystemHeadroom/Grouping/PortGroup.swift` (`F…0004`)
+- Create: `SystemHeadroom/Grouping/PortGroupBuilder.swift` (`F…0005`)
+- Test: `SystemHeadroomTests/PortGroupBuilderTests.swift` (`E…000F`)
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj`
 
 **Interfaces:**
 - Consumes: `SocketRecord`, `ListeningPort`, `AppGroup`, `ProcessMeasurement`, `ProcessSnapshot`.
@@ -842,7 +842,7 @@ Build fixtures by hand from the existing value types (see `GroupingEngineTests` 
 ```swift
 import Testing
 
-@testable import MacHeadroom
+@testable import SystemHeadroom
 
 @Suite("Port group builder")
 struct PortGroupBuilderTests {
@@ -1000,7 +1000,7 @@ enum PortGroupBuilder {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/Grouping/PortGroup.swift MacHeadroom/Grouping/PortGroupBuilder.swift MacHeadroomTests/PortGroupBuilderTests.swift MacHeadroom.xcodeproj/project.pbxproj
+git add SystemHeadroom/Grouping/PortGroup.swift SystemHeadroom/Grouping/PortGroupBuilder.swift SystemHeadroomTests/PortGroupBuilderTests.swift SystemHeadroom.xcodeproj/project.pbxproj
 git commit -m "feat(grouping): fold listening sockets into per-app port groups"
 ```
 
@@ -1009,8 +1009,8 @@ git commit -m "feat(grouping): fold listening sockets into per-app port groups"
 ### Task 6: MonitorStore publishes portGroups
 
 **Files:**
-- Modify: `MacHeadroom/App/MonitorStore.swift`
-- Test: extend `MacHeadroomTests/PortsSamplerLiveTests.swift`
+- Modify: `SystemHeadroom/App/MonitorStore.swift`
+- Test: extend `SystemHeadroomTests/PortsSamplerLiveTests.swift`
 
 **Interfaces:**
 - Consumes: `PortGroupBuilder.build(sockets:groups:fallbackNamesByPID:)`, `MonitorTick.sockets` / `.socketFallbackNames`.
@@ -1022,7 +1022,7 @@ git commit -m "feat(grouping): fold listening sockets into per-app port groups"
   @Test("Store publishes port groups after a refresh")
   @MainActor
   func storePublishesPortGroups() async throws {
-    let suiteName = "com.vinnycarpenter.MacHeadroom.ports-tests"
+    let suiteName = "com.vinnycarpenter.SystemHeadroom.ports-tests"
     let defaults = try #require(UserDefaults(suiteName: suiteName))
     defaults.removePersistentDomain(forName: suiteName)
     let store = MonitorStore(defaults: defaults, capability: .sandboxed)
@@ -1055,7 +1055,7 @@ In the `preview` factory, add parameter `portGroups: [PortGroup]? = []` and assi
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/App/MonitorStore.swift MacHeadroomTests/PortsSamplerLiveTests.swift
+git add SystemHeadroom/App/MonitorStore.swift SystemHeadroomTests/PortsSamplerLiveTests.swift
 git commit -m "feat(app): publish per-app port groups from the monitor store"
 ```
 
@@ -1064,12 +1064,12 @@ git commit -m "feat(app): publish per-app port groups from the monitor store"
 ### Task 7: Classic popover — PopoverTab, ports pane, layout tests
 
 **Files:**
-- Create: `MacHeadroom/UI/PopoverTab.swift` (`H…000B`)
-- Create: `MacHeadroom/UI/PortsPaneView.swift` (`H…000C`) — pane + row + badge in one focused file
-- Modify: `MacHeadroom/UI/PopoverView.swift`
-- Modify: `MacHeadroom/UI/PreviewFixtures.swift` (add port fixtures to `makeStore`)
-- Test: extend `MacHeadroomTests/PopoverLayoutTests.swift`
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj`
+- Create: `SystemHeadroom/UI/PopoverTab.swift` (`H…000B`)
+- Create: `SystemHeadroom/UI/PortsPaneView.swift` (`H…000C`) — pane + row + badge in one focused file
+- Modify: `SystemHeadroom/UI/PopoverView.swift`
+- Modify: `SystemHeadroom/UI/PreviewFixtures.swift` (add port fixtures to `makeStore`)
+- Test: extend `SystemHeadroomTests/PopoverLayoutTests.swift`
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj`
 
 **Interfaces:**
 - Consumes: `MonitorStore.portGroups`, `PortGroup`, `ListeningPort`, `QuitAffordanceView`, `AppIconProvider`, `MetricKind`.
@@ -1097,7 +1097,7 @@ struct PortsPaneView: View {  // in PortsPaneView.swift
 }
 ```
 
-`PopoverView.init(store:initialMetric:)` becomes `init(store: MonitorStore, initialTab: PopoverTab = .cpu)`. `MacHeadroomApp` call sites don't pass `initialMetric` today (verify; adjust if they do).
+`PopoverView.init(store:initialMetric:)` becomes `init(store: MonitorStore, initialTab: PopoverTab = .cpu)`. `SystemHeadroomApp` call sites don't pass `initialMetric` today (verify; adjust if they do).
 
 - [ ] **Step 1: Write the failing layout tests**
 
@@ -1345,7 +1345,7 @@ The `.frame(height: 360)` on the list stays untouched. The Porcelain branch of `
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/UI/PopoverTab.swift MacHeadroom/UI/PortsPaneView.swift MacHeadroom/UI/PopoverView.swift MacHeadroom/UI/PreviewFixtures.swift MacHeadroomTests/PopoverLayoutTests.swift MacHeadroom.xcodeproj/project.pbxproj
+git add SystemHeadroom/UI/PopoverTab.swift SystemHeadroom/UI/PortsPaneView.swift SystemHeadroom/UI/PopoverView.swift SystemHeadroom/UI/PreviewFixtures.swift SystemHeadroomTests/PopoverLayoutTests.swift SystemHeadroom.xcodeproj/project.pbxproj
 git commit -m "feat(ui): add Ports tab to the classic popover"
 ```
 
@@ -1354,9 +1354,9 @@ git commit -m "feat(ui): add Ports tab to the classic popover"
 ### Task 8: Porcelain popover — tab picker, ports header, porcelain rows
 
 **Files:**
-- Modify: `MacHeadroom/UI/MaxHeadroomPopoverView.swift`
-- Modify: `MacHeadroom/UI/PopoverView.swift` (hand the tab through)
-- Test: extend `MacHeadroomTests/PopoverLayoutTests.swift`
+- Modify: `SystemHeadroom/UI/MaxHeadroomPopoverView.swift`
+- Modify: `SystemHeadroom/UI/PopoverView.swift` (hand the tab through)
+- Test: extend `SystemHeadroomTests/PopoverLayoutTests.swift`
 
 **Interfaces:**
 - Consumes: `PopoverTab`, `PortGroup`, `PortBadge`, `QuitAffordanceView`, `PorcelainPalette`, `PorcelainSpacing`.
@@ -1495,7 +1495,7 @@ private struct PorcelainPortRowView: View {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/UI/MaxHeadroomPopoverView.swift MacHeadroom/UI/PopoverView.swift MacHeadroomTests/PopoverLayoutTests.swift
+git add SystemHeadroom/UI/MaxHeadroomPopoverView.swift SystemHeadroom/UI/PopoverView.swift SystemHeadroomTests/PopoverLayoutTests.swift
 git commit -m "feat(ui): add Ports tab to the Porcelain popover"
 ```
 
@@ -1523,7 +1523,7 @@ Append to "Hard-won constraints":
 
 - [ ] **Step 2: Run the entire suite**
 
-Run: `xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'`
+Run: `xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'`
 Expected: all suites PASS. Never end red.
 
 - [ ] **Step 3: Live verification on the dev Mac**
@@ -1532,7 +1532,7 @@ Build and `open` the app (SingleInstanceGuard retires the old instance automatic
 
 ```bash
 python3 -m http.server 8123 &
-/usr/bin/log show --last 2m --info --predicate 'process == "Mac Headroom"' | grep -i port
+/usr/bin/log show --last 2m --info --predicate 'process == "System Headroom"' | grep -i port
 ```
 
 Final visual confirmation is Vinny's — the popover's Ports tab should show `Python — 8123` while the server runs, with quit buttons absent (this is the sandboxed build). Kill the python server afterward. For the Direct build, `Scripts/build-direct.sh` then confirm quit buttons appear on user rows only.

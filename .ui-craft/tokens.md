@@ -1,6 +1,6 @@
-# Headroom Monitor token spine
+# System Headroom token spine
 
-Headroom Monitor uses native SwiftUI semantic styles for platform behavior and a small custom layer for its default Porcelain Native appearance. Raw values live in `PorcelainPalette`; views consume semantic roles rather than introducing local colors or spacing.
+System Headroom uses native SwiftUI semantic styles for platform behavior and a small custom layer for its default Porcelain Native appearance. Raw values live in `PorcelainPalette`; views consume semantic roles rather than introducing local colors or spacing.
 
 ## Primitive tokens
 

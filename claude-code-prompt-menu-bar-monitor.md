@@ -1,6 +1,6 @@
-# Build brief: Mac Headroom, a macOS menu bar resource monitor
+# Build brief: System Headroom, a macOS menu bar resource monitor
 
-You are building a native macOS menu bar app for me, Vinny Carpenter. I ship Swift apps to the App Store and I will review every phase. The product name is Mac Headroom. Keep the name in one constant so branding stays consistent across the app.
+You are building a native macOS menu bar app for me, Vinny Carpenter. I ship Swift apps to the App Store and I will review every phase. The product name is System Headroom. Keep the name in one constant so branding stays consistent across the app.
 
 ## What we are building
 
@@ -69,7 +69,7 @@ Design rules:
 
 ## Branding rules
 
-- Display name: "Mac Headroom" (`CFBundleDisplayName`). App Store listing name: "Mac Headroom: CPU & RAM Monitor".
+- Display name: "System Headroom" (`CFBundleDisplayName`). App Store listing name: "System Headroom: CPU & RAM Monitor".
 - Typeset "Mac" and "Headroom" with equal size, weight, and color anywhere the name appears, per Apple's trademark guidelines for the Mac mark.
 - The name is a nod to the Max Headroom character, whose likeness remains under copyright. The homage stops at the name. Never depict or evoke the character in the icon, UI, or any asset: no CG head, no shutter-shade sunglasses, no glitch or zigzag motifs, no stuttering-text gags.
 - All visual assets are original work. All copy plays it straight; the joke lives in the name only.

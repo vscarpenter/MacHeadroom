@@ -19,7 +19,7 @@
 - v1 acts on groups only, never child rows. No auto-escalation from Quit to Force Quit.
 - Never signal a pid whose current `startIdentity` differs from the row snapshot's.
 - Branding: no new imagery; telemetry stays undistorted. "Mac" and "Headroom" typeset equally.
-- Tests run in the sandboxed TEST_HOST app: `xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'`.
+- Tests run in the sandboxed TEST_HOST app: `xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64'`.
 - Every new source file needs the four pbxproj edits (PBXBuildFile, PBXFileReference, owning group's `children`, target Sources phase) following the hand-rolled ID scheme.
 - Commits follow the creating-git-commits skill: `type(scope): subject`, body, `Claude-Session:` trailer, no Co-Authored-By footer.
 
@@ -28,10 +28,10 @@
 ### Task 1: TerminationCapability
 
 **Files:**
-- Create: `MacHeadroom/App/ProcessTerminator.swift`
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj` (four entries)
-- Create: `MacHeadroomTests/ProcessTerminatorTests.swift`
-- Modify: `MacHeadroom.xcodeproj/project.pbxproj` (four more entries, test target)
+- Create: `SystemHeadroom/App/ProcessTerminator.swift`
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj` (four entries)
+- Create: `SystemHeadroomTests/ProcessTerminatorTests.swift`
+- Modify: `SystemHeadroom.xcodeproj/project.pbxproj` (four more entries, test target)
 
 **Interfaces:**
 - Consumes: nothing.
@@ -42,24 +42,24 @@
 App sources use one ID prefix per group; find it by example, then clone all four entries per file. Run:
 
 ```bash
-grep -n "MonitorStore.swift" MacHeadroom.xcodeproj/project.pbxproj
-grep -n "MonitorStorePreferencesTests.swift" MacHeadroom.xcodeproj/project.pbxproj
+grep -n "MonitorStore.swift" SystemHeadroom.xcodeproj/project.pbxproj
+grep -n "MonitorStorePreferencesTests.swift" SystemHeadroom.xcodeproj/project.pbxproj
 ```
 
 Each grep shows the four locations (PBXBuildFile, PBXFileReference, group `children`, Sources phase). Duplicate each line for the new file, keeping the neighbor's ID prefix and bumping to the next unused hex value (e.g. if App files end at `…000C`, use `…000D`). `ProcessTerminator.swift` mirrors `MonitorStore.swift` (app target); `ProcessTerminatorTests.swift` mirrors `MonitorStorePreferencesTests.swift` (test target). Verify no duplicate IDs:
 
 ```bash
-grep -oE '^[[:space:]]*[A-Z0-9]{24}' MacHeadroom.xcodeproj/project.pbxproj | sort | uniq -d
+grep -oE '^[[:space:]]*[A-Z0-9]{24}' SystemHeadroom.xcodeproj/project.pbxproj | sort | uniq -d
 ```
 
 - [ ] **Step 2: Write the failing test**
 
-`MacHeadroomTests/ProcessTerminatorTests.swift`:
+`SystemHeadroomTests/ProcessTerminatorTests.swift`:
 
 ```swift
 import Testing
 
-@testable import MacHeadroom
+@testable import SystemHeadroom
 
 @Suite("Termination capability")
 struct TerminationCapabilityTests {
@@ -82,14 +82,14 @@ struct TerminationCapabilityTests {
 - [ ] **Step 3: Run to verify failure**
 
 ```bash
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:MacHeadroomTests/TerminationCapabilityTests 2>&1 | tail -20
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:SystemHeadroomTests/TerminationCapabilityTests 2>&1 | tail -20
 ```
 
 Expected: build FAILS with "cannot find 'TerminationCapability' in scope".
 
 - [ ] **Step 4: Implement**
 
-`MacHeadroom/App/ProcessTerminator.swift`:
+`SystemHeadroom/App/ProcessTerminator.swift`:
 
 ```swift
 import Security
@@ -128,7 +128,7 @@ Same command as Step 3. Expected: PASS (both tests).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add MacHeadroom/App/ProcessTerminator.swift MacHeadroomTests/ProcessTerminatorTests.swift MacHeadroom.xcodeproj/project.pbxproj
+git add SystemHeadroom/App/ProcessTerminator.swift SystemHeadroomTests/ProcessTerminatorTests.swift SystemHeadroom.xcodeproj/project.pbxproj
 git commit  # feat(app): add TerminationCapability sandbox self-check — body + Claude-Session trailer per creating-git-commits
 ```
 
@@ -137,8 +137,8 @@ git commit  # feat(app): add TerminationCapability sandbox self-check — body +
 ### Task 2: Single-pid identity revalidation
 
 **Files:**
-- Modify: `MacHeadroom/Sampling/ProcessTableSampler.swift`
-- Test: `MacHeadroomTests/ProcessTerminatorTests.swift` (add a suite)
+- Modify: `SystemHeadroom/Sampling/ProcessTableSampler.swift`
+- Test: `SystemHeadroomTests/ProcessTerminatorTests.swift` (add a suite)
 
 **Interfaces:**
 - Consumes: existing `ProcessIdentity(kinfo_proc)` initializer and its `startIdentity` format `"sec:usec"`.
@@ -172,7 +172,7 @@ struct SinglePidIdentityTests {
 - [ ] **Step 2: Run to verify failure**
 
 ```bash
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:MacHeadroomTests/SinglePidIdentityTests 2>&1 | tail -20
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:SystemHeadroomTests/SinglePidIdentityTests 2>&1 | tail -20
 ```
 
 Expected: build FAILS, "type 'ProcessTableSampler' has no member 'startIdentity'".
@@ -208,7 +208,7 @@ Same command as Step 2. Expected: PASS (both tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/Sampling/ProcessTableSampler.swift MacHeadroomTests/ProcessTerminatorTests.swift
+git add SystemHeadroom/Sampling/ProcessTableSampler.swift SystemHeadroomTests/ProcessTerminatorTests.swift
 git commit  # feat(sampling): add single-pid startIdentity revalidation
 ```
 
@@ -217,8 +217,8 @@ git commit  # feat(sampling): add single-pid startIdentity revalidation
 ### Task 3: ProcessTerminator service
 
 **Files:**
-- Modify: `MacHeadroom/App/ProcessTerminator.swift`
-- Test: `MacHeadroomTests/ProcessTerminatorTests.swift` (add a suite)
+- Modify: `SystemHeadroom/App/ProcessTerminator.swift`
+- Test: `SystemHeadroomTests/ProcessTerminatorTests.swift` (add a suite)
 
 **Interfaces:**
 - Consumes: `AppGroup` (`representativePID`, `children[].snapshot.startIdentity`), `TerminationCapability`, `ProcessTableSampler.startIdentity(of:)`.
@@ -254,7 +254,7 @@ struct RunningAppHandle {
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `ProcessTerminatorTests.swift` (file already imports Testing and MacHeadroom; add `import AppKit` at top if missing):
+Append to `ProcessTerminatorTests.swift` (file already imports Testing and SystemHeadroom; add `import AppKit` at top if missing):
 
 ```swift
 @Suite("ProcessTerminator")
@@ -380,14 +380,14 @@ struct ProcessTerminatorSuite {
 - [ ] **Step 2: Run to verify failure**
 
 ```bash
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:MacHeadroomTests/ProcessTerminatorSuite 2>&1 | tail -20
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:SystemHeadroomTests/ProcessTerminatorSuite 2>&1 | tail -20
 ```
 
 Expected: build FAILS, "cannot find 'ProcessTerminator' in scope".
 
 - [ ] **Step 3: Implement**
 
-Append to `MacHeadroom/App/ProcessTerminator.swift`:
+Append to `SystemHeadroom/App/ProcessTerminator.swift`:
 
 ```swift
 import AppKit
@@ -421,7 +421,7 @@ struct ProcessTerminator {
   var sendSignal: (Int32, Int32) -> Int32
 
   private static let log = Logger(
-    subsystem: "com.vinnycarpenter.MacHeadroom", category: "termination")
+    subsystem: "com.vinnycarpenter.SystemHeadroom", category: "termination")
 
   static func live() -> ProcessTerminator {
     ProcessTerminator(
@@ -480,7 +480,7 @@ Same command as Step 2. Expected: PASS (all eight tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/App/ProcessTerminator.swift MacHeadroomTests/ProcessTerminatorTests.swift
+git add SystemHeadroom/App/ProcessTerminator.swift SystemHeadroomTests/ProcessTerminatorTests.swift
 git commit  # feat(app): add ProcessTerminator with identity-guarded signal path
 ```
 
@@ -489,8 +489,8 @@ git commit  # feat(app): add ProcessTerminator with identity-guarded signal path
 ### Task 4: MonitorStore integration
 
 **Files:**
-- Modify: `MacHeadroom/App/MonitorStore.swift`
-- Test: `MacHeadroomTests/MonitorStorePreferencesTests.swift` (add a suite or tests alongside existing style)
+- Modify: `SystemHeadroom/App/MonitorStore.swift`
+- Test: `SystemHeadroomTests/MonitorStorePreferencesTests.swift` (add a suite or tests alongside existing style)
 
 **Interfaces:**
 - Consumes: `ProcessTerminator`, `TerminationCapability`.
@@ -511,7 +511,7 @@ struct StoreTerminationTests {
     capability: TerminationCapability,
     terminator: ProcessTerminator
   ) -> MonitorStore {
-    let suiteName = "com.vinnycarpenter.MacHeadroom.termination-tests"
+    let suiteName = "com.vinnycarpenter.SystemHeadroom.termination-tests"
     let defaults = UserDefaults(suiteName: suiteName)!
     defaults.removePersistentDomain(forName: suiteName)
     return MonitorStore(
@@ -561,7 +561,7 @@ struct StoreTerminationTests {
 - [ ] **Step 2: Run to verify failure**
 
 ```bash
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:MacHeadroomTests/StoreTerminationTests 2>&1 | tail -20
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:SystemHeadroomTests/StoreTerminationTests 2>&1 | tail -20
 ```
 
 Expected: build FAILS, "extra arguments 'capability:terminator:' in call".
@@ -634,16 +634,16 @@ Run the Step 2 command, then the whole suite (no `-only-testing`). Expected: all
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/App/MonitorStore.swift MacHeadroomTests/MonitorStorePreferencesTests.swift
+git add SystemHeadroom/App/MonitorStore.swift SystemHeadroomTests/MonitorStorePreferencesTests.swift
 git commit  # feat(app): gate MonitorStore quit actions on termination capability
 ```
 
 ### Task 5: Quit affordance in the classic skin
 
 **Files:**
-- Create: `MacHeadroom/UI/QuitAffordanceView.swift` (four pbxproj entries, H-series IDs, mirror `MaxHeadroomPopoverView.swift`'s four lines)
-- Modify: `MacHeadroom/UI/GroupRowView.swift`, `MacHeadroom/UI/PopoverView.swift`, `MacHeadroom/UI/PreviewFixtures.swift`
-- Test: `MacHeadroomTests/PopoverLayoutTests.swift`
+- Create: `SystemHeadroom/UI/QuitAffordanceView.swift` (four pbxproj entries, H-series IDs, mirror `MaxHeadroomPopoverView.swift`'s four lines)
+- Modify: `SystemHeadroom/UI/GroupRowView.swift`, `SystemHeadroom/UI/PopoverView.swift`, `SystemHeadroom/UI/PreviewFixtures.swift`
+- Test: `SystemHeadroomTests/PopoverLayoutTests.swift`
 
 **Interfaces:**
 - Consumes: `MonitorStore.canTerminate`, `store.quit(_:)`, `store.forceQuit(_:)` from Task 4.
@@ -678,14 +678,14 @@ Append to `PopoverLayoutTests.swift`:
 - [ ] **Step 2: Run to verify failure**
 
 ```bash
-xcodebuild test -project MacHeadroom.xcodeproj -scheme MacHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:MacHeadroomTests/PopoverLayoutTests 2>&1 | tail -20
+xcodebuild test -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug -destination 'platform=macOS,arch=arm64' -only-testing:SystemHeadroomTests/PopoverLayoutTests 2>&1 | tail -20
 ```
 
 Expected: build FAILS, "extra argument 'canTerminate' in call".
 
 - [ ] **Step 3: Implement**
 
-`MacHeadroom/UI/QuitAffordanceView.swift` (new file; register in pbxproj first, same four-edit recipe as Task 1):
+`SystemHeadroom/UI/QuitAffordanceView.swift` (new file; register in pbxproj first, same four-edit recipe as Task 1):
 
 ```swift
 import SwiftUI
@@ -815,7 +815,7 @@ Step 2 command first, then the whole suite without `-only-testing`. Expected: al
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/UI/QuitAffordanceView.swift MacHeadroom/UI/GroupRowView.swift MacHeadroom/UI/PopoverView.swift MacHeadroom/UI/PreviewFixtures.swift MacHeadroomTests/PopoverLayoutTests.swift MacHeadroom.xcodeproj/project.pbxproj
+git add SystemHeadroom/UI/QuitAffordanceView.swift SystemHeadroom/UI/GroupRowView.swift SystemHeadroom/UI/PopoverView.swift SystemHeadroom/UI/PreviewFixtures.swift SystemHeadroomTests/PopoverLayoutTests.swift SystemHeadroom.xcodeproj/project.pbxproj
 git commit  # feat(ui): add hover quit affordance to classic popover rows
 ```
 
@@ -824,8 +824,8 @@ git commit  # feat(ui): add hover quit affordance to classic popover rows
 ### Task 6: Quit affordance in the Porcelain skin
 
 **Files:**
-- Modify: `MacHeadroom/UI/MaxHeadroomPopoverView.swift`
-- Test: `MacHeadroomTests/PopoverLayoutTests.swift`
+- Modify: `SystemHeadroom/UI/MaxHeadroomPopoverView.swift`
+- Test: `SystemHeadroomTests/PopoverLayoutTests.swift`
 
 **Interfaces:**
 - Consumes: `QuitAffordanceView`, `.quitContextMenu(for:store:)`, `PreviewFixtures.makeStore(canTerminate:)` from Task 5.
@@ -889,7 +889,7 @@ Whole suite, no `-only-testing`. Expected: all green, including the two capabili
 - [ ] **Step 5: Commit**
 
 ```bash
-git add MacHeadroom/UI/MaxHeadroomPopoverView.swift MacHeadroomTests/PopoverLayoutTests.swift
+git add SystemHeadroom/UI/MaxHeadroomPopoverView.swift SystemHeadroomTests/PopoverLayoutTests.swift
 git commit  # feat(ui): add quit affordance to Porcelain rows without layout shift
 ```
 
@@ -898,8 +898,8 @@ git commit  # feat(ui): add quit affordance to Porcelain rows without layout shi
 ### Task 7: Direct build path, About flavor line, docs
 
 **Files:**
-- Create: `Configuration/Direct.xcconfig`, `MacHeadroom/MacHeadroomDirect.entitlements`, `Scripts/build-direct.sh`
-- Modify: `MacHeadroom/UI/AboutView.swift`, `README.md`, `CLAUDE.md`
+- Create: `Configuration/Direct.xcconfig`, `SystemHeadroom/SystemHeadroomDirect.entitlements`, `Scripts/build-direct.sh`
+- Modify: `SystemHeadroom/UI/AboutView.swift`, `README.md`, `CLAUDE.md`
 
 **Interfaces:**
 - Consumes: `TerminationCapability.current.buildFlavorName` from Task 1.
@@ -917,10 +917,10 @@ git commit  # feat(ui): add quit affordance to Porcelain rows without layout shi
 #include "Release.xcconfig"
 
 ENABLE_APP_SANDBOX = NO
-CODE_SIGN_ENTITLEMENTS = MacHeadroom/MacHeadroomDirect.entitlements
+CODE_SIGN_ENTITLEMENTS = SystemHeadroom/SystemHeadroomDirect.entitlements
 ```
 
-`MacHeadroom/MacHeadroomDirect.entitlements`:
+`SystemHeadroom/SystemHeadroomDirect.entitlements`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -940,12 +940,12 @@ CODE_SIGN_ENTITLEMENTS = MacHeadroom/MacHeadroomDirect.entitlements
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-xcodebuild -project MacHeadroom.xcodeproj -scheme MacHeadroom \
+xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom \
   -configuration Release \
   -xcconfig Configuration/Direct.xcconfig \
   -derivedDataPath build/direct build
 
-app="build/direct/Build/Products/Release/Mac Headroom.app"
+app="build/direct/Build/Products/Release/System Headroom.app"
 if codesign -d --entitlements - "$app" 2>/dev/null | grep -q "app-sandbox"; then
   echo "FAIL: Direct build still carries the sandbox entitlement" >&2
   exit 1
@@ -988,7 +988,7 @@ Whole suite. Expected: green (Task 1's flavor tests already cover the strings; t
 
 The sandboxed test host cannot deliver real signals, so the feature's end-to-end proof is manual on the Direct build:
 
-1. `Scripts/build-direct.sh && open "build/direct/Build/Products/Release/Mac Headroom.app"` (SingleInstanceGuard retires any running copy; the icon may land in Control Center's overflow on a crowded menu bar).
+1. `Scripts/build-direct.sh && open "build/direct/Build/Products/Release/System Headroom.app"` (SingleInstanceGuard retires any running copy; the icon may land in Control Center's overflow on a crowded menu bar).
 2. About tab reads "Build: Direct".
 3. `open -a TextEdit`, drive it near the top of the CPU list (or find it under Memory), hover its row: ✕ appears without the row moving; click, "Quit?" appears; click again; TextEdit quits and the row drops on the next refresh.
 4. Right-click another sacrificial row: Quit and Force Quit menu items appear; Force Quit kills without a save prompt.
@@ -998,7 +998,7 @@ The sandboxed test host cannot deliver real signals, so the feature's end-to-end
 - [ ] **Step 7: Commit**
 
 ```bash
-git add Configuration/Direct.xcconfig MacHeadroom/MacHeadroomDirect.entitlements Scripts/build-direct.sh MacHeadroom/UI/AboutView.swift README.md CLAUDE.md
+git add Configuration/Direct.xcconfig SystemHeadroom/SystemHeadroomDirect.entitlements Scripts/build-direct.sh SystemHeadroom/UI/AboutView.swift README.md CLAUDE.md
 git commit  # feat(release): add unsandboxed Direct build flavor with quit feature
 ```
 
