@@ -22,15 +22,10 @@ dest="${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 mkdir -p "$dest"
 rm -rf "$dest/Sparkle.framework"
 ditto "$src" "$dest/Sparkle.framework"
-
-# Sparkle's Info.plist keys. INFOPLIST_KEY_ passthrough silently drops keys
-# Xcode does not know, and the shared SystemHeadroom/Info.plist must stay
-# Sparkle-free for the App Store flavor, so the Direct flavor gets them here,
-# before Xcode seals the bundle signature.
-info_plist="${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
-plutil -replace SUFeedURL -string "https://www.macheadroom.com/direct/appcast.xml" "$info_plist"
-plutil -replace SUEnableAutomaticChecks -bool true "$info_plist"
-plutil -replace SUPublicEDKey -string "${DIRECT_SPARKLE_PUBLIC_ED_KEY:-}" "$info_plist"
+# Sparkle's Info.plist keys come from SystemHeadroom/InfoDirect.plist via
+# Direct.xcconfig's INFOPLIST_FILE override — never from this script: a
+# script cannot safely mutate a file the build system regenerates on its
+# own schedule.
 
 identity="${EXPANDED_CODE_SIGN_IDENTITY:-}"
 if [ -n "$identity" ] && [ "$identity" != "-" ]; then
