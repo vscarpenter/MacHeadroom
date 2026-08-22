@@ -7,8 +7,8 @@ PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroom
 // Leave blank unless the App Store build has an approved, HTTPS claim service.
 // The client treats a missing value as unavailable and makes no network calls.
 DIRECT_EDITION_CLAIM_URL =
-MARKETING_VERSION = 1.0
-CURRENT_PROJECT_VERSION = 11
+MARKETING_VERSION = 1.1
+CURRENT_PROJECT_VERSION = 12
 
 SDKROOT = macosx
 SUPPORTED_PLATFORMS = macosx

@@ -28,8 +28,8 @@ struct AppIdentityTests {
     let copyright = try #require(
       Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String)
 
-    #expect(short == "1.0")
-    #expect(build == "11")
+    #expect(short == "1.1")
+    #expect(build == "12")
     #expect(copyright == "Copyright © 2026 Vinny Carpenter")
   }
 
