@@ -8,7 +8,7 @@ struct PortGroupBuilderTests {
     ProcessMeasurement(
       snapshot: ProcessSnapshot(
         pid: pid, parentPID: 1, userID: 501, name: name,
-        startIdentity: "\(pid):0", cpuTimeTicks: 0, residentBytes: 0),
+        startIdentity: "\(pid):0", cpuTimeTicks: 0, memoryBytes: 0),
       cpuPercent: nil)
   }
 

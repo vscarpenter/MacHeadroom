@@ -47,7 +47,7 @@ struct ProcessTerminatorSuite {
   static func group(pid: Int32, identity: String) -> AppGroup {
     let snapshot = ProcessSnapshot(
       pid: pid, parentPID: 1, userID: 501, name: "victim",
-      startIdentity: identity, cpuTimeTicks: 0, residentBytes: 1)
+      startIdentity: identity, cpuTimeTicks: 0, memoryBytes: 1)
     return AppGroup(
       groupKey: "victim", name: "victim", bundleIdentifier: nil,
       representativePID: pid,

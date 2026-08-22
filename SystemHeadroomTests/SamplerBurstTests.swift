@@ -1,8 +1,53 @@
+import AppKit
 import Darwin
 import Foundation
 import Testing
 
 @testable import SystemHeadroom
+
+@Suite("Process memory metric")
+struct ProcessMemoryMetricTests {
+  @Test("Sandboxed builds use RSS while Direct builds use physical footprint")
+  func buildFlavorSelection() {
+    #expect(ProcessMemoryMetric.forSandboxedBuild(true) == .residentSize)
+    #expect(ProcessMemoryMetric.forSandboxedBuild(false) == .physicalFootprint)
+    #expect(AppSandboxStatus.current == .enabled)
+    #expect(ProcessMemoryMetric.current == .residentSize)
+  }
+
+  @Test("Physical-footprint mode never silently falls back to RSS")
+  func metricSelection() {
+    #expect(
+      ProcessMemoryMetric.residentSize.value(
+        residentBytes: 10, physicalFootprintBytes: 20) == 10)
+    #expect(
+      ProcessMemoryMetric.physicalFootprint.value(
+        residentBytes: 10, physicalFootprintBytes: 20) == 20)
+    #expect(
+      ProcessMemoryMetric.physicalFootprint.value(
+        residentBytes: 10, physicalFootprintBytes: nil) == nil)
+  }
+
+  @Test("The physical-footprint API returns a value for this process")
+  func ownPhysicalFootprintIsReadable() throws {
+    let footprint = try #require(
+      ProcessTableSampler.physicalFootprintBytes(
+        for: ProcessInfo.processInfo.processIdentifier))
+    #expect(footprint > 0)
+  }
+
+  @Test("The sandbox blocks another same-user process's physical footprint")
+  func otherPhysicalFootprintIsBlocked() throws {
+    let finder = try #require(
+      NSRunningApplication.runningApplications(
+        withBundleIdentifier: "com.apple.finder"
+      ).first)
+    #expect(finder.processIdentifier != ProcessInfo.processInfo.processIdentifier)
+    #expect(
+      ProcessTableSampler.physicalFootprintBytes(
+        for: finder.processIdentifier) == nil)
+  }
+}
 
 @Suite("Sampler wall-clock integrity")
 struct SamplerBurstTests {

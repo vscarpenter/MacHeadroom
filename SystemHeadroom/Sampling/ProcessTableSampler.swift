@@ -6,8 +6,10 @@ import Foundation
 /// owned by the same user. See SANDBOX_NOTES.md for why system, root, and
 /// other-user processes never appear here.
 enum ProcessTableSampler {
-  static func sampleReachableProcesses() -> [ProcessSnapshot] {
-    sampleTable().snapshots
+  static func sampleReachableProcesses(
+    memoryMetric: ProcessMemoryMetric = .current
+  ) -> [ProcessSnapshot] {
+    sampleTable(memoryMetric: memoryMetric).snapshots
   }
 
   /// One enumeration pass serving both consumers: metric snapshots for
@@ -15,7 +17,9 @@ enum ProcessTableSampler {
   /// other-user rows expose their name in kinfo_proc even though their
   /// task info is EPERM, and the ports view needs names for the root
   /// listeners the pcblist sysctl reveals.
-  static func sampleTable() -> ProcessTable {
+  static func sampleTable(
+    memoryMetric: ProcessMemoryMetric = .current
+  ) -> ProcessTable {
     let ownUID = geteuid()
     let identities = enumerateProcesses()
     let names = Dictionary(
@@ -23,7 +27,11 @@ enum ProcessTableSampler {
     let snapshots = identities
       .filter { $0.userID == ownUID }
       .compactMap { identity -> ProcessSnapshot? in
-        guard let task = taskMeasurement(for: identity.pid) else { return nil }
+        guard
+          let task = taskMeasurement(
+            for: identity.pid,
+            memoryMetric: memoryMetric)
+        else { return nil }
         return ProcessSnapshot(
           pid: identity.pid,
           parentPID: identity.parentPID,
@@ -31,7 +39,7 @@ enum ProcessTableSampler {
           name: identity.name,
           startIdentity: identity.startIdentity,
           cpuTimeTicks: task.cpuTimeTicks,
-          residentBytes: task.residentBytes
+          memoryBytes: task.memoryBytes
         )
       }
     return ProcessTable(snapshots: snapshots, commandNamesByPID: names)
@@ -86,15 +94,40 @@ enum ProcessTableSampler {
   }
 
   private static func taskMeasurement(
-    for pid: Int32
-  ) -> (cpuTimeTicks: UInt64, residentBytes: UInt64)? {
+    for pid: Int32,
+    memoryMetric: ProcessMemoryMetric
+  ) -> (cpuTimeTicks: UInt64, memoryBytes: UInt64)? {
     var taskInfo = proc_taskinfo()
     let expectedBytes = Int32(MemoryLayout<proc_taskinfo>.size)
     let returnedBytes = withUnsafeMutablePointer(to: &taskInfo) { pointer in
       proc_pidinfo(pid, PROC_PIDTASKINFO, 0, UnsafeMutableRawPointer(pointer), expectedBytes)
     }
     guard returnedBytes == expectedBytes else { return nil }
-    return (taskInfo.pti_total_user + taskInfo.pti_total_system, taskInfo.pti_resident_size)
+    let footprint =
+      memoryMetric == .physicalFootprint
+      ? physicalFootprintBytes(for: pid)
+      : nil
+    guard
+      let memoryBytes = memoryMetric.value(
+        residentBytes: taskInfo.pti_resident_size,
+        physicalFootprintBytes: footprint)
+    else { return nil }
+    return (taskInfo.pti_total_user + taskInfo.pti_total_system, memoryBytes)
+  }
+
+  /// `proc_pid_rusage` is available on every supported macOS version. It is
+  /// permitted for same-user processes only outside App Sandbox; callers gate
+  /// the sweep by ProcessMemoryMetric so the App Store build never makes a
+  /// guaranteed-to-fail call per process.
+  static func physicalFootprintBytes(for pid: Int32) -> UInt64? {
+    var usage = rusage_info_v2()
+    let result = withUnsafeMutablePointer(to: &usage) { pointer in
+      pointer.withMemoryRebound(to: rusage_info_t?.self, capacity: 1) {
+        proc_pid_rusage(pid, RUSAGE_INFO_V2, $0)
+      }
+    }
+    guard result == 0, usage.ri_phys_footprint > 0 else { return nil }
+    return usage.ri_phys_footprint
   }
 }
 

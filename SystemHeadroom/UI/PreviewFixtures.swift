@@ -10,7 +10,7 @@
       for index in 1...14 {
         let name = index == 1 ? "Google Chrome" : "Google Chrome Helper (Renderer)"
         let pid = Int32(1000 + index)
-        let residentBytes = UInt64(120_000_000 - index * 4_000_000)
+        let memoryBytes = UInt64(120_000_000 - index * 4_000_000)
         let snapshot = ProcessSnapshot(
           pid: pid,
           parentPID: 1000,
@@ -18,7 +18,7 @@
           name: name,
           startIdentity: "\(pid):0",
           cpuTimeTicks: 0,
-          residentBytes: residentBytes
+          memoryBytes: memoryBytes
         )
         chromeChildren.append(
           ProcessMeasurement(snapshot: snapshot, cpuPercent: Double(18 - index)))
@@ -29,7 +29,7 @@
         bundleIdentifier: "com.google.Chrome",
         representativePID: 1000,
         cpuPercent: 18.4,
-        memoryBytes: chromeChildren.reduce(0) { $0 + $1.snapshot.residentBytes },
+        memoryBytes: chromeChildren.reduce(0) { $0 + $1.snapshot.memoryBytes },
         children: chromeChildren
       )
       let xcode = AppGroup(
@@ -43,7 +43,7 @@
           ProcessMeasurement(
             snapshot: ProcessSnapshot(
               pid: 2000, parentPID: 1, userID: 501, name: "Xcode", startIdentity: "2000:0",
-              cpuTimeTicks: 0, residentBytes: 2_400_000_000),
+              cpuTimeTicks: 0, memoryBytes: 2_400_000_000),
             cpuPercent: 12.1)
         ]
       )
@@ -58,7 +58,7 @@
           ProcessMeasurement(
             snapshot: ProcessSnapshot(
               pid: 3000, parentPID: 1, userID: 501, name: "Slack", startIdentity: "3000:0",
-              cpuTimeTicks: 0, residentBytes: 610_000_000),
+              cpuTimeTicks: 0, memoryBytes: 610_000_000),
             cpuPercent: 4.8)
         ]
       )
@@ -73,7 +73,7 @@
           ProcessMeasurement(
             snapshot: ProcessSnapshot(
               pid: 4000, parentPID: 1, userID: 501, name: "Finder", startIdentity: "4000:0",
-              cpuTimeTicks: 0, residentBytes: 240_000_000),
+              cpuTimeTicks: 0, memoryBytes: 240_000_000),
             cpuPercent: 0.3)
         ]
       )
@@ -89,7 +89,7 @@
           ProcessMeasurement(
             snapshot: ProcessSnapshot(
               pid: 5000, parentPID: 1, userID: 501, name: "corespotlightd",
-              startIdentity: "5000:0", cpuTimeTicks: 0, residentBytes: 180_000_000),
+              startIdentity: "5000:0", cpuTimeTicks: 0, memoryBytes: 180_000_000),
             cpuPercent: 2.2)
         ]
       )

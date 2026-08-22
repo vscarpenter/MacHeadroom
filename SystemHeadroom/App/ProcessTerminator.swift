@@ -1,5 +1,4 @@
 import AppKit
-import Security
 import os
 
 /// Whether this build may terminate other processes. The App Sandbox
@@ -12,12 +11,7 @@ enum TerminationCapability: Sendable, Equatable {
   case sandboxed
 
   static let current: TerminationCapability = {
-    let task = SecTaskCreateFromSelf(nil)
-    let value = task.flatMap {
-      SecTaskCopyValueForEntitlement($0, "com.apple.security.app-sandbox" as CFString, nil)
-    }
-    let sandboxed = (value as? Bool) == true
-    return sandboxed ? .sandboxed : .available
+    AppSandboxStatus.current == .enabled ? .sandboxed : .available
   }()
 
   var buildFlavorName: String {

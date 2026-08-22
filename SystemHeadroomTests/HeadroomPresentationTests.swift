@@ -18,6 +18,17 @@ struct HeadroomPresentationTests {
     #expect(ValueFormatting.headroomPercent(used: 60, capacity: 48) == 0)
   }
 
+  @Test("RSS rows are visibly qualified while physical footprint matches Activity Monitor")
+  func memoryMetricLabels() {
+    let bytes: UInt64 = 2_100_000_000
+    #expect(
+      ValueFormatting.memory(bytes, metric: .residentSize)
+        == "\(ValueFormatting.bytes(bytes)) RSS")
+    #expect(
+      ValueFormatting.memory(bytes, metric: .physicalFootprint)
+        == ValueFormatting.bytes(bytes))
+  }
+
   @Test("CPU percents under 10 keep one decimal so light usage stays visible")
   func smallPercentsShowTenths() {
     #expect(ValueFormatting.percent(0.44) == "0.4%")

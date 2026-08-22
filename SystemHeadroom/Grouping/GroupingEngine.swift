@@ -44,7 +44,7 @@ enum GroupingEngine {
         (lhs.cpuPercent ?? -1) > (rhs.cpuPercent ?? -1)
       }
       let cpuPercent = summedCPUPercent(of: sortedChildren)
-      let memoryBytes = sortedChildren.reduce(UInt64(0)) { $0 + $1.snapshot.residentBytes }
+      let memoryBytes = sortedChildren.reduce(UInt64(0)) { $0 + $1.snapshot.memoryBytes }
 
       return AppGroup(
         groupKey: key,

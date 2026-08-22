@@ -20,11 +20,20 @@ enum ValueFormatting {
     return formatter.string(fromByteCount: Int64(clamping: value))
   }
 
-  static func value(_ metric: MetricKind, for group: AppGroup) -> String {
+  static func value(
+    _ metric: MetricKind,
+    for group: AppGroup,
+    memoryMetric: ProcessMemoryMetric
+  ) -> String {
     switch metric {
     case .cpu: percent(group.cpuPercent)
-    case .memory: bytes(group.memoryBytes)
+    case .memory: memory(group.memoryBytes, metric: memoryMetric)
     }
+  }
+
+  static func memory(_ value: UInt64, metric: ProcessMemoryMetric) -> String {
+    let formatted = bytes(value)
+    return metric == .residentSize ? "\(formatted) RSS" : formatted
   }
 
   static func headroomPercent(used: Double?, capacity: Double) -> Int? {
