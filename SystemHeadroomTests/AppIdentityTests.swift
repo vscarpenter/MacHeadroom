@@ -33,6 +33,18 @@ struct AppIdentityTests {
     #expect(copyright == "Copyright © 2026 Vinny Carpenter")
   }
 
+  @Test("The claim-URL build setting reaches Info.plist")
+  func claimURLReachesInfoPlist() throws {
+    // Blank in every committed build (dark launch), but the key itself must
+    // exist: INFOPLIST_KEY_ passthrough silently drops unknown keys, which
+    // once left the claim flow unactivatable. The merged
+    // SystemHeadroom/Info.plist is the supported path.
+    let value = try #require(
+      Bundle.main.object(forInfoDictionaryKey: "DirectEditionClaimURL") as? String)
+    #expect(value.isEmpty)
+    #expect(AppIdentity.directEditionClaimURL == nil)
+  }
+
   @Test("Publishes stable website and privacy policy destinations")
   func supportDestinations() {
     #expect(AppIdentity.websiteURL.absoluteString == "https://www.macheadroom.com/")

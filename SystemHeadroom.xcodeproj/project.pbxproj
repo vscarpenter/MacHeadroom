@@ -304,6 +304,7 @@
 				A70000000000000000000001 /* Sources */,
 				A30000000000000000000001 /* Frameworks */,
 				A60000000000000000000001 /* Resources */,
+				A40000000000000000000008 /* Embed Sparkle (Direct only) */,
 			);
 			buildRules = (
 			);
@@ -388,6 +389,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A40000000000000000000008 /* Embed Sparkle (Direct only) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Sparkle (Direct only)";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${DIRECT_EDITION_BUILD:-NO}\" = \"YES\" ]; then sh \"${SRCROOT}/Scripts/embed-sparkle.sh\"; fi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A70000000000000000000001 /* Sources */ = {
