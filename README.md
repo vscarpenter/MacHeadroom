@@ -51,6 +51,13 @@ and the approved Settings/Help placement is specified in
 Leave `DIRECT_EDITION_CLAIM_URL` blank until that service is deployed and the
 claim flow has received explicit App Review clearance.
 
+The Direct flavor updates itself with Sparkle, vendored by
+`Scripts/fetch-sparkle.sh` (checksum-pinned) and compiled/embedded only under
+`Configuration/Direct.xcconfig`; a test pins that the App Store binary stays
+Sparkle-free. Release operations — publishing DMGs, the appcast, and the
+go-live flag flips — are in
+[Documentation/DirectEditionRunbook.md](Documentation/DirectEditionRunbook.md).
+
 ## How it's built
 
 - `Sampling/` reads the process table through `sysctl` and

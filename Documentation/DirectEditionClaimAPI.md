@@ -54,6 +54,38 @@ Store only a keyed hash of the app transaction ID, the eligibility result, and
 an audit timestamp. Treat the raw transaction ID as a durable account-linked
 identifier: do not log it, put it in a URL, or reuse it as a license key.
 
+## Handoff contract (implemented 2026-08-22)
+
+The claim page at `https://www.macheadroom.com/direct/claim/<token>` exchanges
+its token same-origin (a CloudFront `/direct/api/*` behavior fronting the same
+API):
+
+`POST /v1/handoff` with `{"token": "<one-time-token>"}` returns, on success:
+
+```json
+{
+  "downloadURL": "<15-minute presigned URL for the current notarized DMG>",
+  "version": "1.1",
+  "sha256": "<hex digest of the DMG>"
+}
+```
+
+Every failure — unknown, expired, or exhausted token, missing release
+manifest, disabled flag — is the same generic `503`. Like the claim route, the
+handoff route returns `503` before parsing while `ClaimFlowEnabled` is false.
+
+## Eligibility policy
+
+Any Apple-verified app transaction of the App Store app is eligible. Refunds
+are not revoked — download gating is a delivery control, not DRM — and no
+account, email, or license key is ever involved. Abuse is bounded by limits,
+enforced server-side and mirrored in `ClaimService/src/store.mjs`:
+
+- **5 reissues per rolling 30 days** per transaction hash (`POST /v1/claims`
+  repeats within budget mint a fresh token; beyond it, generic `503`).
+- **24-hour handoff tokens**, each good for **3 download URLs**.
+- **15-minute presigned download URLs.**
+
 ## Accountless Direct download
 
 The handoff page consumes a short-lived, one-time token and returns a
@@ -62,6 +94,12 @@ the customer to create an account, supply an email address, or enter a license
 key. A customer can return to the App Store edition and verify again when a
 replacement download is needed; the claim service rate-limits reissues rather
 than permanently rejecting a transaction after its first claim.
+
+Updates ride Sparkle: the Direct app checks
+`https://www.macheadroom.com/direct/appcast.xml`, whose entries are EdDSA-signed
+by `Scripts/publish-direct.sh`. Update archives under `/direct/updates/` are
+public through the CDN by design — Sparkle cannot present claim tokens, and
+the doctrine above already treats gating as delivery control.
 
 The Direct app has the separate bundle identifier
 `com.vinnycarpenter.SystemHeadroom.Direct` and uses a signed Direct update
