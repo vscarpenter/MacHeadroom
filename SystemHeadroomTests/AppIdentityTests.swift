@@ -46,3 +46,33 @@ struct AppIdentityTests {
     #expect(usesNonExemptEncryption == false)
   }
 }
+
+@Suite("Updater gating")
+struct UpdaterGatingTests {
+  @Test("Update UI appears only in a Direct build that has an updater")
+  func presentationGate() {
+    #expect(UpdaterPresentation.isVisible(capability: .available, hasUpdater: true))
+    #expect(!UpdaterPresentation.isVisible(capability: .available, hasUpdater: false))
+    #expect(!UpdaterPresentation.isVisible(capability: .sandboxed, hasUpdater: true))
+    #expect(!UpdaterPresentation.isVisible(capability: .sandboxed, hasUpdater: false))
+  }
+
+  @Test("The sandboxed build vends no updater")
+  @MainActor
+  func sandboxedBuildHasNoUpdater() {
+    // The test host is the sandboxed App Store flavor, which must compile
+    // the null updater path.
+    #expect(UpdaterProvider.shared == nil)
+  }
+
+  @Test("App Store binary and bundle contain no Sparkle")
+  func appStoreBuildHasNoSparkle() throws {
+    #expect(NSClassFromString("SPUStandardUpdaterController") == nil)
+
+    let frameworksURL = try #require(Bundle.main.privateFrameworksURL)
+    let frameworkNames = ((try? FileManager.default.contentsOfDirectory(
+      at: frameworksURL, includingPropertiesForKeys: nil
+    )) ?? []).map(\.lastPathComponent)
+    #expect(!frameworkNames.contains("Sparkle.framework"))
+  }
+}
