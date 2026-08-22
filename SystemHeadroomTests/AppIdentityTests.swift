@@ -36,7 +36,7 @@ struct AppIdentityTests {
   @Test("Publishes stable website and privacy policy destinations")
   func supportDestinations() {
     #expect(AppIdentity.websiteURL.absoluteString == "https://www.macheadroom.com/")
-    #expect(AppIdentity.privacyPolicyURL.absoluteString == "https://www.macheadroom.com/#privacy")
+    #expect(AppIdentity.privacyPolicyURL.absoluteString == "https://www.macheadroom.com/privacy.html")
   }
 
   @Test("Declares that the app uses no non-exempt encryption")
