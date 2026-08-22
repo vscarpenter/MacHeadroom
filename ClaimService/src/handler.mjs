@@ -6,12 +6,14 @@ import {
   SignedDataVerifier,
 } from "@apple/app-store-server-library";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+
+import { latestRelease, presignDownload } from "./releases.mjs";
+import { consumeHandoff, recordClaim } from "./store.mjs";
 
 const EXPECTED_BUNDLE_ID = process.env.APP_STORE_BUNDLE_ID;
 const EXPECTED_APP_APPLE_ID = Number(process.env.APP_APPLE_ID);
-const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 const APPLE_ROOT_CERTIFICATES = [
   `-----BEGIN CERTIFICATE-----
 MIICQzCCAcmgAwIBAgIILcX8iNLFS5UwCgYIKoZIzj0EAwMwZzEbMBkGA1UEAwwS
@@ -159,21 +161,14 @@ export async function handler(event) {
     const transactionHash = createHmac("sha256", await claimHashKey())
       .update(request.appTransactionID)
       .digest("base64url");
-    const claimID = randomUUID();
-    const now = Math.floor(Date.now() / 1_000);
-
-    await claims.send(new PutCommand({
-      TableName: process.env.CLAIMS_TABLE_NAME,
-      Item: {
-        transactionHash,
-        claimID,
-        originalPurchaseDate: transaction.originalPurchaseDate,
-        validatedAt: new Date().toISOString(),
-        expiresAt: now + ONE_YEAR_SECONDS,
-        status: "pending_one_time_handoff",
-      },
-      ConditionExpression: "attribute_not_exists(transactionHash)",
-    }));
+    const claimID = await recordClaim({
+      store: claims,
+      tableName: process.env.CLAIMS_TABLE_NAME,
+      transactionHash,
+      originalPurchaseDate: transaction.originalPurchaseDate,
+      now: Math.floor(Date.now() / 1_000),
+      newClaimID: randomUUID,
+    });
 
     return json(201, { claimURL: `${handoffBaseUrl}/${claimID}` });
   } catch (error) {
@@ -182,5 +177,43 @@ export async function handler(event) {
       correlationID: createHash("sha256").update(randomUUID()).digest("hex"),
     });
     return json(503, { error: "claim verification is unavailable" });
+  }
+}
+
+export async function handoff(event) {
+  if (process.env.CLAIM_FLOW_ENABLED !== "true") {
+    return json(503, { error: "claim flow is not enabled" });
+  }
+
+  let token;
+  try {
+    if (typeof event.body !== "string" || event.body.length > 1_024) {
+      throw new Error("invalid handoff body");
+    }
+    token = JSON.parse(event.body).token;
+    if (typeof token !== "string") {
+      throw new Error("invalid handoff token");
+    }
+  } catch {
+    return json(400, { error: "invalid handoff request" });
+  }
+
+  try {
+    await consumeHandoff({
+      store: claims,
+      tableName: process.env.CLAIMS_TABLE_NAME,
+      token,
+      now: Math.floor(Date.now() / 1_000),
+    });
+
+    const release = await latestRelease();
+    const downloadURL = await presignDownload(release.key);
+    return json(200, { downloadURL, version: release.version, sha256: release.sha256 });
+  } catch (error) {
+    console.error("handoff failed", {
+      kind: error instanceof Error ? error.name : "unknown",
+      correlationID: createHash("sha256").update(randomUUID()).digest("hex"),
+    });
+    return json(503, { error: "download handoff is unavailable" });
   }
 }
