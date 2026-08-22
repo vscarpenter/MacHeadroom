@@ -1,7 +1,12 @@
 // Direct-download (Developer ID) overlay. Applied on top of the selected
-// Release configuration via `xcodebuild -xcconfig`; the Release target's
-// Shared.xcconfig remains the single source for version and bundle metadata.
+// Release configuration via `xcodebuild -xcconfig`. The App Store bundle ID
+// remains stable for updates; this separate identifier lets both editions
+// live on the same Mac without replacing one another.
 // No sandbox: the popover quit feature exists only here.
 
+APP_DISPLAY_NAME = System Headroom Direct
+PRODUCT_NAME = $(APP_DISPLAY_NAME)
+PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.SystemHeadroom.Direct
+INFOPLIST_KEY_CFBundleDisplayName = $(APP_DISPLAY_NAME)
 ENABLE_APP_SANDBOX = NO
 CODE_SIGN_ENTITLEMENTS = SystemHeadroom/SystemHeadroomDirect.entitlements

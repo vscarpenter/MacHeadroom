@@ -8,7 +8,7 @@ xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom \
   -xcconfig Configuration/Direct.xcconfig \
   -derivedDataPath build/direct build
 
-app="build/direct/Build/Products/Release/System Headroom.app"
+app="build/direct/Build/Products/Release/System Headroom Direct.app"
 entitlements="$(codesign -d --entitlements - "$app" 2>/dev/null)" || {
   echo "FAIL: codesign could not read entitlements from $app" >&2
   exit 1
@@ -35,8 +35,13 @@ expected_build="$(
 )"
 actual_version="$(plutil -extract CFBundleShortVersionString raw "$app/Contents/Info.plist")"
 actual_build="$(plutil -extract CFBundleVersion raw "$app/Contents/Info.plist")"
+actual_bundle_id="$(plutil -extract CFBundleIdentifier raw "$app/Contents/Info.plist")"
 if [[ "$actual_version" != "$expected_version" || "$actual_build" != "$expected_build" ]]; then
   echo "FAIL: Direct version $actual_version ($actual_build) does not match Release $expected_version ($expected_build)" >&2
+  exit 1
+fi
+if [[ "$actual_bundle_id" != "com.vinnycarpenter.SystemHeadroom.Direct" ]]; then
+  echo "FAIL: Direct build has unexpected bundle identifier $actual_bundle_id" >&2
   exit 1
 fi
 

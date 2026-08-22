@@ -117,6 +117,39 @@ struct PopoverVisualTests {
     print("UI_RENDER settings \(url.path)")
   }
 
+  @Test("Configured App Store settings render the Direct edition entry point")
+  @MainActor
+  func settingsRendersDirectEditionEntryPoint() throws {
+    let endpoint = try #require(URL(string: "https://claim.example.com/v1/claims"))
+    let store = PreviewFixtures.makeStore()
+    let hosting = NSHostingView(
+      rootView: ZStack {
+        Color(nsColor: .windowBackgroundColor)
+        SettingsView(store: store, directEditionClaimURL: endpoint)
+      }
+      .environment(\.colorScheme, .light)
+    )
+
+    let size = hosting.fittingSize
+    #expect(size.width >= 440)
+    #expect(size.height > 260)
+
+    hosting.frame = CGRect(origin: .zero, size: size)
+    hosting.layoutSubtreeIfNeeded()
+
+    let bitmap = try #require(
+      hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
+    )
+    hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
+    let data = try #require(bitmap.representation(using: .png, properties: [:]))
+    #expect(data.count > 10_000)
+
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent("SystemHeadroom-Settings-Direct.png")
+    try data.write(to: url)
+    print("UI_RENDER settings-direct \(url.path)")
+  }
+
   @Test("About renders release identity and support links")
   @MainActor
   func aboutRendersReleaseIdentity() throws {
@@ -146,5 +179,74 @@ struct PopoverVisualTests {
       .appendingPathComponent("SystemHeadroom-About.png")
     try data.write(to: url)
     print("UI_RENDER about \(url.path)")
+  }
+
+  @Test("Help renders the menu-bar workflow and sandbox guidance")
+  @MainActor
+  func helpRendersWorkflowAndSandboxGuidance() throws {
+    let store = PreviewFixtures.makeStore()
+    let hosting = NSHostingView(
+      rootView: ZStack {
+        Color(nsColor: .windowBackgroundColor)
+        HelpView(store: store)
+      }
+      .environment(\.colorScheme, .light)
+    )
+
+    let size = hosting.fittingSize
+    #expect(size.width >= 440)
+    #expect(size.height >= 500)
+
+    hosting.frame = CGRect(origin: .zero, size: size)
+    hosting.layoutSubtreeIfNeeded()
+
+    let bitmap = try #require(
+      hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
+    )
+    hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
+    let data = try #require(bitmap.representation(using: .png, properties: [:]))
+    #expect(data.count > 10_000)
+
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent("SystemHeadroom-Help.png")
+    try data.write(to: url)
+    print("UI_RENDER help \(url.path)")
+  }
+
+  @Test("Configured App Store Help renders the Direct edition explanation")
+  @MainActor
+  func helpRendersDirectEditionExplanation() throws {
+    let endpoint = try #require(URL(string: "https://claim.example.com/v1/claims"))
+    let store = PreviewFixtures.makeStore()
+    let hosting = NSHostingView(
+      rootView: ZStack {
+        Color(nsColor: .windowBackgroundColor)
+        HelpView(
+          store: store,
+          directEditionClaimURL: endpoint,
+          requestedSection: .directEdition
+        )
+      }
+      .environment(\.colorScheme, .light)
+    )
+
+    let size = hosting.fittingSize
+    #expect(size.width >= 440)
+    #expect(size.height >= 500)
+
+    hosting.frame = CGRect(origin: .zero, size: size)
+    hosting.layoutSubtreeIfNeeded()
+
+    let bitmap = try #require(
+      hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
+    )
+    hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
+    let data = try #require(bitmap.representation(using: .png, properties: [:]))
+    #expect(data.count > 10_000)
+
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent("SystemHeadroom-Help-Direct.png")
+    try data.write(to: url)
+    print("UI_RENDER help-direct \(url.path)")
   }
 }

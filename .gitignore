@@ -1,6 +1,8 @@
 .DS_Store
 DerivedData/
 build/
+ClaimService/.aws-sam/
+ClaimService/.sam-tools/
 *.xcuserstate
 xcuserdata/
 skills-lock.json
