@@ -1,24 +1,33 @@
 # Direct-edition purchaser download + Help enhancement (2026-08-22)
 
-Design APPROVED by Vinny (single gate passed). Continuous pass: spec -> plan -> implement.
+## Resuming From Here
+DONE — all 15 plan tasks complete on branch feat/direct-download-delivery
+(14 commits, not pushed; push/PR awaiting Vinny's go-ahead).
 
-- [x] Explore existing Direct infrastructure (workflow: map-direct-edition-state)
-- [x] Clarifying questions (6 decisions locked, see spec "Decisions")
-- [x] Present design; approved verbatim ("approved - lets build")
-- [~] Write + commit design doc docs/superpowers/specs/2026-08-22-direct-download-design.md
-- [ ] Spec self-review (inline fixes)
-- [ ] writing-plans skill -> implementation plan
-- [ ] Implement: ClaimService reissue + handoff + template.yaml (TDD, node --test)
-- [ ] Implement: claim web page + site wiring (token/state logic tested)
-- [ ] Implement: Sparkle vendoring, Direct.xcconfig, updater seam, script assertions
-- [ ] Implement: publish-direct.sh; Help screen enhancements + tests
-- [ ] Deploy dark to AWS (confirm each mutating step); smoke test
-- [ ] Full suite green; runbook delivered; Vinny eyeballs Help UI
+- Verified: 102 app tests / 25 suites green; ClaimService 15 green; Site 4
+  green; build-direct.sh green (Sparkle embedded+signed, keys in plist);
+  publish-direct.sh dry-run proven through EdDSA signing; sam validate ok.
+- Deployed DARK to AWS us-east-1: stack update (handoff Lambda + release
+  bucket system-headroom-direct-claims-releasebucket-obkpn5ejlqpl),
+  claim page + CF function + three /direct/* behaviors on E1CMGVHA0HQHJK.
+- Edge smoke green: claim page renders expired state in real Chrome, no
+  console errors, no cookies; /direct/api/handoff 503 generic; landing
+  page untouched.
 
-## AWS inventory (2026-08-22, read-only)
-- Account 710603110067 (user codestar), region us-east-1
-- Stack system-headroom-direct-claims: CREATE_COMPLETE Aug 13, dark
-  (ClaimFlowEnabled=false, ClaimHandoffBaseUrl blank); API f3835sp1s0
-- Site: s3://macheadroom.com (landing page live, uploaded Aug 21) behind
-  CloudFront E1CMGVHA0HQHJK (OAC EP4K8MIMS24OK, root index.html,
-  403/404 -> /404.html, no extra behaviors, no functions)
+## Next
+- Vinny: push + PR when ready.
+- Vinny: back up the Sparkle private key to Secrets Manager
+  (DirectEditionRunbook.md, One-time setup).
+- Go-live remains gated on Apple's written App Review confirmation;
+  sequence in Documentation/DirectEditionRunbook.md.
+- Vinny: eyeball the enhanced Help section (needs an injected claim URL or
+  the UI_RENDER PNGs from PopoverVisualTests).
+
+## Blockers
+- None.
+
+## Assumptions
+- Eligibility policy as documented (refunds not revoked; 5 reissues/30d,
+  3 downloads/token, 24h tokens, 15-min URLs).
+- Update archives public via CDN by design (Sparkle cannot present claim
+  tokens); delivery control, not DRM.
