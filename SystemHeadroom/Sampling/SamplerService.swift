@@ -12,16 +12,19 @@ actor SamplerService {
   private var lastSocketsFailed = false
   private let timebase: mach_timebase_info_data_t
   private let logicalCoreCount: Int
+  private let processMemoryMetric: ProcessMemoryMetric
 
   private static let log = Logger(
     subsystem: "com.vinnycarpenter.SystemHeadroom", category: "ports")
 
   init(
     timebase: mach_timebase_info_data_t = SamplerService.currentTimebase(),
-    logicalCoreCount: Int = max(ProcessInfo.processInfo.activeProcessorCount, 1)
+    logicalCoreCount: Int = max(ProcessInfo.processInfo.activeProcessorCount, 1),
+    processMemoryMetric: ProcessMemoryMetric = .current
   ) {
     self.timebase = timebase
     self.logicalCoreCount = logicalCoreCount
+    self.processMemoryMetric = processMemoryMetric
   }
 
   static func currentTimebase() -> mach_timebase_info_data_t {
@@ -37,7 +40,7 @@ actor SamplerService {
   /// thousandfold when two refreshes overlapped.
   func tick(convention: CPUConvention) -> MonitorTick {
     let now = DispatchTime.now().uptimeNanoseconds
-    let table = ProcessTableSampler.sampleTable()
+    let table = ProcessTableSampler.sampleTable(memoryMetric: processMemoryMetric)
     let snapshots = table.snapshots
     let wallTime = previousTimestamp.flatMap { now > $0 ? now - $0 : nil } ?? 0
 
@@ -94,6 +97,7 @@ actor SamplerService {
         memoryUsedBytes: hostMemory?.usedBytes ?? 0,
         memoryTotalBytes: hostMemory?.totalBytes ?? 0
       ),
+      processMemoryMetric: processMemoryMetric,
       sockets: sockets,
       socketFallbackNames: socketFallbackNames
     )

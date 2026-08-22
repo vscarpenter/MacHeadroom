@@ -71,7 +71,9 @@ struct GroupRowView: View {
           accent: .accentColor, secondary: .secondary,
           isRowHovered: isRowHovered
         ) {
-          Text(ValueFormatting.value(metric, for: group))
+          Text(
+            ValueFormatting.value(
+              metric, for: group, memoryMetric: store.processMemoryMetric))
             .font(.system(.body, design: .monospaced))
             .foregroundStyle(.secondary)
         }
@@ -91,7 +93,7 @@ struct GroupRowView: View {
     }
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
-    .help(glossaryEntry?.blurb ?? "")
+    .help(helpText)
     .quitContextMenu(for: group, store: store)
     .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: value)
     .onHover { hovering in
@@ -103,28 +105,45 @@ struct GroupRowView: View {
 
     if isExpanded {
       ForEach(group.children, id: \.snapshot.pid) { child in
-        ChildRowView(measurement: child, metric: metric)
+        ChildRowView(
+          measurement: child,
+          metric: metric,
+          memoryMetric: store.processMemoryMetric)
       }
     }
   }
 
+  private var helpText: String {
+    [
+      glossaryEntry?.blurb,
+      metric == .memory ? store.processMemoryMetric.helpText : nil,
+    ]
+    .compactMap { $0 }
+    .joined(separator: "\n\n")
+  }
+
   private var accessibilityLabel: String {
     let processWord = group.processCount == 1 ? "process" : "processes"
-    let metricLabel = metric == .cpu ? "percent CPU" : "memory"
+    let metricLabel =
+      metric == .cpu ? "percent CPU" : store.processMemoryMetric.accessibilityName
     let name = glossaryEntry.map { "\($0.friendlyName), \(group.name)" } ?? group.name
+    let value = ValueFormatting.value(
+      metric, for: group, memoryMetric: store.processMemoryMetric)
     return "\(name), \(group.processCount) \(processWord), "
-      + "\(ValueFormatting.value(metric, for: group)) \(metricLabel)"
+      + "\(value) \(metricLabel)"
   }
 }
 
 private struct ChildRowView: View {
   let measurement: ProcessMeasurement
   let metric: MetricKind
+  let memoryMetric: ProcessMemoryMetric
 
   private var valueText: String {
     switch metric {
     case .cpu: ValueFormatting.percent(measurement.cpuPercent)
-    case .memory: ValueFormatting.bytes(measurement.snapshot.residentBytes)
+    case .memory:
+      ValueFormatting.memory(measurement.snapshot.memoryBytes, metric: memoryMetric)
     }
   }
 

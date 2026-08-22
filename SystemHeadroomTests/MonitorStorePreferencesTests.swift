@@ -112,7 +112,7 @@ struct StoreTerminationTests {
   static func someGroup() -> AppGroup {
     let snapshot = ProcessSnapshot(
       pid: 77, parentPID: 1, userID: 501, name: "victim",
-      startIdentity: "1:1", cpuTimeTicks: 0, residentBytes: 1)
+      startIdentity: "1:1", cpuTimeTicks: 0, memoryBytes: 1)
     return AppGroup(
       groupKey: "victim", name: "victim", bundleIdentifier: nil,
       representativePID: 77, cpuPercent: nil, memoryBytes: 1,

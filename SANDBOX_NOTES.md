@@ -303,6 +303,26 @@ Filing an Apple DTS request about non-self `phys_footprint` access under
 Sandbox remains worthwhile, and it can happen independently of the app
 build. It does not block Phase 1.
 
+## Direct-edition follow-up (August 16, 2026)
+
+The original resolution predated the unsandboxed Direct edition. Once that
+edition existed, continuing to use RSS in both builds left Activity
+Monitor-compatible data available but unused.
+
+The sampler now selects its per-process memory metric from the signed app's
+actual sandbox entitlement:
+
+- App Store (sandboxed): `pti_resident_size`, visibly suffixed `RSS` and
+  explained in Help and row tooltips.
+- Direct (unsandboxed): `ri_phys_footprint` from
+  `proc_pid_rusage(RUSAGE_INFO_V2)`, with no RSS fallback.
+
+The distinction matters in both directions. Grouped RSS can exceed physical
+footprint when shared pages are counted for multiple helpers, while GPU-backed
+workloads such as local model runners can have RSS far below their physical
+footprint. The large headroom value remains a host-wide measurement; this
+change applies to ranked app and child-process rows.
+
 Phase 1 starts from this commit. The `PhaseZero` probe target is retired: its
 findings are permanent above, and its source is recoverable from git history
 at `44ab12713a5f4a3fc1303cc82452176e5d80e953` if it is ever needed again.

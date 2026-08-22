@@ -25,6 +25,7 @@ final class MonitorStore {
   private(set) var portGroups: [PortGroup]? = []
   private(set) var systemSummary = SystemSummary(
     cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
+  private(set) var processMemoryMetric = ProcessMemoryMetric.current
   private(set) var lastUpdated: Date?
 
   var samplingInterval: TimeInterval {
@@ -154,6 +155,7 @@ final class MonitorStore {
       sockets: tick.sockets, groups: groups,
       fallbackNamesByPID: tick.socketFallbackNames)
     systemSummary = tick.system
+    processMemoryMetric = tick.processMemoryMetric
     lastUpdated = Date()
   }
 
@@ -248,6 +250,7 @@ extension MonitorStore {
     store.topMemoryGroups = memoryGroups
     store.portGroups = portGroups
     store.systemSummary = summary
+    store.processMemoryMetric = canTerminate ? .physicalFootprint : .residentSize
     store.lastUpdated = Date()
     store.usesPorcelainAppearance = usesPorcelainAppearance
     return store

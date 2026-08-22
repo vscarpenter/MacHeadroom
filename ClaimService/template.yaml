@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >-
+  Disabled-by-default App Store Server API claim verifier for System Headroom
+  Direct. The App Store client remains unconfigured until App Review confirms
+  the customer-transfer model.
+
+Parameters:
+  ClaimFlowEnabled:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Keep false until App Review confirms the claim flow in writing.
+  AppStorePrivateKeySecretArn:
+    Type: String
+    NoEcho: true
+    Description: ARN of the Secrets Manager secret containing the downloaded In-App Purchase .p8 key.
+  AppStoreKeyId:
+    Type: String
+    Description: App Store Connect In-App Purchase key ID.
+  AppStoreIssuerId:
+    Type: String
+    Description: App Store Connect issuer ID.
+  ClaimHandoffBaseUrl:
+    Type: String
+    Default: ''
+    Description: HTTPS handoff base URL. Leave empty until one-time protected download delivery exists.
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures:
+      - arm64
+    Timeout: 12
+    MemorySize: 512
+    Tracing: Active
+    Environment:
+      Variables:
+        APP_STORE_BUNDLE_ID: com.vinnycarpenter.MacHeadroom
+        APP_APPLE_ID: '6794655648'
+
+Resources:
+  ClaimsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          ThrottlingBurstLimit: 10
+          ThrottlingRateLimit: 5
+
+  ClaimsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: transactionHash
+          AttributeType: S
+      KeySchema:
+        - AttributeName: transactionHash
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  ClaimHashSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: HMAC key for irreversible App Store app transaction identifier hashes.
+      GenerateSecretString:
+        SecretStringTemplate: '{}'
+        GenerateStringKey: key
+        PasswordLength: 64
+        ExcludePunctuation: true
+
+  ClaimFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/handler.handler
+      ReservedConcurrentExecutions: 5
+      Environment:
+        Variables:
+          CLAIM_FLOW_ENABLED: !Ref ClaimFlowEnabled
+          CLAIMS_TABLE_NAME: !Ref ClaimsTable
+          CLAIM_HASH_SECRET_ARN: !Ref ClaimHashSecret
+          APP_STORE_PRIVATE_KEY_SECRET_ARN: !Ref AppStorePrivateKeySecretArn
+          APP_STORE_KEY_ID: !Ref AppStoreKeyId
+          APP_STORE_ISSUER_ID: !Ref AppStoreIssuerId
+          CLAIM_HANDOFF_BASE_URL: !Ref ClaimHandoffBaseUrl
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: !GetAtt ClaimsTable.Arn
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Ref ClaimHashSecret
+                - !Ref AppStorePrivateKeySecretArn
+      Events:
+        CreateClaim:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ClaimsApi
+            Path: /v1/claims
+            Method: post
+
+  HealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/handler.health
+      ReservedConcurrentExecutions: 2
+      Events:
+        Health:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ClaimsApi
+            Path: /health
+            Method: get
+
+Outputs:
+  ClaimEndpoint:
+    Description: Disabled claim-verification endpoint. Do not add this to the app without App Review confirmation.
+    Value: !Sub 'https://${ClaimsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/v1/claims'
+  HealthEndpoint:
+    Description: Public health endpoint for deployment monitoring.
+    Value: !Sub 'https://${ClaimsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/health'
+  ClaimsTableName:
+    Value: !Ref ClaimsTable

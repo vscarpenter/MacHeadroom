@@ -1,0 +1,16 @@
+{
+  "name": "system-headroom-direct-claims",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/handler.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@apple/app-store-server-library": "3.1.0",
+    "@aws-sdk/client-dynamodb": "3.1110.0",
+    "@aws-sdk/client-secrets-manager": "3.1109.0",
+    "@aws-sdk/lib-dynamodb": "3.1110.0"
+  }
+}

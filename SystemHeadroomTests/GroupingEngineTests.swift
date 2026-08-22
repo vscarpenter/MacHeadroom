@@ -7,13 +7,13 @@ struct GroupingEngineTests {
   @Test("Helper processes consolidate under their parent app via the pid chain")
   func helperConsolidation() {
     let measurements = [
-      measurement(pid: 100, parentPID: 1, name: "Google Chrome", cpuPercent: 5, residentBytes: 100),
+      measurement(pid: 100, parentPID: 1, name: "Google Chrome", cpuPercent: 5, memoryBytes: 100),
       measurement(
         pid: 101, parentPID: 100, name: "Google Chrome Helper (Renderer)", cpuPercent: 3,
-        residentBytes: 50),
+        memoryBytes: 50),
       measurement(
         pid: 102, parentPID: 100, name: "Google Chrome Helper (GPU)", cpuPercent: 2,
-        residentBytes: 30),
+        memoryBytes: 30),
     ]
     let metadata: [Int32: AppMetadata] = [
       100: AppMetadata(pid: 100, bundleIdentifier: "com.google.Chrome", name: "Google Chrome")
@@ -32,7 +32,7 @@ struct GroupingEngineTests {
   @Test("A helper reparented away from its app still groups by name")
   func nameHeuristicFallback() {
     let measurements = [
-      measurement(pid: 400, parentPID: 1, name: "Safari Helper (Renderer)", cpuPercent: 1, residentBytes: 40),
+      measurement(pid: 400, parentPID: 1, name: "Safari Helper (Renderer)", cpuPercent: 1, memoryBytes: 40),
     ]
     let metadata: [Int32: AppMetadata] = [
       401: AppMetadata(pid: 401, bundleIdentifier: "com.apple.Safari", name: "Safari")
@@ -50,7 +50,7 @@ struct GroupingEngineTests {
   @Test("A helper with no ancestor and no name match stands alone")
   func orphanedHelperStandsAlone() {
     let measurements = [
-      measurement(pid: 200, parentPID: 1, name: "Orphaned Helper", cpuPercent: 0, residentBytes: 10),
+      measurement(pid: 200, parentPID: 1, name: "Orphaned Helper", cpuPercent: 0, memoryBytes: 10),
     ]
 
     let groups = GroupingEngine.group(measurements: measurements, metadataByPID: [:])
@@ -65,7 +65,7 @@ struct GroupingEngineTests {
   @Test("A process with no Helper suffix and no metadata falls back to its own pid")
   func unmatchedStragglerFallsBackToPID() {
     let measurements = [
-      measurement(pid: 300, parentPID: 1, name: "com.example.somedaemon", cpuPercent: 0, residentBytes: 5),
+      measurement(pid: 300, parentPID: 1, name: "com.example.somedaemon", cpuPercent: 0, memoryBytes: 5),
     ]
 
     let groups = GroupingEngine.group(measurements: measurements, metadataByPID: [:])
@@ -128,7 +128,7 @@ private func measurement(
   parentPID: Int32,
   name: String,
   cpuPercent: Double?,
-  residentBytes: UInt64
+  memoryBytes: UInt64
 ) -> ProcessMeasurement {
   ProcessMeasurement(
     snapshot: ProcessSnapshot(
@@ -138,7 +138,7 @@ private func measurement(
       name: name,
       startIdentity: "\(pid):0",
       cpuTimeTicks: 0,
-      residentBytes: residentBytes
+      memoryBytes: memoryBytes
     ),
     cpuPercent: cpuPercent
   )

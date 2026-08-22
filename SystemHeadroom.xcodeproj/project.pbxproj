@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000001 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppIdentity.swift */; };
 		A10000000000000000000002 /* SystemHeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* SystemHeadroomApp.swift */; };
+		A10000000000000000000003 /* DirectEditionClaim.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* DirectEditionClaim.swift */; };
 		A10000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* PrivacyInfo.xcprivacy */; };
 		B10000000000000000000001 /* AppIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AppIdentityTests.swift */; };
 		D10000000000000000000001 /* ProcessSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* ProcessSnapshot.swift */; };
@@ -36,6 +37,7 @@
 		E1000000000000000000000D /* PortTableParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000D /* PortTableParserTests.swift */; };
 		E1000000000000000000000E /* PortsSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000E /* PortsSamplerLiveTests.swift */; };
 		E1000000000000000000000F /* PortGroupBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000000F /* PortGroupBuilderTests.swift */; };
+		E10000000000000000000010 /* DirectEditionClaimTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000010 /* DirectEditionClaimTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -56,6 +58,7 @@
 		H1000000000000000000000A /* QuitAffordanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000A /* QuitAffordanceView.swift */; };
 		H1000000000000000000000B /* PopoverTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000B /* PopoverTab.swift */; };
 		H1000000000000000000000C /* PortsPaneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000C /* PortsPaneView.swift */; };
+		H1000000000000000000000D /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000D /* HelpView.swift */; };
 		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -72,6 +75,7 @@
 /* Begin PBXFileReference section */
 		A20000000000000000000001 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* SystemHeadroomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemHeadroomApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* DirectEditionClaim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectEditionClaim.swift; sourceTree = "<group>"; };
 		A20000000000000000000005 /* SystemHeadroom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SystemHeadroom.entitlements; sourceTree = "<group>"; };
 		A20000000000000000000006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A20000000000000000000007 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -106,6 +110,7 @@
 		E2000000000000000000000D /* PortTableParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableParserTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000000E /* PortsSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortsSamplerLiveTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000000F /* PortGroupBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroupBuilderTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000010 /* DirectEditionClaimTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectEditionClaimTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -126,6 +131,7 @@
 		H2000000000000000000000A /* QuitAffordanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuitAffordanceView.swift; sourceTree = "<group>"; };
 		H2000000000000000000000B /* PopoverTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverTab.swift; sourceTree = "<group>"; };
 		H2000000000000000000000C /* PortsPaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortsPaneView.swift; sourceTree = "<group>"; };
+		H2000000000000000000000D /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -176,6 +182,7 @@
 			children = (
 				A20000000000000000000001 /* AppIdentity.swift */,
 				A20000000000000000000002 /* SystemHeadroomApp.swift */,
+				A20000000000000000000003 /* DirectEditionClaim.swift */,
 				G20000000000000000000001 /* MonitorStore.swift */,
 				G20000000000000000000002 /* SingleInstanceGuard.swift */,
 				G20000000000000000000003 /* ProcessTerminator.swift */,
@@ -229,6 +236,7 @@
 				E2000000000000000000000D /* PortTableParserTests.swift */,
 				E2000000000000000000000E /* PortsSamplerLiveTests.swift */,
 				E2000000000000000000000F /* PortGroupBuilderTests.swift */,
+				E20000000000000000000010 /* DirectEditionClaimTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -278,6 +286,7 @@
 				H2000000000000000000000A /* QuitAffordanceView.swift */,
 				H2000000000000000000000B /* PopoverTab.swift */,
 				H2000000000000000000000C /* PortsPaneView.swift */,
+				H2000000000000000000000D /* HelpView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -384,6 +393,7 @@
 			files = (
 				A10000000000000000000001 /* AppIdentity.swift in Sources */,
 				A10000000000000000000002 /* SystemHeadroomApp.swift in Sources */,
+				A10000000000000000000003 /* DirectEditionClaim.swift in Sources */,
 				D10000000000000000000001 /* ProcessSnapshot.swift in Sources */,
 				D10000000000000000000002 /* ProcessTableSampler.swift in Sources */,
 				D10000000000000000000003 /* HostSampler.swift in Sources */,
@@ -414,6 +424,7 @@
 				H1000000000000000000000A /* QuitAffordanceView.swift in Sources */,
 				H1000000000000000000000B /* PopoverTab.swift in Sources */,
 				H1000000000000000000000C /* PortsPaneView.swift in Sources */,
+				H1000000000000000000000D /* HelpView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +448,7 @@
 				E1000000000000000000000D /* PortTableParserTests.swift in Sources */,
 				E1000000000000000000000E /* PortsSamplerLiveTests.swift in Sources */,
 				E1000000000000000000000F /* PortGroupBuilderTests.swift in Sources */,
+				E10000000000000000000010 /* DirectEditionClaimTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,7 +505,7 @@
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				DEVELOPMENT_TEAM = 52HVJ3VDSM;
-				INFOPLIST_KEY_CFBundleDisplayName = "System Headroom";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -507,7 +519,7 @@
 			baseConfigurationReference = A20000000000000000000008 /* Release.xcconfig */;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 52HVJ3VDSM;
-				INFOPLIST_KEY_CFBundleDisplayName = "System Headroom";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;

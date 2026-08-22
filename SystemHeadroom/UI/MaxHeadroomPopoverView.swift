@@ -356,6 +356,7 @@ private struct PorcelainGroupRowView: View {
           PorcelainChildRowView(
             measurement: child,
             metric: metric,
+            memoryMetric: store.processMemoryMetric,
             palette: palette
           )
         }
@@ -457,7 +458,7 @@ private struct PorcelainGroupRowView: View {
       .padding(.horizontal, PorcelainSpacing.xs)
       .padding(.vertical, PorcelainSpacing.sm)
       .contentShape(Rectangle())
-      .help(glossaryEntry?.blurb ?? "")
+      .help(helpText)
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: value)
       .onHover { hovering in
         guard store.canTerminate else { return }
@@ -478,7 +479,9 @@ private struct PorcelainGroupRowView: View {
       accent: palette.accent, secondary: palette.textSecondary,
       isRowHovered: isRowHovered
     ) {
-      Text(ValueFormatting.value(metric, for: group))
+      Text(
+        ValueFormatting.value(
+          metric, for: group, memoryMetric: store.processMemoryMetric))
         .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
         .monospacedDigit()
         .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
@@ -535,16 +538,29 @@ private struct PorcelainGroupRowView: View {
 
   private var accessibilityLabel: String {
     let processWord = group.processCount == 1 ? "process" : "processes"
-    let metricLabel = metric == .cpu ? "percent CPU" : "memory"
+    let metricLabel =
+      metric == .cpu ? "percent CPU" : store.processMemoryMetric.accessibilityName
     let name = glossaryEntry.map { "\($0.friendlyName), \(group.name)" } ?? group.name
+    let value = ValueFormatting.value(
+      metric, for: group, memoryMetric: store.processMemoryMetric)
     return "\(name), \(group.processCount) \(processWord), "
-      + "\(ValueFormatting.value(metric, for: group)) \(metricLabel)"
+      + "\(value) \(metricLabel)"
+  }
+
+  private var helpText: String {
+    [
+      glossaryEntry?.blurb,
+      metric == .memory ? store.processMemoryMetric.helpText : nil,
+    ]
+    .compactMap { $0 }
+    .joined(separator: "\n\n")
   }
 }
 
 private struct PorcelainChildRowView: View {
   let measurement: ProcessMeasurement
   let metric: MetricKind
+  let memoryMetric: ProcessMemoryMetric
   let palette: PorcelainPalette
 
   private var valueText: String {
@@ -552,7 +568,7 @@ private struct PorcelainChildRowView: View {
     case .cpu:
       ValueFormatting.percent(measurement.cpuPercent)
     case .memory:
-      ValueFormatting.bytes(measurement.snapshot.residentBytes)
+      ValueFormatting.memory(measurement.snapshot.memoryBytes, metric: memoryMetric)
     }
   }
 

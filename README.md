@@ -33,13 +33,23 @@ The unit tests run hosted inside the app (`SystemHeadroomTests`, wired to
 ## Build flavors
 
 System Headroom ships as two flavors from the same source. The Mac App
-Store flavor is sandboxed, the distribution target above. A second,
-unsandboxed Direct flavor builds via `Scripts/build-direct.sh`, which
-applies `Configuration/Direct.xcconfig` as an invocation-time overlay
-without touching the Xcode project. The App Sandbox blocks every way
-to quit or kill another process, so the popover's quit-from-the-row
-feature only works in the Direct build; the About tab reports which
-flavor you're running.
+Store flavor is sandboxed and retains its existing bundle identifier for
+updates. A second, unsandboxed Direct flavor has its own bundle identifier,
+so both editions can coexist on one Mac. `Scripts/build-direct.sh` makes a
+developer-signed Direct build for local testing. `Scripts/release-direct.sh`
+creates the customer-downloadable DMG: it requires a Developer ID Application
+certificate and a configured `notarytool` keychain profile, then notarizes and
+staples both the app and the DMG. The App Sandbox blocks every way to quit or
+kill another process, so the popover's quit-from-the-row feature only works in
+the Direct build; the About tab reports which flavor you're running.
+
+The optional App Store-purchase transfer uses an App Store app transaction and
+a server-side verification endpoint. Its protocol and privacy constraints are
+in [Documentation/DirectEditionClaimAPI.md](Documentation/DirectEditionClaimAPI.md),
+and the approved Settings/Help placement is specified in
+[Documentation/DirectEditionSettingsOptionA.md](Documentation/DirectEditionSettingsOptionA.md).
+Leave `DIRECT_EDITION_CLAIM_URL` blank until that service is deployed and the
+claim flow has received explicit App Review clearance.
 
 ## How it's built
 
@@ -63,24 +73,31 @@ flavor you're running.
   and a one-line explanation on hover. Porcelain Native is the default
   appearance, emphasizing headroom, app identity, and warm amber signal
   details without changing measurements. A compact classic appearance
-  remains available in Settings, alongside General controls and an
-  About tab with version and links.
+  remains available in Settings, alongside General controls, task-oriented
+  Help, and an About tab with version and links. When the separately gated
+  Direct transfer is configured, General shows one quiet edition-comparison
+  entry point and Help owns the explanation and verification states.
 - `Design/` holds the scripts that generate the app icon and the menu
   bar glyph. Edit the script and re-run it instead of touching the
   images.
 
-## Why memory means resident size, not physical footprint
+## Why memory differs by build flavor
 
 Activity Monitor's Memory column is physical footprint. App Sandbox
 blocks reading any other process's physical footprint, even processes
 owned by the same user; only a process's own footprint is readable.
 CPU and resident size stay readable for same-user processes.
 
-System Headroom keeps the Sandbox and Mac App Store distribution, and
-shows resident size instead. That number runs higher than Activity
-Monitor's for apps with many helper processes. Resident size counts
-shared framework pages once per process, not once per app. The full
-investigation and the options considered live in
+The App Store edition therefore shows resident size and visibly marks each
+memory value `RSS`. RSS can be higher than Activity Monitor after grouping
+many helper processes, because shared pages can be counted in each process,
+or dramatically lower for GPU-backed workloads whose allocations are charged
+to physical footprint. The Help screen and row tooltips explain the boundary.
+
+The unsandboxed Direct edition reads physical footprint and uses the same
+per-process memory accounting as Activity Monitor. It never silently falls
+back to RSS if a footprint read fails. The full sandbox investigation and the
+options considered live in
 [SANDBOX_NOTES.md](SANDBOX_NOTES.md).
 
 ## Status
