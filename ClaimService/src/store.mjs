@@ -90,9 +90,10 @@ export async function recordClaim({
   return claimID;
 }
 
-/// Redeems a one-time handoff token for one download slot. TTL deletion lags
-/// in DynamoDB, so expiry is enforced here as well as in the condition.
-export async function consumeHandoff({ store, tableName, token, now }) {
+/// Shared read-only validation: throws unless the token is well-formed and
+/// its item exists, is unexpired (TTL deletion lags in DynamoDB, so expiry
+/// is enforced here as well as in the update condition), and has slots left.
+async function readRedeemableHandoff({ store, tableName, token, now }) {
   if (typeof token !== "string" || !HANDOFF_TOKEN_PATTERN.test(token)) {
     throw new Error("invalid handoff token");
   }
@@ -107,6 +108,22 @@ export async function consumeHandoff({ store, tableName, token, now }) {
   if (!item || item.expiresAt <= now || item.downloadsIssued >= DOWNLOADS_PER_HANDOFF) {
     throw new Error("handoff token is not redeemable");
   }
+
+  return key;
+}
+
+/// Read-only redeemability check. The handler peeks before the failure-prone
+/// S3 manifest read so a transient failure there never costs a download slot;
+/// only consumeHandoff spends one.
+export async function peekHandoff({ store, tableName, token, now }) {
+  await readRedeemableHandoff({ store, tableName, token, now });
+}
+
+/// Redeems a one-time handoff token for one download slot. Self-validating —
+/// safe to call without a preceding peek — and the conditional update alone
+/// enforces the cap under concurrency.
+export async function consumeHandoff({ store, tableName, token, now }) {
+  const key = await readRedeemableHandoff({ store, tableName, token, now });
 
   await store.send(new UpdateCommand({
     TableName: tableName,

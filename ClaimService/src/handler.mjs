@@ -10,7 +10,7 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 
 import { latestRelease, presignDownload } from "./releases.mjs";
-import { consumeHandoff, recordClaim } from "./store.mjs";
+import { consumeHandoff, peekHandoff, recordClaim } from "./store.mjs";
 
 const EXPECTED_BUNDLE_ID = process.env.APP_STORE_BUNDLE_ID;
 const EXPECTED_APP_APPLE_ID = Number(process.env.APP_APPLE_ID);
@@ -199,14 +199,22 @@ export async function handoff(event) {
   }
 
   try {
-    await consumeHandoff({
+    const handoffRequest = {
       store: claims,
       tableName: process.env.CLAIMS_TABLE_NAME,
       token,
       now: Math.floor(Date.now() / 1_000),
-    });
+    };
 
+    // Peek before the S3 manifest read so a transient failure there never
+    // spends a download slot; dead tokens never reach S3 at all. The
+    // conditional increment in consumeHandoff still enforces the cap under
+    // concurrency, and presigning is local, so nothing failure-prone runs
+    // after the slot is spent.
+    await peekHandoff(handoffRequest);
     const release = await latestRelease();
+    await consumeHandoff(handoffRequest);
+
     const downloadURL = await presignDownload(release.key);
     return json(200, { downloadURL, version: release.version, sha256: release.sha256 });
   } catch (error) {

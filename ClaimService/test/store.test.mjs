@@ -10,6 +10,7 @@ import {
   REISSUE_LIMIT,
   REISSUE_WINDOW_SECONDS,
   consumeHandoff,
+  peekHandoff,
   recordClaim,
 } from "../src/store.mjs";
 
@@ -219,5 +220,39 @@ test("handoff consumption rejects junk, unknown, expired, and exhausted tokens",
     const store = fakeStore(handlers);
     await assert.rejects(() => consumeHandoff({ store, tableName: TABLE, token, now: NOW }));
     assert.equal(store.sent.filter((command) => command instanceof UpdateCommand).length, 0);
+  }
+});
+
+test("peeking a redeemable handoff performs no writes", async () => {
+  const store = fakeStore({
+    GetCommand: () => ({
+      Item: { transactionHash: `handoff#${UUID}`, downloadsIssued: 1, expiresAt: NOW + 60 },
+    }),
+  });
+
+  await peekHandoff({ store, tableName: TABLE, token: UUID, now: NOW });
+  assert.equal(store.sent.filter((command) => !(command instanceof GetCommand)).length, 0);
+});
+
+test("peeking rejects junk, unknown, expired, and exhausted tokens without writes", async () => {
+  const cases = [
+    { token: "not-a-uuid", handlers: {} },
+    { token: UUID, handlers: { GetCommand: () => ({}) } },
+    {
+      token: UUID,
+      handlers: { GetCommand: () => ({ Item: { downloadsIssued: 0, expiresAt: NOW - 1 } }) },
+    },
+    {
+      token: UUID,
+      handlers: {
+        GetCommand: () => ({ Item: { downloadsIssued: DOWNLOADS_PER_HANDOFF, expiresAt: NOW + 60 } }),
+      },
+    },
+  ];
+
+  for (const { token, handlers } of cases) {
+    const store = fakeStore(handlers);
+    await assert.rejects(() => peekHandoff({ store, tableName: TABLE, token, now: NOW }));
+    assert.equal(store.sent.filter((command) => !(command instanceof GetCommand)).length, 0);
   }
 });
