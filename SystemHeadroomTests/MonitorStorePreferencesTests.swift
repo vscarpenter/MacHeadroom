@@ -59,9 +59,15 @@ struct StoreSamplingCadenceTests {
   /// The first tick after launch can only prime the CPU baseline (every
   /// delta needs two samples). The store must follow it with a quick
   /// second sample so the popover shows real CPU numbers in about a
-  /// second, not a full sampling interval later. The 3-second deadline
-  /// sits well below the 5-second default interval, so this fails if the
-  /// quick follow-up ever regresses to normal cadence.
+  /// second, not a full sampling interval later.
+  ///
+  /// The stored interval is pushed out to 30 seconds so the two cadences
+  /// sit far apart: the quick follow-up is capped at 1 second, so data
+  /// landing inside the deadline can only mean the follow-up ran. An
+  /// earlier version raced a 3-second deadline against the 5-second
+  /// default, which left under 2 seconds for two full process-table
+  /// sweeps. That cleared locally by 0.4 seconds and timed out on CI,
+  /// where the same sweeps run up to 2.6x slower.
   @Test("Opening the popover publishes CPU data well before the first full interval")
   @MainActor
   func quickSecondSampleAfterPriming() async throws {
@@ -69,12 +75,16 @@ struct StoreSamplingCadenceTests {
     let defaults = try #require(UserDefaults(suiteName: suiteName))
     defaults.removePersistentDomain(forName: suiteName)
     defer { defaults.removePersistentDomain(forName: suiteName) }
+    defaults.set(30, forKey: "samplingInterval")
 
     let store = MonitorStore(defaults: defaults)
+    // Guards the gap this test rests on: if the defaults key ever drifts,
+    // the store falls back to 5 seconds and this goes quietly flaky again.
+    #expect(store.samplingInterval == 30)
     store.popoverDidAppear()
     defer { store.popoverDidDisappear() }
 
-    let deadline = ContinuousClock.now.advanced(by: .seconds(3))
+    let deadline = ContinuousClock.now.advanced(by: .seconds(15))
     while store.systemSummary.cpuPercent == nil, ContinuousClock.now < deadline {
       try await Task.sleep(for: .milliseconds(50))
     }
