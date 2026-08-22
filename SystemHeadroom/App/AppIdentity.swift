@@ -2,7 +2,7 @@ import Foundation
 
 enum AppIdentity {
   static let websiteURL = URL(string: "https://www.macheadroom.com/")!
-  static let privacyPolicyURL = URL(string: "https://www.macheadroom.com/#privacy")!
+  static let privacyPolicyURL = URL(string: "https://www.macheadroom.com/privacy.html")!
 
   static var displayName: String {
     Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
