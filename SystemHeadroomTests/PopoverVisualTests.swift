@@ -249,4 +249,30 @@ struct PopoverVisualTests {
     try data.write(to: url)
     print("UI_RENDER help-direct \(url.path)")
   }
+
+  @Test("About hides Check for Updates outside a Direct build with an updater")
+  @MainActor
+  func aboutHidesUpdateButtonWhenGated() throws {
+    struct FakeUpdater: UpdaterClient {
+      var canCheckForUpdates: Bool { true }
+      func checkForUpdates() {}
+    }
+
+    // The gate needs both conditions; each alone must render identically to
+    // the plain App Store About tab.
+    let baseline = NSHostingView(rootView: AboutView()).fittingSize
+    let updaterOnly = NSHostingView(
+      rootView: AboutView(updater: FakeUpdater(), capability: .sandboxed)
+    ).fittingSize
+    let capabilityOnly = NSHostingView(
+      rootView: AboutView(updater: nil, capability: .available)
+    ).fittingSize
+    #expect(updaterOnly == baseline)
+    #expect(capabilityOnly == baseline)
+
+    let direct = NSHostingView(
+      rootView: AboutView(updater: FakeUpdater(), capability: .available)
+    ).fittingSize
+    #expect(direct.height > baseline.height)
+  }
 }
