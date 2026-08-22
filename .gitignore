@@ -6,3 +6,4 @@ ClaimService/.sam-tools/
 *.xcuserstate
 xcuserdata/
 skills-lock.json
+Vendor/
