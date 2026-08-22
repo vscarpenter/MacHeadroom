@@ -28,9 +28,21 @@ struct AppIdentityTests {
     let copyright = try #require(
       Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String)
 
-    #expect(short == "1.0")
-    #expect(build == "11")
+    #expect(short == "1.1")
+    #expect(build == "12")
     #expect(copyright == "Copyright © 2026 Vinny Carpenter")
+  }
+
+  @Test("The claim-URL build setting reaches Info.plist")
+  func claimURLReachesInfoPlist() throws {
+    // Blank in every committed build (dark launch), but the key itself must
+    // exist: INFOPLIST_KEY_ passthrough silently drops unknown keys, which
+    // once left the claim flow unactivatable. The merged
+    // SystemHeadroom/Info.plist is the supported path.
+    let value = try #require(
+      Bundle.main.object(forInfoDictionaryKey: "DirectEditionClaimURL") as? String)
+    #expect(value.isEmpty)
+    #expect(AppIdentity.directEditionClaimURL == nil)
   }
 
   @Test("Publishes stable website and privacy policy destinations")
@@ -44,5 +56,35 @@ struct AppIdentityTests {
     let usesNonExemptEncryption = try #require(
       Bundle.main.object(forInfoDictionaryKey: "ITSAppUsesNonExemptEncryption") as? Bool)
     #expect(usesNonExemptEncryption == false)
+  }
+}
+
+@Suite("Updater gating")
+struct UpdaterGatingTests {
+  @Test("Update UI appears only in a Direct build that has an updater")
+  func presentationGate() {
+    #expect(UpdaterPresentation.isVisible(capability: .available, hasUpdater: true))
+    #expect(!UpdaterPresentation.isVisible(capability: .available, hasUpdater: false))
+    #expect(!UpdaterPresentation.isVisible(capability: .sandboxed, hasUpdater: true))
+    #expect(!UpdaterPresentation.isVisible(capability: .sandboxed, hasUpdater: false))
+  }
+
+  @Test("The sandboxed build vends no updater")
+  @MainActor
+  func sandboxedBuildHasNoUpdater() {
+    // The test host is the sandboxed App Store flavor, which must compile
+    // the null updater path.
+    #expect(UpdaterProvider.shared == nil)
+  }
+
+  @Test("App Store binary and bundle contain no Sparkle")
+  func appStoreBuildHasNoSparkle() throws {
+    #expect(NSClassFromString("SPUStandardUpdaterController") == nil)
+
+    let frameworksURL = try #require(Bundle.main.privateFrameworksURL)
+    let frameworkNames = ((try? FileManager.default.contentsOfDirectory(
+      at: frameworksURL, includingPropertiesForKeys: nil
+    )) ?? []).map(\.lastPathComponent)
+    #expect(!frameworkNames.contains("Sparkle.framework"))
   }
 }

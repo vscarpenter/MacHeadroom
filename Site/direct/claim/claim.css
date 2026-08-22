@@ -1,0 +1,79 @@
+/* Porcelain-and-amber, matching the app. Self-contained: no external
+   fonts or assets, so the page makes zero third-party requests. */
+:root {
+  --ink: #1d1a17;
+  --ink-soft: #6b645c;
+  --surface: #f6f2ec;
+  --card: #fffdf9;
+  --line: #e5ddd2;
+  --amber: #d9930d;
+  --amber-deep: #a86f04;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #efe9e1;
+    --ink-soft: #a39b90;
+    --surface: #171412;
+    --card: #211d19;
+    --line: #35302a;
+    --amber: #e8a41f;
+    --amber-deep: #f0bc55;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: radial-gradient(1200px 600px at 50% -10%, color-mix(in srgb, var(--amber) 7%, var(--surface)), var(--surface));
+  color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.card {
+  width: min(560px, 100%);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 40px 44px 28px;
+  box-shadow: 0 18px 48px -24px rgb(0 0 0 / 0.35);
+}
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.glyph {
+  display: flex; align-items: flex-end; gap: 3px;
+  width: 40px; height: 40px; padding: 8px 7px;
+  background: #16130f; border-radius: 9px;
+}
+.glyph span { flex: 1; background: var(--amber); border-radius: 1.5px; }
+.glyph span:nth-child(1) { height: 35%; }
+.glyph span:nth-child(2) { height: 55%; }
+.glyph span:nth-child(3) { height: 75%; }
+.glyph span:nth-child(4) { height: 100%; }
+h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: -0.01em; margin: 0; }
+h1 em { font-style: normal; color: var(--amber-deep); }
+.lead { font-size: 1.12rem; font-weight: 600; margin: 0 0 4px; }
+.sub { color: var(--ink-soft); margin: 0 0 12px; }
+.steps { margin: 16px 0; padding-left: 22px; }
+.steps li { margin: 8px 0; }
+.checksum {
+  margin: 18px 0 14px; padding: 10px 12px;
+  background: color-mix(in srgb, var(--line) 40%, var(--card));
+  border-radius: 8px; font-size: 0.78rem; color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+.checksum code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+button {
+  appearance: none; border: 1px solid var(--line); border-radius: 8px;
+  background: transparent; color: var(--amber-deep);
+  font: inherit; font-size: 0.9rem; padding: 7px 14px; cursor: pointer;
+}
+button:hover { border-color: var(--amber); }
+footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); }
+footer p { margin: 0; font-size: 0.8rem; color: var(--ink-soft); }
+footer a { color: inherit; }
+@media (prefers-reduced-motion: no-preference) {
+  .state:not([hidden]) { animation: rise 240ms ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+}

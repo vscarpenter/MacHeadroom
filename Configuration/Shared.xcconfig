@@ -7,8 +7,8 @@ PRODUCT_BUNDLE_IDENTIFIER = com.vinnycarpenter.MacHeadroom
 // Leave blank unless the App Store build has an approved, HTTPS claim service.
 // The client treats a missing value as unavailable and makes no network calls.
 DIRECT_EDITION_CLAIM_URL =
-MARKETING_VERSION = 1.0
-CURRENT_PROJECT_VERSION = 11
+MARKETING_VERSION = 1.1
+CURRENT_PROJECT_VERSION = 12
 
 SDKROOT = macosx
 SUPPORTED_PLATFORMS = macosx
@@ -31,7 +31,7 @@ GENERATE_INFOPLIST_FILE = YES
 INFOPLIST_KEY_CFBundleDisplayName = $(APP_DISPLAY_NAME)
 INFOPLIST_KEY_CFBundleName = $(APP_DISPLAY_NAME)
 INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO
-INFOPLIST_KEY_DirectEditionClaimURL = $(DIRECT_EDITION_CLAIM_URL)
+INFOPLIST_FILE = SystemHeadroom/Info.plist
 INFOPLIST_KEY_LSUIElement = YES
 INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.utilities
 INFOPLIST_KEY_NSHumanReadableCopyright = Copyright © 2026 Vinny Carpenter

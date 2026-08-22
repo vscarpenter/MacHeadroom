@@ -45,4 +45,20 @@ if [[ "$actual_bundle_id" != "com.vinnycarpenter.SystemHeadroom.Direct" ]]; then
   exit 1
 fi
 
+# Sparkle must be embedded here and only here; the App Store flavor's
+# absence is pinned by UpdaterGatingTests in the normal suite.
+if [[ ! -d "$app/Contents/Frameworks/Sparkle.framework" ]]; then
+  echo "FAIL: Direct build is missing Sparkle.framework (run Scripts/fetch-sparkle.sh)" >&2
+  exit 1
+fi
+feed_url="$(plutil -extract SUFeedURL raw "$app/Contents/Info.plist" 2>/dev/null || true)"
+if [[ "$feed_url" != "https://www.macheadroom.com/direct/appcast.xml" ]]; then
+  echo "FAIL: Direct build SUFeedURL is '$feed_url'" >&2
+  exit 1
+fi
+public_key="$(plutil -extract SUPublicEDKey raw "$app/Contents/Info.plist" 2>/dev/null || true)"
+if [[ -z "$public_key" ]]; then
+  echo "WARN: SUPublicEDKey is empty; dev builds tolerate this, release-direct.sh does not"
+fi
+
 echo "OK: unsandboxed Direct build $actual_version ($actual_build) at $app"

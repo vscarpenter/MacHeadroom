@@ -96,6 +96,14 @@ logic fixture-testable:
   `MonitorStore.canTerminate` and only the unsandboxed Direct build
   (`Scripts/build-direct.sh`) has it. Do not add termination UI to the
   Mac App Store build.
+- **Sparkle exists only in the Direct flavor** — the one deliberate
+  compile-time fork (`DIRECT_EDITION` via Direct.xcconfig; vendored by
+  `Scripts/fetch-sparkle.sh`). The App Store binary/bundle must stay
+  Sparkle-free (test-pinned in `UpdaterGatingTests`). Custom Info.plist
+  keys must ride the merged `SystemHeadroom/Info.plist` /
+  `InfoDirect.plist` files — `INFOPLIST_KEY_` passthrough silently drops
+  keys Xcode doesn't know, and a script phase must never mutate the
+  generated Info.plist (Xcode regenerates it on its own schedule).
 - **Port enumeration is sysctl-only.** Under the App Sandbox,
   `proc_pidinfo(PROC_PIDLISTFDS)` is EPERM for every non-self process
   and `bind()` is EPERM outright, so ports come from

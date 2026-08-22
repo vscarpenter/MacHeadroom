@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>System Headroom Direct</title>
+  <link rel="stylesheet" href="/direct/claim/claim.css">
+</head>
+<body>
+  <main class="card">
+    <header>
+      <div class="glyph" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <h1>System Headroom <em>Direct</em></h1>
+    </header>
+
+    <section id="state-exchanging" class="state" aria-live="polite">
+      <p class="lead">Preparing your download…</p>
+      <p class="sub">Checking your one-time download link.</p>
+    </section>
+
+    <section id="state-ready" class="state" hidden>
+      <p class="lead">Your download has started.</p>
+      <p class="sub">Version <span id="release-version"></span> · notarized by Apple</p>
+      <ol class="steps">
+        <li>Open the downloaded <strong>System Headroom Direct.dmg</strong>.</li>
+        <li>Drag <strong>System Headroom Direct</strong> into <strong>Applications</strong>.</li>
+        <li>If macOS asks, choose <strong>Open</strong> — the app is Developer&nbsp;ID signed and notarized.</li>
+      </ol>
+      <p class="checksum">SHA-256&nbsp;<code id="release-sha256"></code></p>
+      <button id="retry-download" type="button">Download didn’t start? Try again</button>
+    </section>
+
+    <section id="state-expired" class="state" hidden>
+      <p class="lead">This download link has expired.</p>
+      <p class="sub">Links are single-purpose and short-lived on purpose. Getting a fresh one takes a moment:</p>
+      <ol class="steps">
+        <li>Open <strong>System Headroom</strong> from the App&nbsp;Store on your Mac.</li>
+        <li>Choose <strong>Settings → Help → Direct edition</strong>.</li>
+        <li>Select <strong>Verify purchase and continue</strong>.</li>
+      </ol>
+      <p class="sub">No account, email, or license key is ever needed.</p>
+    </section>
+
+    <footer>
+      <p>Included with your App Store purchase · <a href="https://www.macheadroom.com/">macheadroom.com</a></p>
+    </footer>
+  </main>
+  <script type="module" src="/direct/claim/claim.js"></script>
+</body>
+</html>

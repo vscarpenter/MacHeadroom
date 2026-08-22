@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Custom keys only. Xcode merges this file with the generated
+	     Info.plist (GENERATE_INFOPLIST_FILE stays YES); INFOPLIST_KEY_
+	     passthrough silently drops keys Xcode does not know, which is why
+	     DirectEditionClaimURL lives here. Sparkle keys are Direct-only and
+	     are written by Scripts/embed-sparkle.sh, never by this file. -->
+	<key>DirectEditionClaimURL</key>
+	<string>$(DIRECT_EDITION_CLAIM_URL)</string>
+</dict>
+</plist>

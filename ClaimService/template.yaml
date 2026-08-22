@@ -82,6 +82,23 @@ Resources:
         PasswordLength: 64
         ExcludePunctuation: true
 
+  ReleaseBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
   ClaimFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -102,6 +119,8 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:PutItem
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
               Resource: !GetAtt ClaimsTable.Arn
             - Effect: Allow
               Action:
@@ -115,6 +134,36 @@ Resources:
           Properties:
             RestApiId: !Ref ClaimsApi
             Path: /v1/claims
+            Method: post
+
+  HandoffFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/handler.handoff
+      ReservedConcurrentExecutions: 5
+      Environment:
+        Variables:
+          CLAIM_FLOW_ENABLED: !Ref ClaimFlowEnabled
+          CLAIMS_TABLE_NAME: !Ref ClaimsTable
+          RELEASE_BUCKET_NAME: !Ref ReleaseBucket
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt ClaimsTable.Arn
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: !Sub '${ReleaseBucket.Arn}/updates/*'
+      Events:
+        Handoff:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ClaimsApi
+            Path: /v1/handoff
             Method: post
 
   HealthFunction:
@@ -140,3 +189,9 @@ Outputs:
     Value: !Sub 'https://${ClaimsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/health'
   ClaimsTableName:
     Value: !Ref ClaimsTable
+  HandoffEndpoint:
+    Description: Dark handoff endpoint reached same-origin via the site's /direct/api/* behavior.
+    Value: !Sub 'https://${ClaimsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/v1/handoff'
+  ReleaseBucketName:
+    Description: Private bucket holding notarized Direct DMGs under updates/.
+    Value: !Ref ReleaseBucket

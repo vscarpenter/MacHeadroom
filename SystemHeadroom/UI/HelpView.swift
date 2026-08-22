@@ -119,11 +119,27 @@ struct HelpView: View {
         )
         HelpFact(
           title: "What Direct adds",
-          detail: "System Headroom Direct is Developer ID signed and Apple notarized. It uses physical-footprint memory, adds Quit and Force Quit, installs alongside this edition, and receives updates outside the App Store."
+          detail: "System Headroom Direct is Developer ID signed and Apple notarized. It uses physical-footprint memory, adds Quit and Force Quit, installs alongside this edition, and keeps itself up to date with built-in update checks."
         )
         HelpFact(
           title: "Included with your purchase",
           detail: "There is no additional payment or account. Verification sends only your App Store purchase evidence—never process samples, computer names, or preferences."
+        )
+
+        HelpStep(
+          number: 1,
+          title: "Verify your purchase",
+          detail: "System Headroom sends only your App Store purchase evidence to the transfer service."
+        )
+        HelpStep(
+          number: 2,
+          title: "Open the download page",
+          detail: "Your browser opens macheadroom.com with a private link to the notarized installer."
+        )
+        HelpStep(
+          number: 3,
+          title: "Install Direct",
+          detail: "Open the downloaded disk image and drag System Headroom Direct into Applications."
         )
 
         switch directClaim.state {
@@ -140,9 +156,12 @@ struct HelpView: View {
               .foregroundStyle(.secondary)
           }
         case .readyToOpen(let claimURL):
-          Button("Open claim page") {
+          Button("Open download page") {
             NSWorkspace.shared.open(claimURL)
           }
+          Text("Verify again anytime to download the newest version.")
+            .font(.caption)
+            .foregroundStyle(.secondary)
         case .failed(let message):
           Text(message)
             .font(.caption)

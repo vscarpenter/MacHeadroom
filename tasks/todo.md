@@ -1,34 +1,33 @@
-# Resuming From Here (2026-08-01, evening)
+# Direct-edition purchaser download + Help enhancement (2026-08-22)
 
-## Done
-- Fixed tab row cross-contamination: namespaced `PortGroup.id` ("port:" +
-  groupKey) so it can't collide with `AppGroup.id` inside the shared
-  LazyVStack row cache. Commit `33a0c46`, regression test in
-  PortGroupBuilderTests. Suite green (85 tests / 21 suites).
-- Confirmed Porcelain Native is already the default appearance (code path,
-  "Porcelain Native defaults on" test, and Vinny's container prefs).
-- Prepared and uploaded 1.0 (build 9) to App Store Connect for TestFlight:
-  bumped Shared.xcconfig + AppIdentityTests together (commit `bf098a0`),
-  full suite green, archived Release, exportArchive upload succeeded
-  ("Uploaded SystemHeadroom"). Build 8 was never uploaded; 9 skips it.
+## Resuming From Here
+DONE — all 15 plan tasks complete on branch feat/direct-download-delivery
+(14 commits, not pushed; push/PR awaiting Vinny's go-ahead).
+
+- Verified: 102 app tests / 25 suites green; ClaimService 15 green; Site 4
+  green; build-direct.sh green (Sparkle embedded+signed, keys in plist);
+  publish-direct.sh dry-run proven through EdDSA signing; sam validate ok.
+- Deployed DARK to AWS us-east-1: stack update (handoff Lambda + release
+  bucket system-headroom-direct-claims-releasebucket-obkpn5ejlqpl),
+  claim page + CF function + three /direct/* behaviors on E1CMGVHA0HQHJK.
+- Edge smoke green: claim page renders expired state in real Chrome, no
+  console errors, no cookies; /direct/api/handoff 503 generic; landing
+  page untouched.
 
 ## Next
-- DONE: TestFlight build enabled, installed, and verified working by Vinny
-  (Aug 1 late). The July 26 Apple-side install 500s are resolved.
-- RESOLVED: the tested TestFlight build is 1.0 (10) = tonight's scripted
-  upload, auto-renumbered from 9 by Xcode's manageAppVersionAndBuildNumber
-  on collision with the 2:34 PM Organizer upload. Repo synced to 10
-  (commit `227fc0d`, suite green, not yet pushed). Before the next
-  release prep, check ASC for the real latest build number first.
-- Refined App Store description (adds SEE WHAT'S LISTENING section) is in
-  this session's scratchpad; paste into ASC alongside the build swap on
-  the 1.0 version page.
-- Pushed: `main` is in sync with origin (`6b1921d..bf098a0` — the tab-bleed
-  fix `33a0c46` and the build 9 bump `bf098a0`).
+- Vinny: push + PR when ready.
+- Vinny: back up the Sparkle private key to Secrets Manager
+  (DirectEditionRunbook.md, One-time setup).
+- Go-live remains gated on Apple's written App Review confirmation;
+  sequence in Documentation/DirectEditionRunbook.md.
+- Vinny: eyeball the enhanced Help section (needs an injected claim URL or
+  the UI_RENDER PNGs from PopoverVisualTests).
 
 ## Blockers
 - None.
 
 ## Assumptions
-- Incrementing to build 9 (not re-using 8) was safe and matches "increment
-  the build number"; duplicate numbers are rejected by ASC anyway.
+- Eligibility policy as documented (refunds not revoked; 5 reissues/30d,
+  3 downloads/token, 24h tokens, 15-min URLs).
+- Update archives public via CDN by design (Sparkle cannot present claim
+  tokens); delivery control, not DRM.

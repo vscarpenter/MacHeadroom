@@ -5,6 +5,9 @@ import SwiftUI
 /// design; acknowledgements and release notes can slot in beneath the
 /// links later without touching the General tab.
 struct AboutView: View {
+  var updater: UpdaterClient? = UpdaterProvider.shared
+  var capability: TerminationCapability = .current
+
   var body: some View {
     VStack(spacing: 8) {
       Image(nsImage: NSApp.applicationIconImage)
@@ -33,6 +36,16 @@ struct AboutView: View {
         }
       }
       .padding(.top, 8)
+
+      if UpdaterPresentation.isVisible(capability: capability, hasUpdater: updater != nil),
+        let updater
+      {
+        Button("Check for Updates…") {
+          updater.checkForUpdates()
+        }
+        .padding(.top, 8)
+        .accessibilityIdentifier("check-for-updates-button")
+      }
     }
     .padding(24)
     .frame(width: 440)

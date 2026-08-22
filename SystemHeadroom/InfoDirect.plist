@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Direct-flavor custom keys, selected by Configuration/Direct.xcconfig's
+	     INFOPLIST_FILE override and merged into the generated Info.plist.
+	     Sparkle keys must exist here and ONLY here: the App Store flavor
+	     merges SystemHeadroom/Info.plist, which must stay Sparkle-free.
+	     DirectEditionClaimURL is duplicated from Info.plist because the
+	     override replaces the file wholesale. -->
+	<key>DirectEditionClaimURL</key>
+	<string>$(DIRECT_EDITION_CLAIM_URL)</string>
+	<key>SUFeedURL</key>
+	<string>https://www.macheadroom.com/direct/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>$(DIRECT_SPARKLE_PUBLIC_ED_KEY)</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+</dict>
+</plist>
