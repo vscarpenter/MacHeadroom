@@ -14,3 +14,11 @@ Design APPROVED by Vinny (single gate passed). Continuous pass: spec -> plan -> 
 - [ ] Implement: publish-direct.sh; Help screen enhancements + tests
 - [ ] Deploy dark to AWS (confirm each mutating step); smoke test
 - [ ] Full suite green; runbook delivered; Vinny eyeballs Help UI
+
+## AWS inventory (2026-08-22, read-only)
+- Account 710603110067 (user codestar), region us-east-1
+- Stack system-headroom-direct-claims: CREATE_COMPLETE Aug 13, dark
+  (ClaimFlowEnabled=false, ClaimHandoffBaseUrl blank); API f3835sp1s0
+- Site: s3://macheadroom.com (landing page live, uploaded Aug 21) behind
+  CloudFront E1CMGVHA0HQHJK (OAC EP4K8MIMS24OK, root index.html,
+  403/404 -> /404.html, no extra behaviors, no functions)
