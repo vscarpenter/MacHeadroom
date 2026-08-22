@@ -506,7 +506,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A20000000000000000000008 /* Release.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				DEVELOPMENT_TEAM = 52HVJ3VDSM;
 				INFOPLIST_KEY_CFBundleDisplayName = "System Headroom";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
