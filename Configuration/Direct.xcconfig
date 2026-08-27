@@ -24,7 +24,7 @@ FRAMEWORK_SEARCH_PATHS = $(inherited) $(SRCROOT)/Vendor/Sparkle
 OTHER_LDFLAGS = $(inherited) -framework Sparkle
 // Filled in once generate_keys has run on the release machine; blank keys
 // are tolerated by dev builds and rejected by release-direct.sh.
-DIRECT_SPARKLE_PUBLIC_ED_KEY = T73F0l8J+zZ/DL7UpX5GY5w3yL6tqZwFrGLGKil0TnM=
+DIRECT_SPARKLE_PUBLIC_ED_KEY = zM7z7Yzk7eLMWDDsD/q44/9cWUXvR3VgnoC38wzta30=
 // The embed phase copies a framework tree, which Xcode's user-script
 // sandbox cannot express as inputPaths. This flavor is the unsandboxed
 // one by definition; the App Store build keeps script sandboxing on.

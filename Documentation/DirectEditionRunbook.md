@@ -10,11 +10,18 @@ dark-launch invariant: the deployed stack has `ClaimFlowEnabled=false`, and
 - [x] Sparkle EdDSA keypair generated (`Vendor/Sparkle/bin/generate_keys`);
       private key in the login Keychain, public key pinned in
       `Configuration/Direct.xcconfig` (`DIRECT_SPARKLE_PUBLIC_ED_KEY`).
-- [ ] **Back up the private key**: `Vendor/Sparkle/bin/generate_keys -x
-      sparkle-private-key.pem`, store it in AWS Secrets Manager
-      (`aws secretsmanager create-secret --name macheadroom/sparkle-eddsa
-      --secret-string file://sparkle-private-key.pem`), then delete the local
-      file. Losing this key orphans every shipped Direct install.
+      Rotated 2026-08-27, before any Direct release shipped, so no install
+      pins the retired key.
+- [x] **Back up the private key** (done 2026-08-27, verified round-trip):
+      `Vendor/Sparkle/bin/generate_keys -x sparkle-private-key.pem`, store it
+      in AWS Secrets Manager (secret `macheadroom/sparkle-eddsa`, us-east-1;
+      re-key with `aws secretsmanager put-secret-value --secret-id
+      macheadroom/sparkle-eddsa --secret-string file://sparkle-private-key.pem`),
+      then delete the local file. Verify without printing key material:
+      `printf '%s' "$(aws secretsmanager get-secret-value --region us-east-1
+      --secret-id macheadroom/sparkle-eddsa --query SecretString --output
+      text)" | cmp -s - sparkle-private-key.pem && echo OK`. Losing this key
+      orphans every shipped Direct install.
 - [ ] App Store Connect In-App Purchase key (`.p8`) in Secrets Manager;
       its ARN is the `AppStorePrivateKeySecretArn` deploy parameter.
 
