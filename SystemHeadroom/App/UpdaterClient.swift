@@ -55,4 +55,16 @@ enum UpdaterPresentation {
 @MainActor
 enum UpdaterProvider {
   static let shared: UpdaterClient? = makeUpdaterClient()
+
+  /// `shared` is a lazy static, and its only reader is the About tab, so
+  /// Sparkle's controller — which schedules its background checks from init
+  /// — was never constructed until the user opened Settings → About. A
+  /// Direct build measured 105 seconds with zero requests to its feed, while
+  /// Help promises the edition "keeps itself up to date with built-in update
+  /// checks". Launch calls this to start them. The App Store flavor has no
+  /// updater to construct, so it stays a no-op there.
+  @discardableResult
+  static func startBackgroundChecks() -> Bool {
+    shared != nil
+  }
 }

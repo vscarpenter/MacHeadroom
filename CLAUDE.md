@@ -96,6 +96,24 @@ logic fixture-testable:
   `MonitorStore.canTerminate` and only the unsandboxed Direct build
   (`Scripts/build-direct.sh`) has it. Do not add termination UI to the
   Mac App Store build.
+- **Opening the Settings scene must also activate the app.** The app is
+  `LSUIElement` and `MenuBarExtraWindow` is a non-activating panel, so
+  the app is never frontmost: the panel dismisses on the tap and the
+  Settings window is left ordered behind whatever app the user was
+  actually in. Measured on macOS 26.6.2 — rank among on-screen normal
+  windows: open alone = 1 (buried, never key), open then
+  `NSApp.activate()` = 0 (key). Both call sites go through
+  `SettingsWindowPresenter` (`SettingsWindowPresenterTests` pins the
+  order); `SettingsLink` cannot be used because it exposes no action
+  hook, so the gear buttons use the `openSettings` environment action.
+- **Launch must start the updater.** `UpdaterProvider.shared` is a lazy
+  static, so nothing constructs Sparkle's controller — which schedules
+  background checks from its own init — until something reads it. When
+  the About tab was its only reader, a Direct build ran 105 seconds with
+  zero requests to its feed despite `SUEnableAutomaticChecks`, while Help
+  promises the edition "keeps itself up to date". `SystemHeadroomApp.init`
+  calls `UpdaterProvider.startBackgroundChecks()`; verified against a
+  localhost appcast (feed fetched within 5s of launch).
 - **Sparkle exists only in the Direct flavor** — the one deliberate
   compile-time fork (`DIRECT_EDITION` via Direct.xcconfig; vendored by
   `Scripts/fetch-sparkle.sh`). The App Store binary/bundle must stay

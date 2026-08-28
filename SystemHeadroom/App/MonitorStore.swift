@@ -208,17 +208,26 @@ final class MonitorStore {
   }
 
   private static func currentAppMetadata() -> [Int32: AppMetadata] {
-    Dictionary(
-      uniqueKeysWithValues: NSWorkspace.shared.runningApplications.map { app in
-        (
-          app.processIdentifier,
-          AppMetadata(
-            pid: app.processIdentifier,
-            bundleIdentifier: app.bundleIdentifier,
-            name: app.localizedName ?? "Unknown"
-          )
+    metadataTable(
+      from: NSWorkspace.shared.runningApplications.map { app in
+        AppMetadata(
+          pid: app.processIdentifier,
+          bundleIdentifier: app.bundleIdentifier,
+          name: app.localizedName ?? "Unknown"
         )
       }
+    )
+  }
+
+  /// NSRunningApplication reports a pid of -1 once the app has terminated, so
+  /// a sweep catching two apps mid-exit yields two entries under the same key
+  /// and traps `Dictionary(uniqueKeysWithValues:)`. Nothing the sampler
+  /// reports has a non-positive pid, so a terminated entry could never match a
+  /// row: drop it rather than keep unusable metadata.
+  static func metadataTable(from entries: [AppMetadata]) -> [Int32: AppMetadata] {
+    Dictionary(
+      entries.lazy.filter { $0.pid > 0 }.map { ($0.pid, $0) },
+      uniquingKeysWith: { first, _ in first }
     )
   }
 }

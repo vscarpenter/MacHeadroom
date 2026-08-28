@@ -7,6 +7,7 @@ struct SystemHeadroomApp: App {
 
   init() {
     Self.instanceGuard.activate()
+    UpdaterProvider.startBackgroundChecks()
   }
 
   var body: some Scene {
