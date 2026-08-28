@@ -6,6 +6,7 @@ struct PorcelainPopoverView: View {
   @State private var selectedTab: PopoverTab
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.colorScheme) private var colorScheme
+  @Environment(\.openSettings) private var openSettings
 
   init(store: MonitorStore, initialTab: PopoverTab = .cpu) {
     self.store = store
@@ -234,7 +235,9 @@ struct PorcelainPopoverView: View {
       .accessibilityLabel("Refresh")
 
       Menu {
-        SettingsLink {
+        Button {
+          SettingsWindowPresenter.present(open: { openSettings() })
+        } label: {
           Label("Settings", systemImage: "gearshape")
         }
 

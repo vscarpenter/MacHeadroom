@@ -4,6 +4,7 @@ struct PopoverView: View {
   let store: MonitorStore
   @State private var selectedTab: PopoverTab
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @Environment(\.openSettings) private var openSettings
 
   init(store: MonitorStore, initialTab: PopoverTab = .cpu) {
     self.store = store
@@ -116,7 +117,9 @@ struct PopoverView: View {
       .buttonStyle(.plain)
       .accessibilityLabel("Refresh")
 
-      SettingsLink {
+      Button {
+        SettingsWindowPresenter.present(open: { openSettings() })
+      } label: {
         Image(systemName: "gearshape")
       }
       .buttonStyle(.plain)
