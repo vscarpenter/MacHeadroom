@@ -77,6 +77,19 @@ struct UpdaterGatingTests {
     #expect(UpdaterProvider.shared == nil)
   }
 
+  /// UpdaterProvider.shared is a lazy static whose only reader used to be
+  /// AboutView, so Sparkle's controller — which schedules background checks
+  /// from its own init — was never constructed until the user opened
+  /// Settings → About. Measured: a Direct build ran for 105s with zero
+  /// requests to its feed. Launch now starts the checks explicitly, and
+  /// starting must stay gated so the App Store flavor starts nothing.
+  @Test("Starting background checks stays a no-op without an updater")
+  @MainActor
+  func startingBackgroundChecksIsGated() {
+    #expect(UpdaterProvider.startBackgroundChecks() == false)
+    #expect(UpdaterProvider.startBackgroundChecks() == false)
+  }
+
   @Test("App Store binary and bundle contain no Sparkle")
   func appStoreBuildHasNoSparkle() throws {
     #expect(NSClassFromString("SPUStandardUpdaterController") == nil)
