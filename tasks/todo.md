@@ -1,3 +1,38 @@
+# Free Direct distribution (2026-09-15)
+
+## Design and implementation
+
+- Paid, sandboxed Mac App Store edition keeps its existing identity and updates.
+- Free, unsandboxed Direct edition uses its existing identity and Sparkle checks.
+- Free downloads do not use the historical purchase-claim service; its flags stay disabled.
+- Implemented universal local builds, release preflight, Developer ID validation,
+  explicit notarization acceptance, signed DMGs with Applications shortcuts,
+  and version/build filenames plus release receipts and checksums.
+- Publishing stages locally by default. Explicit `--publish` uploads an immutable
+  DMG, public stable download, manifest, and appcast after verifying the embedded
+  update key; public bytes are checked before and after CDN invalidation.
+- Added Direct CI build and release/signature tests. Updated the operator runbook.
+
+## Validation and remaining release work
+
+- Universal Direct 1.1 (15) local build passed; both arm64 and x86_64 confirmed,
+  empty entitlements confirmed, and Sparkle/feed configuration present.
+- 12 Python release/metadata tests and 34 Swift appcast verification cases passed.
+- App Store test host built with development signing: 102 of 106 tests passed.
+  Four existing live-port test methods failed (`fetchAndParse`, `udpAgreement`,
+  `tickCarriesSockets`, `storePublishesPortGroups`); no app/test source changed.
+  The updater-gating suite passed. Log: `build/distribution-tests-development.log`.
+- Xcode 27 is installed; use `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`
+  while the default developer selection points to Command Line Tools.
+- No Developer ID Application identity was available in the release Mac's valid
+  signing identities. Configure that certificate and a notarytool profile before
+  producing the customer DMG. Sparkle private-key availability was not accessed.
+- No customer notarization, cloud upload, landing-page edit, or publication was
+  performed. Hosting routes and the free-download button remain release steps.
+
+The older purchase-transfer plans below are historical. Their claim-flow gates
+do not apply to the independent free website download.
+
 # Settings window + Direct update feed (2026-08-27)
 
 ## Resuming From Here

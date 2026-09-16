@@ -37,3 +37,20 @@ jobs:
         # A test bundle that fails to load still reports TEST SUCCEEDED
         # with 0 tests executed; require the Swift Testing summary line.
         run: grep -E "Test run with [1-9][0-9]* tests .* passed" xcodebuild.log
+
+  direct:
+    name: Verify Direct distribution tooling
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test release orchestration and metadata
+        run: python3 -B -m unittest discover -s Scripts/tests -p 'test_*.py'
+      - name: Test update signature verification
+        run: xcrun swift Scripts/tests/test-direct-appcast.swift
+      - name: Fetch pinned Sparkle
+        run: Scripts/fetch-sparkle.sh
+      - name: Build and verify universal Direct edition
+        # Validation only. Developer ID signing, notarization, and publication
+        # run explicitly on the release Mac with its Keychain credentials.
+        run: Scripts/build-direct.sh --ad-hoc

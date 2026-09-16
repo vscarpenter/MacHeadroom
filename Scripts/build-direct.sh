@@ -1,15 +1,53 @@
 #!/bin/zsh
-# Build the unsandboxed Direct flavor and prove it is unsandboxed.
+# Build the universal, unsandboxed Direct flavor for local testing.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+
+signing_settings=()
+case "${1:-}" in
+  --help|-h)
+    cat <<'HELP'
+Usage: Scripts/build-direct.sh [--ad-hoc]
+
+Build and verify the Direct edition for Apple silicon and Intel Macs.
+The default uses the project's development signing configuration.
+--ad-hoc requires no signing certificate and disables the hardened runtime
+for CI/local tests, allowing Sparkle's vendor-signed framework to load.
+Customer downloads must use Scripts/release-direct.sh instead.
+
+If xcode-select points to Command Line Tools, set:
+  DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+HELP
+    exit 0
+    ;;
+  --ad-hoc)
+    signing_settings=(CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= ENABLE_HARDENED_RUNTIME=NO)
+    shift
+    ;;
+  "") ;;
+  *) echo "FAIL: unknown option: $1 (see --help)" >&2; exit 1 ;;
+esac
+[[ $# -eq 0 ]] || { echo "FAIL: unexpected argument: $1 (see --help)" >&2; exit 1; }
+
+if ! xcodebuild -version >/dev/null 2>&1; then
+  echo "FAIL: select a full Xcode installation, or set DEVELOPER_DIR (see --help)" >&2
+  exit 1
+fi
+[[ -d Vendor/Sparkle/Sparkle.framework ]] || {
+  echo "FAIL: Sparkle is missing; run Scripts/fetch-sparkle.sh first" >&2
+  exit 1
+}
 
 xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom \
   -configuration Release \
   -xcconfig Configuration/Direct.xcconfig \
-  -derivedDataPath build/direct build
+  -destination 'generic/platform=macOS' \
+  -derivedDataPath build/direct \
+  'ARCHS=arm64 x86_64' ONLY_ACTIVE_ARCH=NO \
+  "${signing_settings[@]}" build
 
 app="build/direct/Build/Products/Release/System Headroom Direct.app"
-entitlements="$(codesign -d --entitlements - "$app" 2>/dev/null)" || {
+entitlements="$(codesign -d --entitlements - --xml "$app" 2>/dev/null)" || {
   echo "FAIL: codesign could not read entitlements from $app" >&2
   exit 1
 }
@@ -44,6 +82,13 @@ if [[ "$actual_bundle_id" != "com.vinnycarpenter.SystemHeadroom.Direct" ]]; then
   echo "FAIL: Direct build has unexpected bundle identifier $actual_bundle_id" >&2
   exit 1
 fi
+executable="$(plutil -extract CFBundleExecutable raw "$app/Contents/Info.plist")"
+for architecture in arm64 x86_64; do
+  lipo "$app/Contents/MacOS/$executable" -verify_arch "$architecture" || {
+    echo "FAIL: Direct build is missing the $architecture architecture" >&2
+    exit 1
+  }
+done
 
 # Sparkle must be embedded here and only here; the App Store flavor's
 # absence is pinned by UpdaterGatingTests in the normal suite.
@@ -61,4 +106,4 @@ if [[ -z "$public_key" ]]; then
   echo "WARN: SUPublicEDKey is empty; dev builds tolerate this, release-direct.sh does not"
 fi
 
-echo "OK: unsandboxed Direct build $actual_version ($actual_build) at $app"
+echo "OK: universal, unsandboxed Direct build $actual_version ($actual_build) at $app"
