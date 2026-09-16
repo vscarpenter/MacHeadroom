@@ -272,9 +272,15 @@ def prepare(env, output):
     run = Run(output, env, create=True)
     run.step("release-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "Scripts/tests", "-p", "test_*.py"])
     run.step("update-signature-tests", ["xcrun", "swift", "Scripts/tests/test-direct-appcast.swift"])
+    # Use the same signing identity for the host and test bundle. On this
+    # macOS 27 release Mac, Apple Development signing returns empty socket
+    # tables; Developer ID passes the unchanged sandboxed live-port tests.
     run.step("app-tests", ["xcodebuild", "test", "-project", "SystemHeadroom.xcodeproj", "-scheme", "SystemHeadroom",
                           "-configuration", "Debug", "-destination", f"platform=macOS,arch={platform.machine()}",
-                          "-derivedDataPath", str(run.directory / "test-build")], require_tests=True)
+                          "-derivedDataPath", str(run.directory / "test-build"),
+                          "CODE_SIGN_STYLE=Manual",
+                          f"CODE_SIGN_IDENTITY={env['DIRECT_DEVELOPER_ID_APPLICATION']}",
+                          f"DEVELOPMENT_TEAM={env['DIRECT_DEVELOPER_TEAM_ID']}"], require_tests=True)
     run.step("notarized-release", ["Scripts/release-direct.sh", "--output-dir", str(run.directory / "release")])
     run.state["releaseDirectory"] = "release"
     run.save()

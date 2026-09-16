@@ -46,6 +46,7 @@ class DirectWorkflowTests(unittest.TestCase):
         self.config = config / "DirectRelease.local.json"
         self.output = self.root / "runs/example"
         self.identity = "Developer ID Application: Example Developer (TEAM123456)"
+        self.release_env = {**self.defaults, "DIRECT_DEVELOPER_ID_APPLICATION": self.identity}
         self.commands = []
         self.app_test_output = "Test run with 106 tests in 10.123 seconds passed.\n"
         self.failing_command = None
@@ -215,7 +216,7 @@ class DirectWorkflowTests(unittest.TestCase):
                 patch.object(workflow, "doctor", side_effect=workflow.ReleaseError("missing certificate")), \
                 patch.object(workflow.subprocess, "run") as run:
             with self.assertRaisesRegex(workflow.ReleaseError, "missing certificate"):
-                workflow.prepare({}, self.output)
+                workflow.prepare(self.release_env, self.output)
         self.assertFalse(self.output.exists())
         run.assert_not_called()
 
@@ -224,7 +225,7 @@ class DirectWorkflowTests(unittest.TestCase):
                 patch.object(workflow, "doctor") as doctor, \
                 patch.object(workflow.subprocess, "run") as run:
             with self.assertRaisesRegex(workflow.ReleaseError, "Sparkle unavailable"):
-                workflow.prepare({}, self.output)
+                workflow.prepare(self.release_env, self.output)
         doctor.assert_not_called()
         run.assert_not_called()
         self.assertFalse(self.output.exists())
@@ -234,7 +235,7 @@ class DirectWorkflowTests(unittest.TestCase):
         with patch.object(workflow, "capture", return_value=""), patch.object(workflow, "doctor"), \
                 patch.object(workflow.subprocess, "run", side_effect=self.fake_subprocess):
             with self.assertRaisesRegex(workflow.ReleaseError, "release-tests failed"):
-                workflow.prepare({}, self.output)
+                workflow.prepare(self.release_env, self.output)
         state = json.loads((self.output / "workflow.json").read_text())
         self.assertEqual(state["status"], "failed")
         self.assertEqual([step["name"] for step in state["steps"]], ["release-tests"])
@@ -246,7 +247,7 @@ class DirectWorkflowTests(unittest.TestCase):
         with patch.object(workflow, "capture", return_value=""), patch.object(workflow, "doctor"), \
                 patch.object(workflow.subprocess, "run", side_effect=self.fake_subprocess):
             with self.assertRaisesRegex(workflow.ReleaseError, "app-tests failed"):
-                workflow.prepare({}, self.output)
+                workflow.prepare(self.release_env, self.output)
         self.assertEqual([command[0] for command in self.commands][-1], "xcodebuild")
         self.assertFalse((self.output / "release").exists())
 
@@ -255,7 +256,7 @@ class DirectWorkflowTests(unittest.TestCase):
         with patch.object(workflow, "capture", return_value=""), patch.object(workflow, "doctor"), \
                 patch.object(workflow.subprocess, "run", side_effect=self.fake_subprocess):
             with self.assertRaisesRegex(workflow.ReleaseError, "did not execute a passing Swift test suite"):
-                workflow.prepare({}, self.output)
+                workflow.prepare(self.release_env, self.output)
         state = json.loads((self.output / "workflow.json").read_text())
         self.assertEqual(state["status"], "failed")
         self.assertEqual(state["steps"][-1]["name"], "app-tests")
@@ -266,7 +267,7 @@ class DirectWorkflowTests(unittest.TestCase):
     def test_prepare_validates_tests_then_notarizes_and_stages_without_publishing(self):
         with patch.object(workflow, "capture", return_value=""), patch.object(workflow, "doctor"), \
                 patch.object(workflow.subprocess, "run", side_effect=self.fake_subprocess):
-            workflow.prepare({}, self.output)
+            workflow.prepare(self.release_env, self.output)
         state = json.loads((self.output / "workflow.json").read_text())
         self.assertEqual(state["status"], "staged")
         self.assertEqual([step["name"] for step in state["steps"]],
@@ -275,6 +276,20 @@ class DirectWorkflowTests(unittest.TestCase):
         self.assertIn("--stage-only", self.commands[-1])
         self.assertFalse(any("--publish" in command for command in self.commands))
         self.assertNotIn("publication", state)
+
+    def test_prepare_signs_sandboxed_app_tests_with_the_configured_release_identity(self):
+        with patch.object(workflow, "capture", return_value=""), patch.object(workflow, "doctor"), \
+                patch.object(workflow.subprocess, "run", side_effect=self.fake_subprocess):
+            workflow.prepare(self.release_env, self.output)
+        command = next(command for command in self.commands if command[0] == "xcodebuild")
+        self.assertIn("CODE_SIGN_STYLE=Manual", command)
+        self.assertIn(f"CODE_SIGN_IDENTITY={self.identity}", command)
+        self.assertIn("DEVELOPMENT_TEAM=TEAM123456", command)
+        self.assertEqual(command[command.index("-scheme") + 1], "SystemHeadroom")
+        self.assertEqual(command[command.index("-configuration") + 1], "Debug")
+        self.assertFalse(any(arg.startswith(("CODE_SIGN_ENTITLEMENTS=", "ENABLE_APP_SANDBOX=",
+                                             "-only-testing", "-skip-testing", "-xcconfig"))
+                             for arg in command))
 
     def test_artifact_detects_same_size_byte_changes(self):
         run, artifact = self.make_run()

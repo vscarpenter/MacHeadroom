@@ -395,3 +395,47 @@ contained by the records' self-framing (`xgn_len`/`xgn_kind`), a
 defensive parser, and a live test inside the sandboxed test host that
 cross-checks the parsed (port, pid) listener set against
 `netstat -anv` on every run.
+
+## Port enumeration signing-context follow-up (September 16, 2026)
+
+On the release Mac running macOS 27.0 (26A428), `direct-release prepare`
+initially failed four of the five `PortsSamplerLiveTests`. The complete run
+executed 106 tests; the failing assertions required populated socket tables
+or their derived rows. TCP agreement alone passed because both the app's
+parser and its child `netstat` returned empty sets. The initial log is
+`build/direct-runs/20260916-135543-19406/logs/03-app-tests.log`.
+
+The syscalls succeeded, but returned only the two generation headers (48
+bytes), despite nonzero socket counts in those headers. A controlled probe
+then used the production sampler/parser and the production App Sandbox
+entitlement. Re-signing the same `PortProbe.app` with the two installed
+identities produced these observations without changing its source or SDK:
+
+| Signing identity | TCP table | UDP table | Parsed listeners |
+| --- | --- | --- | --- |
+| Apple Development | 48 bytes | 48 bytes | 0 |
+| Developer ID Application | 61,648 bytes | 28,200 bytes | 17 TCP, 15 UDP |
+
+A Developer ID-signed loose executable still returned 48-byte tables; the
+populated-table result above was observed in the sandboxed `.app` bundle.
+These are measurements of this machine, OS build, and signing contexts. They
+do not establish the underlying OS policy, a universal restriction on Apple
+Development certificates, or the behavior of an App Store-distributed build.
+The probe source and local bundles are under `build/ports-diagnosis/`; these
+diagnostic artifacts are ignored by git.
+
+The unchanged five live-port tests subsequently passed with the sandboxed
+Debug test host and test bundle signed using the configured Developer ID
+identity. The evidence is
+`build/ports-diagnosis/developer-id-tests.log` and its associated xcresult.
+The log records the production `com.apple.security.app-sandbox` entitlement
+and a passing Swift Testing summary with five tests.
+The repaired workflow subsequently passed all 106 tests in 27 suites in
+`build/direct-runs/20260916-140522-f9e002/logs/03-app-tests.log`, with the
+sandbox entitlement and Developer ID identity recorded in that same log.
+
+The release wrapper now passes `CODE_SIGN_STYLE=Manual`, the configured
+`CODE_SIGN_IDENTITY`, and `DEVELOPMENT_TEAM` to the app test invocation.
+It retains the Debug configuration, sandbox entitlement, and full test suite.
+No parser, ABI layout, product entitlement, or test assertion changes were
+needed. Archive signing and notarization remain separate later steps.

@@ -69,6 +69,12 @@ asked. They are stored in Apple Keychain under the configured
 [Apple's notarytool setup](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)
 for supported authentication options.
 
+For App Store Connect API authentication, enter the absolute path to the `.p8`
+file and its Key ID. A key under Users and Access → Integrations → App Store
+Connect API → **Team Keys** also requires that page's **Issuer ID** UUID;
+leaving it blank fails validation. Individual keys must omit the issuer. The
+Issuer ID is distinct from the Key ID and Apple Developer Team ID.
+
 `doctor` checks local tools, signing identity, and release settings.
 `doctor --online` also asks Apple to validate the notarization credentials and
 signs disposable data with Sparkle's existing Keychain key, verifying it against
@@ -125,9 +131,16 @@ overlay. Review and commit the version changes with the release source.
    downloads.
 
 Any test failure stops preparation before the archive. A zero-test run is also
-rejected. Four live-port tests failed in the previous local verification; if
-those failures recur, preparation stops and their cause must be resolved. The
-release workflow provides no test-skip option.
+rejected. The release workflow provides no test-skip option.
+
+`prepare` signs the Debug test host and its test bundle with the configured
+Developer ID identity. The host retains its App Sandbox entitlement and runs
+the complete suite. On the release Mac running macOS 27.0 (26A428), the default
+Apple Development signing context returned empty socket tables; the same
+sandboxed probe app signed with Developer ID returned populated tables, and the
+unchanged five live-port tests passed. This is a local signing-context
+observation, not a general macOS policy claim. See the September 16 follow-up in
+[`SANDBOX_NOTES.md`](../SANDBOX_NOTES.md).
 
 Apple must return `Accepted` before the app and DMG proceed through stapling and
 validation. The release checks include both architectures, bundle identity,
