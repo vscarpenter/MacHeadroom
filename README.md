@@ -45,7 +45,7 @@ a local build does not establish that either release is publicly available.
 | Sandbox | Enabled | Disabled; Hardened Runtime retained |
 | Updates | Mac App Store | Sparkle automatic checks and About → Check for Updates |
 | Local build | `xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug build` | `./Scripts/build-direct.sh --ad-hoc` |
-| Release | Archive the SystemHeadroom scheme without a Direct overlay; distribute through Xcode Organizer/App Store Connect | `./Scripts/release-direct.sh`, then `./Scripts/publish-direct.sh --publish <dmg>` |
+| Release | Archive the SystemHeadroom scheme without a Direct overlay; distribute through Xcode Organizer/App Store Connect | `./Scripts/direct-release prepare`, then `./Scripts/direct-release publish <run-directory>` |
 
 Both editions can be installed together, but the single-instance guard keeps
 only the most recently launched copy running. The popover's process controls
@@ -61,10 +61,54 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 ```
 
 Omit `--ad-hoc` to use the project's development signing configuration.
-Customer downloads use `release-direct.sh`: it requires a Developer ID
-Application identity and a `notarytool` Keychain profile, produces a universal
-Apple silicon/Intel app, and notarizes and staples both the app and its DMG.
-Publishing defaults to local staging; only `--publish` uploads files.
+
+For customer downloads, install a Developer ID Application certificate and its
+private key through Xcode → Settings → Accounts → Manage Certificates, then
+configure the automated release workflow once:
+
+```bash
+./Scripts/direct-release setup
+./Scripts/fetch-sparkle.sh
+./Scripts/direct-release credentials
+./Scripts/direct-release doctor --online
+```
+
+`setup` saves non-secret settings in the ignored
+`Configuration/DirectRelease.local.json`; exported environment values take
+precedence. `credentials` opens Apple's secure terminal prompts and stores
+notarization credentials in Keychain. Certificate creation remains manual.
+For the sibling landing-page checkout, optionally run
+`./Scripts/direct-release setup --site-config ../macheadroom.com/.env.local`
+to import the existing site bucket and CloudFront distribution. Set the release
+bucket separately with `setup --set DIRECT_RELEASE_BUCKET=...`.
+
+For each release:
+
+```bash
+./Scripts/direct-release bump
+./Scripts/direct-release prepare
+```
+
+`bump` increments the shared build and updates its test expectations; add
+`--version 1.2` to change the marketing version. `prepare` requires the complete
+test suite to pass, builds a universal Apple silicon/Intel app, notarizes and
+staples the app and DMG, and stages the Sparkle appcast with signed downloads.
+It prints a unique run directory under `build/direct-runs/` with logs and
+`workflow.json`, and uploads nothing to the website.
+
+After inspecting the DMG and configuring hosting, publish that exact run:
+
+```bash
+RUN='build/direct-runs/<directory-printed-by-prepare>'
+./Scripts/direct-release doctor --online --publishing
+./Scripts/direct-release publish "$RUN"
+./Scripts/direct-release status "$RUN"
+```
+
+Publication verifies the retained DMG and uses it without rebuilding. Retry a
+failed publication with the same run; use `stage <run-directory>` to retry
+staging a completed notarized DMG. The runbook covers deployment settings,
+hosting routes, test failures, and recovery.
 
 Sparkle is checksum-pinned by `Scripts/fetch-sparkle.sh` and compiled and
 embedded only with `Configuration/Direct.xcconfig`. Direct initializes its
@@ -132,8 +176,8 @@ options considered live in
 
 ## Status
 
-The core app is feature-complete and passes its test suite. That
-covers the sampler, the grouping engine, the popover, the process
+The core app is feature-complete. Its test suite covers the sampler,
+the grouping engine, the popover, the process
 glossary, the single-instance guard, the tabbed Settings window with
 its About screen, and the brand glyph in the menu bar. The icon ships
 as a traditional flat iconset for now; see

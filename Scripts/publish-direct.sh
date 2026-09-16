@@ -5,11 +5,14 @@ cd "$(dirname "$0")/.."
 
 usage() {
   cat <<'EOF'
-Usage: Scripts/publish-direct.sh [--stage-only | --publish] path/to/release.dmg
+Usage: Scripts/publish-direct.sh [--stage-only | --publish] [--output-dir PATH] path/to/release.dmg
 
 Default: validate the notarized DMG and stage the free download, manifest,
 and appcast with a signed download locally. This uses the Sparkle key in Keychain.
 --publish also uploads to S3, invalidates CloudFront, and checks public delivery.
+--output-dir chooses a new staging directory; it must not already exist.
+By default, staging uses a fresh directory under build/direct-publish/.
+A successful publication writes publish.json only after public verification.
 
 Publishing requires DIRECT_RELEASE_BUCKET, DIRECT_SITE_BUCKET, and
 DIRECT_CLOUDFRONT_DISTRIBUTION_ID. CloudFront must map /direct/updates/*
@@ -20,14 +23,31 @@ EOF
 fail() { echo "FAIL: $*" >&2; exit 1; }
 
 publish=no
-case "${1:-}" in
-  -h|--help) usage; exit 0 ;;
-  --publish) publish=yes; shift ;;
-  --stage-only|--dry-run) shift ;;
-esac
+output_dir=""
+mode=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help) usage; exit 0 ;;
+    --publish|--stage-only|--dry-run)
+      [[ -z "$mode" ]] || fail "choose only one of --stage-only or --publish"
+      mode="$1"
+      [[ "$1" != --publish ]] || publish=yes
+      shift ;;
+    --output-dir)
+      [[ $# -ge 2 && -n "$2" && "$2" != --* ]] || fail "--output-dir requires a path"
+      [[ -z "$output_dir" ]] || fail "--output-dir may only be specified once"
+      output_dir="${2:A}"
+      shift 2 ;;
+    --) shift; break ;;
+    -*) fail "unknown option: $1" ;;
+    *) break ;;
+  esac
+done
 [[ $# == 1 ]] || { usage >&2; exit 1; }
 dmg="${1:A}"
 [[ -f "$dmg" ]] || fail "no DMG at $dmg"
+[[ -z "$output_dir" || ( ! -e "$output_dir" && ! -L "$output_dir" ) ]] ||
+  fail "output directory already exists: $output_dir"
 [[ -x Vendor/Sparkle/bin/generate_appcast ]] || fail "run Scripts/fetch-sparkle.sh first"
 if [[ "$publish" == yes ]]; then
   : "${DIRECT_RELEASE_BUCKET:?Set this to the S3 release bucket name.}"
@@ -78,9 +98,15 @@ build="$(plutil -extract CFBundleVersion raw "$scratch/Info.plist")"
   fail "expected a numeric marketing version and integer build number"
 artifact="System-Headroom-Direct-${version}-${build}.dmg"
 alias_name="System-Headroom-Direct.dmg"
-# Fresh staging prevents reuse of an appcast signed with a retired key.
-mkdir -p build/direct-publish
-staging="$(mktemp -d "$PWD/build/direct-publish/${version}-${build}.XXXXXX")"
+# Fresh staging prevents reuse of an appcast signed with a retired key or receipt.
+if [[ -n "$output_dir" ]]; then
+  mkdir -p "${output_dir:h}"
+  mkdir "$output_dir"
+  staging="$output_dir"
+else
+  mkdir -p build/direct-publish
+  staging="$(mktemp -d "$PWD/build/direct-publish/${version}-${build}.XXXXXX")"
+fi
 mkdir "$staging/updates"
 cp "$dmg" "$staging/updates/$artifact"
 cp "$scratch/Info.plist" "$staging/Info.plist"
@@ -143,4 +169,24 @@ for remote in appcast.xml updates/latest.json "updates/$alias_name"; do
     "https://www.macheadroom.com/direct/$remote" -o "$scratch/public-file"
   cmp -s "$scratch/public-file" "$staging/$remote" || fail "public $remote differs from the staged release"
 done
+python3 - "$staging/updates/latest.json" "$staging/publish.json" "$invalidation" <<'PY'
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+manifest = json.loads(Path(sys.argv[1]).read_text())
+receipt = {
+    "version": manifest["version"],
+    "build": manifest["build"],
+    "downloadURL": "https://www.macheadroom.com/direct/updates/System-Headroom-Direct.dmg",
+    "artifactURL": manifest["downloadURL"],
+    "sha256": manifest["sha256"],
+    "publishedAt": datetime.now(timezone.utc).isoformat(),
+    "cloudfrontInvalidationID": sys.argv[3],
+}
+with Path(sys.argv[2]).open("x") as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write("\n")
+PY
 echo "OK: published and verified free System Headroom Direct $version ($build)"

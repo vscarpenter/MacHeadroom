@@ -1,157 +1,176 @@
 # Direct edition runbook
 
-The Mac App Store edition remains paid and sandboxed. The Direct edition is
-a free website download, without a purchase check, account, receipt, or claim
-token. It uses Developer ID signing and Hardened Runtime with App Sandbox
-disabled. Both editions retain their own bundle identifiers and inherit the
-version and build number from `Configuration/Shared.xcconfig`.
+Use `./Scripts/direct-release` to configure the release Mac, advance the build,
+run all tests, create a notarized DMG, and prepare its appcast with signed downloads.
+Publishing is a separate command that uses the same DMG without rebuilding.
 
-Direct enables Sparkle automatic update checks at app launch and offers
-About → Check for Updates. Checking automatically does not mean updates install
-without user interaction. The App Store edition uses App Store updates and
-contains no Sparkle framework or feed configuration.
+The Mac App Store edition remains paid and sandboxed. The Direct edition is a
+free website download with Developer ID signing, Hardened Runtime, and App
+Sandbox disabled. It requires no purchase, account, receipt, or claim token.
+Both editions keep separate bundle identifiers and share the version and build
+in `Configuration/Shared.xcconfig`.
 
-## Release-machine setup
+Direct checks for Sparkle updates at launch and offers About → Check for
+Updates. Automatic checking does not promise unattended installation. The App
+Store edition uses App Store updates and contains no Sparkle framework.
 
-Use a full Xcode installation. If `xcode-select -p` points to Command Line
-Tools, select Xcode for this shell without changing the machine-wide setting:
+## Set up the release Mac once
+
+Use a full Xcode installation and install a **Developer ID Application**
+certificate with its private key through Xcode → Settings → Accounts → Manage
+Certificates. Certificate creation remains a manual Apple Developer step; an
+Apple Development or Apple Distribution certificate cannot replace it. See
+[Apple's Developer ID guidance](https://developer.apple.com/developer-id/).
+
+From the repository root, run:
 
 ```bash
-export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-xcodebuild -version
+./Scripts/direct-release setup
 ./Scripts/fetch-sparkle.sh
+./Scripts/direct-release credentials
+./Scripts/direct-release doctor --online
 ```
 
-The fetch script downloads the pinned Sparkle framework and tools and verifies
-their checksum. Developer ID distribution needs a **Developer ID Application**
-certificate and its private key in the release machine's Keychain. List
-available identities with `security find-identity -v -p codesigning`; an
-Apple Development or Apple Distribution certificate is not interchangeable.
-See [Apple's Developer ID guidance](https://developer.apple.com/developer-id/).
-
-Create a notarization profile interactively, using an Apple Account with the
-appropriate Developer Program team and an app-specific password:
+For this workspace's sibling landing-page checkout, setup can also import its
+existing deployment destinations:
 
 ```bash
-xcrun notarytool store-credentials SystemHeadroomDirect
+./Scripts/direct-release setup --site-config ../macheadroom.com/.env.local
 ```
 
-Answer its credential prompts, then set these non-secret release settings in
-your shell, replacing the identity and team placeholders:
+That option reads only the literal `S3_BUCKET` and
+`CLOUDFRONT_DISTRIBUTION_ID` values, without executing the file, and stores them
+as `DIRECT_SITE_BUCKET` and `DIRECT_CLOUDFRONT_DISTRIBUTION_ID`. Explicit `--set`
+values override imported settings. The release bucket still needs a separate
+`--set DIRECT_RELEASE_BUCKET=...` before publishing.
+
+`setup` creates the ignored `Configuration/DirectRelease.local.json` from
+`Configuration/DirectRelease.example.json`, preserves existing settings, and
+selects the installed Developer ID identity when exactly one matches the
+configured team. It does not create certificates or store secrets. If needed,
+set your team and certificate explicitly, then rerun `doctor`:
 
 ```bash
-export DIRECT_DEVELOPER_ID_APPLICATION='Developer ID Application: Your Name (TEAMID)'
-export DIRECT_DEVELOPER_TEAM_ID='TEAMID'
-export DIRECT_NOTARY_PROFILE='SystemHeadroomDirect'
+./Scripts/direct-release setup \
+  --set DIRECT_DEVELOPER_TEAM_ID='TEAMID' \
+  --set DIRECT_DEVELOPER_ID_APPLICATION='Developer ID Application: Your Name (TEAMID)'
 ```
 
-The profile name refers to credentials held in Keychain; do not put passwords
-or private keys in source, shell scripts, or CI logs. Apple also supports
-App Store Connect API-key credentials for notarization. See
-[Apple's notarytool setup](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool).
+The default Xcode path is `/Applications/Xcode.app/Contents/Developer`. Use
+`setup --set DEVELOPER_DIR=/path/to/Xcode.app/Contents/Developer` for another
+installation. Nonempty exported environment values override the local JSON.
+Supported settings are listed in the example file; keep passwords and private
+keys out of both files and command-line arguments.
+
+`credentials` opens Apple's interactive `notarytool store-credentials` prompts
+in your terminal. Enter the Apple Account, team, and app-specific password when
+asked. They are stored in Apple Keychain under the configured
+`DIRECT_NOTARY_PROFILE` (default `SystemHeadroomDirect`). See
+[Apple's notarytool setup](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)
+for supported authentication options.
+
+`doctor` checks local tools, signing identity, and release settings.
+`doctor --online` also asks Apple to validate the notarization credentials and
+signs disposable data with Sparkle's existing Keychain key, verifying it against
+the app's pinned public key. macOS may request Keychain access. A successful
+check does not create a release or publish anything.
 
 ### Preserve the Sparkle signing identity
 
 `DIRECT_SPARKLE_PUBLIC_ED_KEY` is already pinned in
-`Configuration/Direct.xcconfig`. That public key is safe to commit. The matching
-private EdDSA key must be available to Sparkle's tools in the release machine's
-Keychain; private signing material is not supplied by this repository.
+`Configuration/Direct.xcconfig`. The matching private EdDSA key must be in the
+release Mac's Keychain; the repository supplies no private signing material.
 
-Keep a protected backup of the existing private key before distributing a
-release. Sparkle's `generate_keys -x <private-backup-path>` exports it and
+Keep a protected backup of that existing key before distributing a release.
+Sparkle's `generate_keys -x <private-backup-path>` exports it and
 `generate_keys -f <private-backup-path>` restores it on another release Mac.
 Use a secure location outside the checkout, transfer it to your approved secret
-store, and remove any temporary export. Do not print it or include it in a
+store, and remove any temporary export. Do not print the key or include it in a
 release artifact. See [Sparkle's key documentation](https://sparkle-project.org/documentation/).
 
-Do not generate a replacement key or edit the pinned public key as part of a
-routine release. Recover the matching private key from its existing backup if
-it is missing. Key rotation needs a separate migration plan for installed apps.
-Staging verifies the download signature against the public key embedded in the
-new app and fails if they do not match.
+If the key is missing, restore the matching backup. Routine releases must not
+generate a replacement key or change the public key: rotation needs a migration
+plan for installed apps. Both online readiness checks and staging verify that
+the signing key matches the app's pinned public key.
 
-## Build and release
-
-| Purpose | Command | Result |
-| --- | --- | --- |
-| Local test without a certificate | `./Scripts/build-direct.sh --ad-hoc` | Universal Direct app under `build/direct/Build/Products/Release/` |
-| Local test with development signing | `./Scripts/build-direct.sh` | Same app, using project signing settings |
-| Check local release prerequisites | `./Scripts/release-direct.sh --preflight` | Reports missing tools/settings/certificate without building or contacting Apple |
-| Create customer DMG | `./Scripts/release-direct.sh` | Developer ID signed, notarized app and DMG; no publication |
-| Choose release output location | `./Scripts/release-direct.sh --output-dir build/direct-release/my-release` | Uses a new directory; refuses an existing path |
-
-Preflight checks that a notarization profile name is configured. Apple validates
-that profile's credentials during the actual submission. A successful preflight
-does not establish notarization or Sparkle private-key availability.
-
-Before each release, update `MARKETING_VERSION` as needed and increase the
-integer `CURRENT_PROJECT_VERSION` in `Configuration/Shared.xcconfig`. Direct
-inherits those values; do not add independent version values to its overlay.
-The App Store archive continues to use the SystemHeadroom scheme without the
-Direct xcconfig overlay and is distributed through Xcode Organizer/App Store
-Connect.
-
-The Direct release script verifies the bundle identity, both architectures,
-Developer ID signature, Hardened Runtime, absence of sandbox/debug entitlements,
-embedded Sparkle, and the update feed/public key. It requires an `Accepted`
-notarization result before stapling and validating the app and DMG. The DMG
-includes an Applications shortcut.
-
-Default output is a unique directory under `build/direct-release/`, containing:
-
-- `System-Headroom-Direct-<version>-<build>.dmg`
-- `release.json` and `SHA256SUMS`
-- The app archive and notarization submission receipts
-
-Open the DMG, copy the app into Applications, and test launch, process controls,
-About, and Check for Updates before publishing. Test from an older Direct
-version as well when verifying an update offer. The two editions may be
-installed together, but launching one closes the other through the shared
-single-instance guard.
-
-### Continuous integration
-
-`.github/workflows/xcode-build-and-test.yml` runs the sandboxed app tests and a
-separate Direct job: release-orchestration/metadata tests, appcast signature
-tests, the pinned Sparkle fetch, and a universal ad-hoc Direct build. These
-checks need no release credentials. Developer ID signing, notarization, and
-publication run explicitly on the release Mac; a passing CI run is not a
-customer release.
-
-## Stage the free download
-
-Use the actual DMG path printed by the release script:
+## Prepare each release
 
 ```bash
-./Scripts/publish-direct.sh --stage-only \
-  'build/direct-release/<release-directory>/System-Headroom-Direct-<version>-<build>.dmg'
+# Keep the marketing version and increment the shared integer build.
+./Scripts/direct-release bump
+
+# Choose a new directory, or omit --output-dir for an automatically unique one.
+RUN="build/direct-runs/$(date +%Y%m%d-%H%M%S)-$$"
+./Scripts/direct-release prepare --output-dir "$RUN"
+./Scripts/direct-release status "$RUN"
 ```
 
-Omitting `--stage-only` has the same behavior. Staging validates the signed,
-stapled DMG and app, invokes Sparkle's `generate_appcast` with the existing
-Keychain signing key, and verifies the appcast's download signature, URL,
-version, minimum macOS version, and byte count against the actual artifact.
-The XML contains an EdDSA signature for the DMG; the XML feed itself is not
-configured for Sparkle's optional feed-signing feature.
+Use `bump --version 1.2` to change the marketing version while incrementing the
+build, or `bump --version 1.2 --build 20` to choose both. The build must increase
+and the marketing version cannot decrease. The command updates the shared
+xcconfig and exact release-identity test expectations together, refusing to
+modify either when the current values disagree. This advances both editions;
+the App Store archive still uses the SystemHeadroom scheme without the Direct
+overlay. Review and commit the version changes with the release source.
 
-The new directory under `build/direct-publish/` contains `appcast.xml`, the app's
-`Info.plist`, and `updates/` with an immutable version/build DMG, a stable-name
-DMG copy, and `latest.json` with the version, download URL, size, and SHA-256.
-Staging performs no uploads, though macOS may contact Apple while assessing the
-signed artifact. The legacy purchase claim setting must be blank.
+`prepare` performs these steps in order:
 
-## Hosting and landing-page prerequisites
+1. Fetch checksum-pinned Sparkle and run online release-readiness checks.
+2. Run every Python release-tooling test, Swift appcast-signature tests, and
+   the complete hosted macOS app test suite.
+3. Archive a universal Apple silicon/Intel Direct app, verify signing and
+   entitlements, notarize and staple the app, then create, notarize, and staple
+   its signed DMG.
+4. Stage the free-download files and generate and verify the appcast with signed
+   downloads.
 
-Configure these environment variables for the intended deployment:
+Any test failure stops preparation before the archive. A zero-test run is also
+rejected. Four live-port tests failed in the previous local verification; if
+those failures recur, preparation stops and their cause must be resolved. The
+release workflow provides no test-skip option.
+
+Apple must return `Accepted` before the app and DMG proceed through stapling and
+validation. The release checks include both architectures, bundle identity,
+Developer ID signature, Hardened Runtime, disabled sandbox/debug entitlements,
+embedded Sparkle, and the expected update feed/public key. The DMG includes an
+Applications shortcut. `prepare` contacts Apple for signing assessment and
+notarization, but uploads no files to the website.
+
+The default run location is a unique directory under `build/direct-runs/`.
+An explicit `--output-dir` must not already exist. Each run retains:
+
+- `workflow.json`: step status, timestamps, log paths, and release location.
+- `logs/`: separate test, notarization, staging, and publishing logs.
+- `release/`: the versioned DMG, `release.json`, `SHA256SUMS`, app archive,
+  and notarization receipts.
+- `stage-<step>/`: verified `appcast.xml`, app `Info.plist`, and `updates/`
+  containing the immutable DMG, stable-name DMG, and `latest.json` manifest.
+
+Keep the printed run path, or set `RUN` to it again in a new terminal.
+`./Scripts/direct-release status "$RUN"` shows the saved state and log paths.
+
+Open the DMG, install into Applications, and test launch, process controls,
+About, and Check for Updates before publishing. Verify an update offer from an
+older Direct version as well. Both editions can be installed together, but
+launching one closes the other through the shared single-instance guard.
+
+## Configure hosting and publish
+
+Save the intended deployment settings once, using an existing AWS CLI profile:
 
 ```bash
-export DIRECT_RELEASE_BUCKET='your-release-bucket'
-export DIRECT_SITE_BUCKET='your-site-bucket'
-export DIRECT_CLOUDFRONT_DISTRIBUTION_ID='your-distribution-id'
+./Scripts/direct-release setup \
+  --set DIRECT_RELEASE_BUCKET='your-release-bucket' \
+  --set DIRECT_SITE_BUCKET='your-site-bucket' \
+  --set DIRECT_CLOUDFRONT_DISTRIBUTION_ID='your-distribution-id' \
+  --set AWS_PROFILE='your-aws-profile'
+./Scripts/direct-release doctor --online --publishing
 ```
 
-The publisher uses existing AWS CLI credentials. Before publishing, the site
-must support these public HTTPS routes without authentication or claim tokens:
+The publishing check validates Apple/Sparkle readiness plus AWS credentials and
+access to both buckets and the CloudFront distribution. It does not create
+buckets, configure routes, or prove public delivery. Before publication, the
+site must support these HTTPS routes without authentication or claim tokens:
 
 | Public route | S3 object |
 | --- | --- |
@@ -159,56 +178,92 @@ must support these public HTTPS routes without authentication or claim tokens:
 | `/direct/appcast.xml` | Site bucket: `direct/appcast.xml` |
 
 A CloudFront path behavior alone does not remove `/direct` from the URI.
-Configure the required rewrite/origin routing so the public path reaches the
-object keys above, with CloudFront authorized to read the release bucket. A
-public S3 bucket is unnecessary. Ensure custom error handling does not return
-the landing-page HTML for missing DMGs or XML feeds.
+Configure the rewrite/origin routing so these paths reach the specified object
+keys, with CloudFront authorized to read the release bucket. A public S3 bucket
+is unnecessary. Missing DMGs or feeds must not return the landing-page HTML.
 
-The site's free-download button should point to this stable URL:
+The landing page's free-download button should point to:
 
 ```text
 https://www.macheadroom.com/direct/updates/System-Headroom-Direct.dmg
 ```
 
-Keep the paid Mac App Store link as the other purchase option. These scripts
-do not edit the landing page or provision its CloudFront routes. The site's
-existing deployment allowlist also does not create a download button or these
-routes; update and verify the site separately. Its deployment must preserve
-the publisher-managed appcast and release objects.
+Keep the paid Mac App Store link as the other purchase option. These scripts do
+not edit the landing page or provision CloudFront routes. Its deployment must
+preserve the publisher-managed appcast and release objects. Adding this tooling
+does not establish that a public download has been deployed.
 
-## Publish and verify delivery
-
-After inspecting the release and configuring hosting, explicitly publish it:
+After inspecting the prepared DMG and configuring hosting, explicitly publish
+that run:
 
 ```bash
-./Scripts/publish-direct.sh --publish \
-  'build/direct-release/<release-directory>/System-Headroom-Direct-<version>-<build>.dmg'
+./Scripts/direct-release publish "$RUN"
+./Scripts/direct-release status "$RUN"
 ```
 
-The publisher refuses a lower build number or replacement bytes for an existing
-version/build URL. An exact retry is allowed. It uploads the immutable DMG first
-and downloads it through the public URL to check the bytes before updating the
-stable download, manifest, or appcast. It then invalidates their CloudFront
-paths, waits for completion, and compares the public responses with the staged
-files. Only a successful `--publish` run verifies those remote artifacts.
+`publish` checks the retained DMG's checksum and size against its release
+receipt, then publishes those exact bytes without rebuilding. The publisher
+rejects a lower build number or replacement bytes for an existing version/build
+URL. An exact retry is allowed.
 
-Finally, use the live landing-page button to download and install the DMG on a
-test Mac. Confirm the browser download opens normally and an older Direct
-install discovers the update. Script verification proves delivery of the
-expected bytes; this end-to-end check verifies the customer experience.
+It uploads the immutable DMG first and downloads it through the public URL to
+verify its bytes before updating the stable download, manifest, or appcast. It
+then invalidates CloudFront paths, waits for completion, and compares public
+responses with the staged files. Successful delivery receipts are retained in
+the run. Only a successful publication verifies those remote artifacts.
 
-## Recovery and legacy claim service
+Finally, use the live landing-page button to download and install on a test Mac.
+Confirm the browser download opens normally and an older Direct installation
+discovers the update. The script verifies delivery of expected bytes; these
+checks verify the customer experience.
 
-Retain each released DMG and its receipts. Never replace an immutable versioned
-DMG with different bytes. To undo a faulty release, rebuild the previous good
-source with a higher build number, then release and publish it normally.
-Sparkle does not automatically downgrade installed apps, and the publisher
-rejects attempts to publish an older build.
+## Recover a failed run
+
+Inspect `status` and the named logs before retrying:
+
+| Failure | Next action |
+| --- | --- |
+| Readiness or tests | Fix the reported issue and run `prepare` with a new output directory. |
+| Archive or notarization | Inspect the logs and Apple submission receipts, fix the issue, then start a new `prepare` run. Existing output directories cannot be reused. |
+| Staging after a completed notarized release | Fix the reported issue, then run `./Scripts/direct-release stage "$RUN"` to stage the same DMG. |
+| Publishing | Fix credentials, hosting, or the reported delivery issue, then retry `./Scripts/direct-release publish "$RUN"`. Do not rebuild or bump the version for a delivery retry. |
+
+Retain released DMGs and receipts. If changed source must replace an already
+published release, increase the build and prepare a new run. To undo a faulty
+release, build the previous good source with a higher build number. Sparkle
+does not automatically downgrade installed apps.
+
+## Underlying scripts and CI
+
+The wrapper supplies settings from the ignored JSON and records the workflow.
+The lower-level scripts remain available for individual operations; when
+running them directly, export the required settings in your shell.
+
+| Purpose | Command |
+| --- | --- |
+| Local build with ad-hoc signing | `./Scripts/build-direct.sh --ad-hoc` |
+| Local build with project development signing | `./Scripts/build-direct.sh` |
+| Local release checks only | `./Scripts/release-direct.sh --preflight` |
+| Archive, sign, notarize, and package without the wrapper's test/staging steps | `./Scripts/release-direct.sh --output-dir <new-directory>` |
+| Stage a retained DMG without uploading | `./Scripts/publish-direct.sh --stage-only <dmg>` |
+| Explicitly publish a retained DMG | `./Scripts/publish-direct.sh --publish <dmg>` |
+
+Staging checks the signed, stapled app and DMG, then verifies the generated
+appcast's EdDSA download signature, URL, version, minimum macOS version, and
+byte count. The XML feed itself does not use Sparkle's optional feed-signing
+feature. Staging does not upload, though macOS may contact Apple for assessment.
+
+`.github/workflows/xcode-build-and-test.yml` runs sandboxed app tests and a
+separate Direct job for release-tooling tests, appcast-signature tests,
+checksum-pinned Sparkle, and a universal ad-hoc Direct build. CI needs no release
+credentials. Signing, notarization, and publication run on the release Mac;
+a passing CI run does not create a customer release.
+
+## Legacy claim service
 
 The old purchase-transfer service is independent of free distribution. Keep
 `DIRECT_EDITION_CLAIM_URL` blank and any deployed service at
 `ClaimFlowEnabled=false`. Do not enable its Settings/Help flow, claim routes,
-or receipt verification to offer the free download. Historical claim-service
-design notes remain in `DirectEditionClaimAPI.md` and
-`DirectEditionSettingsOptionA.md`; their transfer-policy gates do not gate this
-independent free website release.
+or receipt verification to offer the free download. Historical notes remain in
+`DirectEditionClaimAPI.md` and `DirectEditionSettingsOptionA.md`; their
+transfer-policy gates do not gate this free website release.

@@ -1,3 +1,27 @@
+# Direct runbook automation (2026-09-15)
+
+- Added `Scripts/direct-release`: setup, credentials, doctor, bump, prepare,
+  stage, publish, and status commands. Local JSON stores only non-secret values;
+  exported environment settings take precedence and credentials remain in Keychain.
+- Setup detects the signing identity and can import the existing site's bucket
+  and CloudFront distribution without executing its environment file. This Mac's
+  ignored config was initialized; the release bucket was verified from the
+  existing CloudFormation stack and saved locally. No AWS resources changed.
+- Preparation fetches Sparkle, checks Apple credentials and update-key continuity,
+  requires all tooling and app tests to pass, notarizes, and stages the DMG.
+  Each step has a durable status and log. Failed/zero-test runs never archive.
+- Publishing explicitly reuses the chosen run's checksummed DMG, supports retries,
+  and records a publication receipt only after all public bytes are verified.
+- Build-number updates also update the app identity test pins; no version was
+  bumped while implementing this workflow (still 1.1 / 15).
+- Verification: 65 Python automation/release tests passed; shell syntax and
+  whitespace checks passed. No app source or runtime behavior changed this turn.
+- Live readiness still requires a Developer ID Application identity. Notary and
+  Sparkle private-key availability have not been probed; configure credentials
+  interactively, then run `doctor --online`. Prior live-port test failures remain
+  a preparation gate; no test-skipping option was added.
+- No customer notarization, publication, landing-page changes, or key creation.
+
 # Free Direct distribution (2026-09-15)
 
 ## Design and implementation
