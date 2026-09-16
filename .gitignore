@@ -7,3 +7,5 @@ ClaimService/.sam-tools/
 xcuserdata/
 skills-lock.json
 Vendor/
+Configuration/DirectRelease.local.json
+__pycache__/

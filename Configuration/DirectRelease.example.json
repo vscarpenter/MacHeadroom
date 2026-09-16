@@ -1,0 +1,11 @@
+{
+  "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+  "DIRECT_DEVELOPER_ID_APPLICATION": "",
+  "DIRECT_DEVELOPER_TEAM_ID": "52HVJ3VDSM",
+  "DIRECT_NOTARY_PROFILE": "SystemHeadroomDirect",
+  "DIRECT_RELEASE_BUCKET": "",
+  "DIRECT_SITE_BUCKET": "",
+  "DIRECT_CLOUDFRONT_DISTRIBUTION_ID": "",
+  "AWS_PROFILE": "",
+  "AWS_REGION": "us-east-1"
+}

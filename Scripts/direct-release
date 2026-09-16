@@ -1,0 +1,347 @@
+#!/usr/bin/env python3
+"""Automate the Direct runbook; credentials stay in Keychain/AWS profiles."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import plistlib
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from datetime import datetime, timezone
+from xml.sax.saxutils import escape
+
+ROOT = Path(__file__).resolve().parents[1]
+CONFIG_KEYS = {
+    "DEVELOPER_DIR", "DIRECT_DEVELOPER_ID_APPLICATION", "DIRECT_DEVELOPER_TEAM_ID",
+    "DIRECT_NOTARY_PROFILE", "DIRECT_RELEASE_BUCKET", "DIRECT_SITE_BUCKET",
+    "DIRECT_CLOUDFRONT_DISTRIBUTION_ID", "AWS_PROFILE", "AWS_REGION",
+}
+FEED = "https://www.macheadroom.com/direct/appcast.xml"
+
+
+class ReleaseError(Exception):
+    pass
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def write_json(path, value):
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(value, indent=2) + "\n")
+    temporary.replace(path)
+
+
+def configuration(path):
+    value = json.loads(path.read_text()) if path.exists() else {}
+    if not isinstance(value, dict) or set(value) - CONFIG_KEYS:
+        raise ReleaseError(f"{path} must contain only supported non-secret settings (see DirectRelease.example.json)")
+    if any(not isinstance(item, str) or "\n" in item or "\r" in item for item in value.values()):
+        raise ReleaseError("Release settings must be single-line strings")
+    return value
+
+
+def environment(config):
+    env = dict(os.environ)
+    for key, value in config.items():
+        if value and not env.get(key):
+            env[key] = value
+    if not env.get("DEVELOPER_DIR") and Path("/Applications/Xcode.app/Contents/Developer").is_dir():
+        env["DEVELOPER_DIR"] = "/Applications/Xcode.app/Contents/Developer"
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    return env
+
+
+def capture(command, env, timeout=60):
+    result = subprocess.run(command, cwd=ROOT, env=env, text=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
+    if result.returncode:
+        raise ReleaseError(f"{shlex.join(map(str, command))} failed:\n{result.stdout.strip()}")
+    return result.stdout.strip()
+
+
+def setting(file, key):
+    matches = re.findall(rf"^{re.escape(key)}\s*=\s*(.*?)\s*$", file.read_text(), re.MULTILINE)
+    if len(matches) != 1:
+        raise ReleaseError(f"Expected one {key} in {file}")
+    return matches[0]
+
+
+def site_settings(path):
+    """Read only the two hosting settings; never execute/source an env file."""
+    names = {"S3_BUCKET": "DIRECT_SITE_BUCKET", "CLOUDFRONT_DISTRIBUTION_ID": "DIRECT_CLOUDFRONT_DISTRIBUTION_ID"}
+    result = {}
+    for line in path.read_text().splitlines():
+        match = re.match(r"^\s*(?:export\s+)?([A-Z][A-Z0-9_]*)\s*=\s*(.*)$", line)
+        if not match or match[1] not in names:
+            continue
+        tokens = shlex.split(match[2], comments=True)
+        if len(tokens) != 1 or not re.fullmatch(r"[A-Za-z0-9._:/-]+", tokens[0]):
+            raise ReleaseError(f"{match[1]} must be a literal hosting value in {path}")
+        value = tokens[0]
+        if match[1] == "S3_BUCKET":
+            value = value.removeprefix("s3://").rstrip("/")
+        result[names[match[1]]] = value
+    if len(result) != 2:
+        raise ReleaseError(f"{path} must define S3_BUCKET and CLOUDFRONT_DISTRIBUTION_ID")
+    return result
+
+
+def setup(path, overrides, site_config=None):
+    config = json.loads((ROOT / "Configuration/DirectRelease.example.json").read_text())
+    config.update(configuration(path))
+    if site_config:
+        config.update(site_settings(site_config))
+    for entry in overrides:
+        key, separator, value = entry.partition("=")
+        if not separator or key not in CONFIG_KEYS or "\n" in value or "\r" in value:
+            raise ReleaseError("Use --set NAME=value with a supported non-secret setting")
+        config[key] = value
+    env = environment(config)
+    if not config["DIRECT_DEVELOPER_ID_APPLICATION"]:
+        try:
+            identities = capture(["security", "find-identity", "-v", "-p", "codesigning"], env)
+            matches = re.findall(r'"(Developer ID Application: [^"\n]+)"', identities)
+            matches = [name for name in matches if name.endswith(f"({env.get('DIRECT_DEVELOPER_TEAM_ID', '')})")]
+            if len(matches) == 1:
+                config["DIRECT_DEVELOPER_ID_APPLICATION"] = matches[0]
+            elif len(matches) > 1:
+                print("Multiple Developer ID certificates found; choose one with --set DIRECT_DEVELOPER_ID_APPLICATION=...")
+        except (ReleaseError, OSError):
+            pass
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_json(path, config)
+    path.chmod(0o600)
+    print(f"Saved non-secret release settings: {path}")
+    if not config["DIRECT_DEVELOPER_ID_APPLICATION"]:
+        print("Install a Developer ID Application certificate in Xcode → Settings → Accounts → Manage Certificates, then run setup again.")
+    print("Next: ./Scripts/direct-release doctor")
+
+
+def check_signing_key(env):
+    """Sign disposable bytes and verify with the pinned public key; never export it."""
+    with tempfile.TemporaryDirectory(prefix="direct-key-check-") as directory:
+        folder = Path(directory)
+        archive = folder / "System-Headroom-Direct-0-0.dmg"
+        archive.write_bytes(b"System Headroom release-key readiness check\n" + os.urandom(32))
+        signature = capture([str(ROOT / "Vendor/Sparkle/bin/sign_update"), "-p", str(archive)], env)
+        info = {
+            "CFBundleIdentifier": "com.vinnycarpenter.SystemHeadroom.Direct",
+            "CFBundleShortVersionString": "0", "CFBundleVersion": "0",
+            "LSMinimumSystemVersion": "14.0", "SUFeedURL": FEED,
+            "SUPublicEDKey": setting(ROOT / "Configuration/Direct.xcconfig", "DIRECT_SPARKLE_PUBLIC_ED_KEY"),
+        }
+        (folder / "Info.plist").write_bytes(plistlib.dumps(info))
+        xml = f'''<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"><channel><item>
+<sparkle:version>0</sparkle:version><sparkle:shortVersionString>0</sparkle:shortVersionString>
+<sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+<enclosure url="https://www.macheadroom.com/direct/updates/{archive.name}" length="{archive.stat().st_size}" sparkle:edSignature="{escape(signature, {chr(34): '&quot;'})}"/>
+</item></channel></rss>'''
+        (folder / "appcast.xml").write_text(xml)
+        capture(["xcrun", "swift", "Scripts/verify-direct-appcast.swift", str(folder / "appcast.xml"),
+                 str(archive), str(folder / "Info.plist")], env)
+
+
+def doctor(env, online=False, publishing=False):
+    failures = []
+    try:
+        print(capture(["Scripts/release-direct.sh", "--preflight"], env))
+    except (ReleaseError, OSError) as error:
+        failures.append(str(error))
+    for name in ("generate_appcast", "sign_update"):
+        if not os.access(ROOT / "Vendor/Sparkle/bin" / name, os.X_OK):
+            failures.append(f"Missing Sparkle {name}; run ./Scripts/fetch-sparkle.sh")
+    if publishing:
+        for key in ("DIRECT_RELEASE_BUCKET", "DIRECT_SITE_BUCKET", "DIRECT_CLOUDFRONT_DISTRIBUTION_ID"):
+            if not env.get(key):
+                failures.append(f"Set {key} with ./Scripts/direct-release setup --set {key}=...")
+        if not shutil.which("aws", path=env.get("PATH")):
+            failures.append("Install the AWS CLI to publish")
+    if failures:
+        raise ReleaseError("\n".join(failures))
+    if online:
+        capture(["xcrun", "notarytool", "history", "--keychain-profile", env["DIRECT_NOTARY_PROFILE"],
+                 "--output-format", "json"], env)
+        print("OK: notarization credentials accepted by Apple")
+        check_signing_key(env)
+        print("OK: Sparkle signing key matches the app's pinned public key")
+        if publishing:
+            capture(["aws", "sts", "get-caller-identity"], env)
+            for key in ("DIRECT_RELEASE_BUCKET", "DIRECT_SITE_BUCKET"):
+                capture(["aws", "s3api", "head-bucket", "--bucket", env[key]], env)
+            capture(["aws", "cloudfront", "get-distribution", "--id", env["DIRECT_CLOUDFRONT_DISTRIBUTION_ID"]], env)
+            print("OK: AWS credentials and deployment targets are accessible; public routing is checked during publish")
+    else:
+        print("Local checks passed. Use doctor --online to validate Apple credentials and the Sparkle signing key.")
+
+
+class Run:
+    def __init__(self, directory, env, create=False):
+        self.directory, self.env = directory.resolve(), env
+        self.receipt = self.directory / "workflow.json"
+        if create:
+            self.directory.mkdir(parents=True, exist_ok=False)
+            (self.directory / "logs").mkdir()
+            self.state = {"schema": 1, "createdAt": now(), "status": "preparing", "steps": []}
+            self.save()
+        else:
+            self.state = json.loads(self.receipt.read_text())
+            if self.state.get("schema") != 1:
+                raise ReleaseError("Unrecognized release workflow receipt")
+
+    def save(self):
+        self.state["updatedAt"] = now()
+        write_json(self.receipt, self.state)
+
+    def step(self, label, command, require_tests=False):
+        log = self.directory / "logs" / f"{len(self.state['steps']) + 1:02d}-{label}.log"
+        step = {"name": label, "status": "running", "log": str(log), "startedAt": now()}
+        self.state["steps"].append(step)
+        self.save()
+        print(f"{label}: {log}", flush=True)
+        try:
+            with log.open("w") as stream:
+                result = subprocess.run(command, cwd=ROOT, env=self.env, stdout=stream, stderr=subprocess.STDOUT)
+            if result.returncode:
+                raise ReleaseError(f"{label} failed (exit {result.returncode}); see {log}")
+            if require_tests and not re.search(r"Test run with [1-9][0-9]* tests .* passed", log.read_text()):
+                raise ReleaseError(f"{label} did not execute a passing Swift test suite; see {log}")
+            step["status"] = "passed"
+        except (ReleaseError, OSError, KeyboardInterrupt):
+            step["status"] = "failed"
+            self.state["status"] = "failed"
+            raise
+        finally:
+            step["finishedAt"] = now()
+            self.save()
+
+    def artifact(self):
+        release = self.state.get("releaseDirectory")
+        if not release:
+            raise ReleaseError("This run has no successful notarized release to stage or publish")
+        metadata = json.loads((self.directory / release / "release.json").read_text())
+        name = metadata["dmg"]
+        if not isinstance(name, str) or Path(name).name != name or not name.endswith(".dmg"):
+            raise ReleaseError("Invalid DMG filename in release receipt")
+        artifact = self.directory / release / name
+        with artifact.open("rb") as stream:
+            digest = hashlib.sha256()
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        if digest.hexdigest() != metadata["sha256"] or artifact.stat().st_size != metadata["size"]:
+            raise ReleaseError("DMG changed since notarization; refusing to stage or publish")
+        return artifact
+
+    def stage(self, publish=False):
+        artifact = self.artifact()
+        if publish and self.state.get("status") not in ("staged", "published", "publish-failed"):
+            raise ReleaseError("Stage the release successfully before publishing it")
+        label = "publish" if publish else "stage"
+        output = self.directory / f"{label}-{len(self.state['steps']) + 1:02d}"
+        try:
+            self.step(label, ["Scripts/publish-direct.sh", "--publish" if publish else "--stage-only",
+                             "--output-dir", str(output), str(artifact)])
+            if publish:
+                receipt = json.loads((output / "publish.json").read_text())
+                self.state["publication"] = receipt
+            self.state["stagingDirectory"] = str(output)
+            self.state["status"] = "published" if publish else "staged"
+        except (ReleaseError, OSError, ValueError, KeyboardInterrupt):
+            self.state["status"] = "publish-failed" if publish else "stage-failed"
+            raise
+        finally:
+            self.save()
+        print(f"{self.state['status'].capitalize()}: {self.directory}")
+
+
+def prepare(env, output):
+    # Fail early before spending time compiling or sending an app to Apple.
+    capture(["Scripts/fetch-sparkle.sh"], env)
+    doctor(env, online=True)
+    if output is None:
+        parent = ROOT / "build/direct-runs"
+        parent.mkdir(parents=True, exist_ok=True)
+        output = parent / (datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + os.urandom(3).hex())
+    run = Run(output, env, create=True)
+    run.step("release-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "Scripts/tests", "-p", "test_*.py"])
+    run.step("update-signature-tests", ["xcrun", "swift", "Scripts/tests/test-direct-appcast.swift"])
+    # Use the same signing identity for the host and test bundle. On this
+    # macOS 27 release Mac, Apple Development signing returns empty socket
+    # tables; Developer ID passes the unchanged sandboxed live-port tests.
+    run.step("app-tests", ["xcodebuild", "test", "-project", "SystemHeadroom.xcodeproj", "-scheme", "SystemHeadroom",
+                          "-configuration", "Debug", "-destination", f"platform=macOS,arch={platform.machine()}",
+                          "-derivedDataPath", str(run.directory / "test-build"),
+                          "CODE_SIGN_STYLE=Manual",
+                          f"CODE_SIGN_IDENTITY={env['DIRECT_DEVELOPER_ID_APPLICATION']}",
+                          f"DEVELOPMENT_TEAM={env['DIRECT_DEVELOPER_TEAM_ID']}"], require_tests=True)
+    run.step("notarized-release", ["Scripts/release-direct.sh", "--output-dir", str(run.directory / "release")])
+    run.state["releaseDirectory"] = "release"
+    run.save()
+    run.stage()
+    print(f"Inspect the DMG, then publish these exact bytes:\n  ./Scripts/direct-release publish {shlex.quote(str(run.directory))}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, default=ROOT / "Configuration/DirectRelease.local.json")
+    commands = parser.add_subparsers(dest="command", required=True)
+    init = commands.add_parser("setup", help="Create/update ignored local settings; detect Developer ID identity")
+    init.add_argument("--set", action="append", default=[], metavar="NAME=VALUE")
+    init.add_argument("--site-config", type=Path, help="Import bucket and distribution from the site's .env.local without executing it")
+    commands.add_parser("credentials", help="Open Apple's interactive notarization credential setup")
+    check = commands.add_parser("doctor", help="Check local prerequisites; optionally verify credentials online")
+    check.add_argument("--online", action="store_true")
+    check.add_argument("--publishing", action="store_true", help="Also check AWS publishing prerequisites")
+    bump = commands.add_parser("bump", help="Increment shared build number and update release identity test pins")
+    bump.add_argument("--version")
+    bump.add_argument("--build")
+    build = commands.add_parser("prepare", help="Test, archive, notarize, and stage; never upload to the website")
+    build.add_argument("--output-dir", type=Path)
+    for name in ("stage", "publish", "status"):
+        command = commands.add_parser(name, help={"stage": "Retry staging an already notarized run", "publish": "Publish the reviewed run without rebuilding", "status": "Show release state and logs"}[name])
+        command.add_argument("run", type=Path, help="Directory printed by prepare (contains workflow.json)")
+    args = parser.parse_args()
+    if args.command == "setup":
+        setup(args.config, args.set, args.site_config)
+        return
+    env = environment(configuration(args.config))
+    if args.command == "credentials":
+        profile = env.get("DIRECT_NOTARY_PROFILE", "SystemHeadroomDirect")
+        if not sys.stdin.isatty():
+            raise ReleaseError("Run ./Scripts/direct-release credentials in a terminal for Apple's secure prompts")
+        subprocess.run(["xcrun", "notarytool", "store-credentials", profile], cwd=ROOT, env=env, check=True)
+    elif args.command == "doctor":
+        doctor(env, online=args.online, publishing=args.publishing)
+    elif args.command == "bump":
+        command = [sys.executable, "Scripts/bump-direct-version.py"]
+        if args.version:
+            command += ["--version", args.version]
+        if args.build:
+            command += ["--build", args.build]
+        print(capture(command, env))
+    elif args.command == "prepare":
+        prepare(env, args.output_dir)
+    else:
+        run = Run(args.run, env)
+        if args.command == "status":
+            print(json.dumps(run.state, indent=2))
+        else:
+            if args.command == "publish":
+                doctor(env, online=True, publishing=True)
+            run.stage(publish=args.command == "publish")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (ReleaseError, OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
+        sys.exit(f"FAIL: {error}")
+    except KeyboardInterrupt:
+        sys.exit("Stopped; see the release directory for logs and receipts.")

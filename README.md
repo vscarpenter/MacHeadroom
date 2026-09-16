@@ -15,7 +15,8 @@ in the Direct build, one click) from gone.
 
 - macOS 14.0 or later to run
 - Xcode 26.6 and Swift 6 to build
-- No accounts, no network calls, no third-party dependencies
+- No account required; process monitoring stays on your Mac
+- The Direct edition uses Sparkle and makes network requests for update checks
 
 ## Building and testing
 
@@ -32,31 +33,97 @@ The unit tests run hosted inside the app (`SystemHeadroomTests`, wired to
 
 ## Build flavors
 
-System Headroom ships as two flavors from the same source. The Mac App
-Store flavor is sandboxed and retains its existing bundle identifier for
-updates. A second, unsandboxed Direct flavor has its own bundle identifier,
-so both editions can coexist on one Mac. `Scripts/build-direct.sh` makes a
-developer-signed Direct build for local testing. `Scripts/release-direct.sh`
-creates the customer-downloadable DMG: it requires a Developer ID Application
-certificate and a configured `notarytool` keychain profile, then notarizes and
-staples both the app and the DMG. The App Sandbox blocks every way to quit or
-kill another process, so the popover's quit-from-the-row feature only works in
-the Direct build; the About tab reports which flavor you're running.
+System Headroom has two editions from the same source: a paid, sandboxed
+Mac App Store edition and a free, unsandboxed Direct download from
+[macheadroom.com](https://macheadroom.com). The Direct download requires no
+purchase, receipt, account, or claim token. These are distribution options;
+a local build does not establish that either release is publicly available.
 
-The optional App Store-purchase transfer uses an App Store app transaction and
-a server-side verification endpoint. Its protocol and privacy constraints are
-in [Documentation/DirectEditionClaimAPI.md](Documentation/DirectEditionClaimAPI.md),
-and the approved Settings/Help placement is specified in
-[Documentation/DirectEditionSettingsOptionA.md](Documentation/DirectEditionSettingsOptionA.md).
-Leave `DIRECT_EDITION_CLAIM_URL` blank until that service is deployed and the
-claim flow has received explicit App Review clearance.
+| | Mac App Store | Direct download |
+| --- | --- | --- |
+| Bundle identifier | `com.vinnycarpenter.MacHeadroom` | `com.vinnycarpenter.SystemHeadroom.Direct` |
+| Sandbox | Enabled | Disabled; Hardened Runtime retained |
+| Updates | Mac App Store | Sparkle automatic checks and About → Check for Updates |
+| Local build | `xcodebuild -project SystemHeadroom.xcodeproj -scheme SystemHeadroom -configuration Debug build` | `./Scripts/build-direct.sh --ad-hoc` |
+| Release | Archive the SystemHeadroom scheme without a Direct overlay; distribute through Xcode Organizer/App Store Connect | `./Scripts/direct-release prepare`, then `./Scripts/direct-release publish <run-directory>` |
 
-The Direct flavor updates itself with Sparkle, vendored by
-`Scripts/fetch-sparkle.sh` (checksum-pinned) and compiled/embedded only under
-`Configuration/Direct.xcconfig`; a test pins that the App Store binary stays
-Sparkle-free. Release operations — publishing DMGs, the appcast, and the
-go-live flag flips — are in
-[Documentation/DirectEditionRunbook.md](Documentation/DirectEditionRunbook.md).
+Both editions can be installed together, but the single-instance guard keeps
+only the most recently launched copy running. The popover's process controls
+work in the Direct build; the About tab identifies the running edition.
+
+For a local Direct build with no signing certificate:
+
+```bash
+# Use this override if xcode-select currently points at Command Line Tools.
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+./Scripts/fetch-sparkle.sh
+./Scripts/build-direct.sh --ad-hoc
+```
+
+Omit `--ad-hoc` to use the project's development signing configuration.
+
+For customer downloads, install a Developer ID Application certificate and its
+private key through Xcode → Settings → Accounts → Manage Certificates, then
+configure the automated release workflow once:
+
+```bash
+./Scripts/direct-release setup
+./Scripts/fetch-sparkle.sh
+./Scripts/direct-release credentials
+./Scripts/direct-release doctor --online
+```
+
+`setup` saves non-secret settings in the ignored
+`Configuration/DirectRelease.local.json`; exported environment values take
+precedence. `credentials` opens Apple's secure terminal prompts and stores
+notarization credentials in Keychain. Certificate creation remains manual.
+For the sibling landing-page checkout, optionally run
+`./Scripts/direct-release setup --site-config ../macheadroom.com/.env.local`
+to import the existing site bucket and CloudFront distribution. Set the release
+bucket separately with `setup --set DIRECT_RELEASE_BUCKET=...`.
+
+For each release:
+
+```bash
+./Scripts/direct-release bump
+./Scripts/direct-release prepare
+```
+
+`bump` increments the shared build and updates its test expectations; add
+`--version 1.2` to change the marketing version. `prepare` requires the complete
+test suite to pass, builds a universal Apple silicon/Intel app, notarizes and
+staples the app and DMG, and stages the Sparkle appcast with signed downloads.
+It prints a unique run directory under `build/direct-runs/` with logs and
+`workflow.json`, and uploads nothing to the website.
+
+After inspecting the DMG and configuring hosting, publish that exact run:
+
+```bash
+RUN='build/direct-runs/<directory-printed-by-prepare>'
+./Scripts/direct-release doctor --online --publishing
+./Scripts/direct-release publish "$RUN"
+./Scripts/direct-release status "$RUN"
+```
+
+Publication verifies the retained DMG and uses it without rebuilding. Retry a
+failed publication with the same run; use `stage <run-directory>` to retry
+staging a completed notarized DMG. The runbook covers deployment settings,
+hosting routes, test failures, and recovery.
+
+Sparkle is checksum-pinned by `Scripts/fetch-sparkle.sh` and compiled and
+embedded only with `Configuration/Direct.xcconfig`. Direct initializes its
+updater at launch and enables automatic update checks; this does not promise
+unattended installation. The App Store binary stays Sparkle-free. Signing,
+release verification, hosting requirements, and the stable website download
+link are in the
+[Direct edition runbook](Documentation/DirectEditionRunbook.md).
+
+The legacy App Store-purchase transfer is separate and remains disabled:
+leave `DIRECT_EDITION_CLAIM_URL` blank and any deployed claim service at
+`ClaimFlowEnabled=false`. The free website download does not use that service
+or depend on approval of its transfer model. Historical protocol and UI notes
+remain in [DirectEditionClaimAPI.md](Documentation/DirectEditionClaimAPI.md)
+and [DirectEditionSettingsOptionA.md](Documentation/DirectEditionSettingsOptionA.md).
 
 ## How it's built
 
@@ -109,8 +176,8 @@ options considered live in
 
 ## Status
 
-The core app is feature-complete and passes its test suite. That
-covers the sampler, the grouping engine, the popover, the process
+The core app is feature-complete. Its test suite covers the sampler,
+the grouping engine, the popover, the process
 glossary, the single-instance guard, the tabbed Settings window with
 its About screen, and the brand glyph in the menu bar. The icon ships
 as a traditional flat iconset for now; see
