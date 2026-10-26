@@ -99,7 +99,7 @@ struct HelpView: View {
           )
           HelpFact(
             title: "What counts",
-            detail: "Alerts measure against one core, the way Activity Monitor does, so a row shown as 7% of the whole Mac can still be a full core. You get one notification per episode, and the same app waits five minutes before it can alert again."
+            detail: "Alerts measure against one core, the way Activity Monitor does. A row shown as 7% of the whole Mac can still be a full core. You get one notification per episode, and the same app waits five minutes before it can alert again."
           )
         }
 
