@@ -439,3 +439,12 @@ The release wrapper now passes `CODE_SIGN_STYLE=Manual`, the configured
 It retains the Debug configuration, sandbox entitlement, and full test suite.
 No parser, ABI layout, product entitlement, or test assertion changes were
 needed. Archive signing and notarization remain separate later steps.
+
+## Memory pressure and swap reads (October 26, 2026)
+
+Two more sysctls were measured inside the sandboxed test host on macOS 27
+(Darwin 27.0.0) for the 1.5.0 header badge: `kern.memorystatus_vm_pressure_level`
+and `vm.swapusage`. Both succeed under the production
+`com.apple.security.app-sandbox` entitlement with no further entitlement.
+`HostPressureLiveTests` re-proves it on every run. A failed read maps to
+nil and the badge shows Unknown rather than a guessed value.
