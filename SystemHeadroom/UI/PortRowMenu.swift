@@ -64,6 +64,17 @@ private struct PortRowMenuItems: View {
       openButtons
       copyButtons
     }
+    if let webPort = PortRowActions.preferredWebPort(in: group.ports),
+      !store.localHostnames.isEmpty
+    {
+      if flattened {
+        aliasOpenButtons(for: webPort)
+        aliasCopyButtons(for: webPort)
+      } else {
+        Menu("Open as") { aliasOpenButtons(for: webPort) }
+        Menu("Copy as") { aliasCopyButtons(for: webPort) }
+      }
+    }
   }
 
   private var openButtons: some View {
@@ -81,6 +92,22 @@ private struct PortRowMenuItems: View {
       Button("Copy \(PortRowActions.address(for: port))") {
         handler.copy(PortRowActions.address(for: port))
       }
+    }
+  }
+
+  private func aliasURLs(for port: ListeningPort) -> [URL] {
+    store.localHostnames.compactMap { PortRowActions.url(for: port, host: $0) }
+  }
+
+  private func aliasOpenButtons(for port: ListeningPort) -> some View {
+    ForEach(aliasURLs(for: port), id: \.self) { url in
+      Button("Open \(url.absoluteString)") { handler.open(url) }
+    }
+  }
+
+  private func aliasCopyButtons(for port: ListeningPort) -> some View {
+    ForEach(aliasURLs(for: port), id: \.self) { url in
+      Button("Copy \(url.absoluteString)") { handler.copy(url.absoluteString) }
     }
   }
 }

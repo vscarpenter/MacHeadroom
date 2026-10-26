@@ -30,6 +30,9 @@ final class MonitorStore {
     cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
   private(set) var processMemoryMetric = ProcessMemoryMetric.current
   private(set) var lastUpdated: Date?
+  /// Loopback names from /etc/hosts, read each time the popover opens.
+  /// Port rows on 80 or 443 offer them as Open and Copy targets.
+  private(set) var localHostnames: [String] = []
 
   var samplingInterval: TimeInterval {
     didSet {
@@ -124,6 +127,7 @@ final class MonitorStore {
   private let sampler: SamplerService
   private let defaults: UserDefaults
   private let alertDelivery: AlertDelivery
+  private let hostnamesReader: () -> [String]?
   private let topListLimit = 10
   private var timerTask: Task<Void, Never>?
   private var isPopoverOpen = false
@@ -138,13 +142,15 @@ final class MonitorStore {
     defaults: UserDefaults = .standard,
     capability: TerminationCapability = .current,
     terminator: ProcessTerminator = .live(),
-    alertDelivery: AlertDelivery = NotificationAlertDelivery()
+    alertDelivery: AlertDelivery = NotificationAlertDelivery(),
+    hostnamesReader: @escaping () -> [String]? = { HostsFile.readLoopbackNames() }
   ) {
     self.canTerminate = capability == .available
     self.terminator = terminator
     self.sampler = sampler
     self.defaults = defaults
     self.alertDelivery = alertDelivery
+    self.hostnamesReader = hostnamesReader
     let storedInterval = defaults.double(forKey: DefaultsKey.samplingInterval)
     samplingInterval = storedInterval > 0 ? storedInterval : 5
     cpuConvention =
@@ -181,6 +187,7 @@ final class MonitorStore {
   /// stack two ticks back to back.
   func popoverDidAppear() {
     isPopoverOpen = true
+    localHostnames = hostnamesReader() ?? []
     if timerTask == nil {
       start()
     } else {

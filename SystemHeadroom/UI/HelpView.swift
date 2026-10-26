@@ -73,7 +73,7 @@ struct HelpView: View {
           )
           HelpFact(
             title: "Open or copy a port",
-            detail: "Select the … at the end of a Ports row, or Control-click the row, to open localhost and that port in your browser or to copy the address."
+            detail: "Select the … at the end of a Ports row, or Control-click the row, to open localhost and that port in your browser or to copy the address. Rows listening on 80 or 443 also offer the loopback names from your hosts file, so a reverse proxy opens under the name it routes by."
           )
           HelpFact(
             title: "Memory pressure and swap",

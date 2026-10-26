@@ -448,3 +448,7 @@ and `vm.swapusage`. Both succeed under the production
 `com.apple.security.app-sandbox` entitlement with no further entitlement.
 `HostPressureLiveTests` re-proves it on every run. A failed read maps to
 nil and the badge shows Unknown rather than a guessed value.
+
+The same day, `/etc/hosts` was read from the sandboxed test host for the
+port rows' hostname aliases (`HostsFileLiveTests`): allowed, no
+entitlement needed. A failed read leaves the menu at localhost only.

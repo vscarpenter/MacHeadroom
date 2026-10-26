@@ -349,3 +349,16 @@ Row height and the popover size do not change. The Help fact names the
 button first and the gesture second. Chosen by Vinny from three
 options; the alternatives were a header hint line plus tooltips, or
 both.
+
+## Amendment 2 (October 26, 2026): hostname aliases on the web ports
+
+Vinny's Caddy row routes by Host header, so localhost:443 reaches it
+under the wrong name and scheme. Rows listening on TCP 80 or 443 now
+also offer "Open as" and "Copy as" submenus with one entry per loopback
+name from /etc/hosts (names on 127.0.0.1 or ::1 lines, minus localhost
+itself), as https://name when the row has 443 and http://name
+otherwise, with no port suffix. Other ports keep the localhost items.
+The store reads the file each time the popover opens; a read failure
+means localhost only. The sandboxed test host proves the read on every
+run (`HostsFileLiveTests`). Chosen by Vinny over aliases on every port
+and over a list typed in Settings.
