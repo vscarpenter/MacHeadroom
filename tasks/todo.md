@@ -28,8 +28,8 @@ is implemented and committed on `feat/1.5.0-port-actions-pressure-alerts`
   `yes > /dev/null` for 40 seconds, expect one notification and no second
   one inside five minutes; on the sandboxed Debug build the port menu has
   Open and Copy but no Quit.
-- Vinny: push and open a PR against `feat/ports-force-quit` (or `main`
-  after #8 merges). Nothing is pushed.
+- Pushed; PR #9 is open against `feat/ports-force-quit` (GitHub retargets
+  it to `main` once #8 merges).
 - Release: `Scripts/release-direct.sh` with 1.5.0 (17); App Store
   "What's New" copy is not drafted yet.
 
