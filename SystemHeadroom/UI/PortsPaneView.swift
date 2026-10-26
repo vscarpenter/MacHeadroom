@@ -77,6 +77,7 @@ struct PortRowView: View {
       }
     }
     .frame(height: 26)
+    .contentShape(Rectangle())
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
   }

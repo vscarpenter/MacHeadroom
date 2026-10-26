@@ -654,6 +654,7 @@ private struct PorcelainPortRowView: View {
     }
     .padding(.vertical, PorcelainSpacing.xs)
     .frame(height: 44)
+    .contentShape(Rectangle())
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
   }
