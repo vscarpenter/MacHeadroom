@@ -1,3 +1,49 @@
+# 1.5.0 (17): port actions, memory pressure, CPU alerts (2026-10-26)
+
+## Resuming From Here
+DONE: every task in `docs/superpowers/plans/2026-10-26-port-actions-pressure-alerts.md`
+is implemented and committed on `feat/1.5.0-port-actions-pressure-alerts`
+(stacked on `feat/ports-force-quit`, which is PR #8). Spec:
+`docs/superpowers/specs/2026-10-26-port-actions-pressure-alerts-design.md`.
+
+- Full suite after the review fixes: 141 tests in 33 suites, 137 pass. The 4 failures are the
+  known `PortsSamplerLiveTests` cases on this Mac (Apple Development
+  signing returns empty socket tables; see SANDBOX_NOTES.md, Sept 16).
+- Direct build: `Scripts/build-direct.sh` OK, universal, 1.5.0 (17).
+- Sandbox measurement: `kern.memorystatus_vm_pressure_level` and
+  `vm.swapusage` are ALLOWED in the sandboxed test host
+  (`HostPressureLiveTests`); SANDBOX_NOTES.md records the measurement.
+- Whole-branch review (fresh reviewer): no Critical findings. Two Important
+  findings fixed in `c01125b` (the tick carries its CPU convention so the
+  alert conversion cannot race a preference flip) and `307ea5a` (delivery
+  failures are logged). `e7c6830` and `81fd662` fix the Help color word and
+  record the sysctl measurement in SANDBOX_NOTES.md. Five minors deferred;
+  see the session change report.
+
+## Next
+- Vinny: manual checks from the spec. Control-click a dev server row
+  (Open launches the browser at localhost:<port>, Copy pastes it); look
+  at the pressure badge in both skins (Porcelain puts it under the metric
+  picker); turn on alerts at 50% for 30 seconds and run
+  `yes > /dev/null` for 40 seconds, expect one notification and no second
+  one inside five minutes; on the sandboxed Debug build the port menu has
+  Open and Copy but no Quit.
+- Vinny: push and open a PR against `feat/ports-force-quit` (or `main`
+  after #8 merges). Nothing is pushed.
+- Release: `Scripts/release-direct.sh` with 1.5.0 (17); App Store
+  "What's New" copy is not drafted yet.
+
+## Blockers
+- None in code. Push, PR, and release wait for Vinny.
+
+## Assumptions
+- "1.5.0" is the literal marketing version Vinny asked for; earlier
+  releases used two parts (1.0, 1.1).
+- Alert threshold is always percent of one core, whatever convention the
+  list displays (spec decision, Help says so).
+
+---
+
 # Direct runbook automation (2026-09-15)
 
 - Added `Scripts/direct-release`: setup, credentials, doctor, bump, prepare,
