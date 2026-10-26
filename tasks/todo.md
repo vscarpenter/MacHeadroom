@@ -4,43 +4,58 @@
 DONE: every task in `docs/superpowers/plans/2026-10-26-port-actions-pressure-alerts.md`
 is implemented and committed on `feat/1.5.0-port-actions-pressure-alerts`
 (stacked on `feat/ports-force-quit`, which is PR #8). Spec:
-`docs/superpowers/specs/2026-10-26-port-actions-pressure-alerts-design.md`.
+`docs/superpowers/specs/2026-10-26-port-actions-pressure-alerts-design.md`,
+now with three amendments.
 
-- Full suite after the review fixes: 141 tests in 33 suites, 137 pass. The 4 failures are the
-  known `PortsSamplerLiveTests` cases on this Mac (Apple Development
-  signing returns empty socket tables; see SANDBOX_NOTES.md, Sept 16).
-- Direct build: `Scripts/build-direct.sh` OK, universal, 1.5.0 (17).
-- Sandbox measurement: `kern.memorystatus_vm_pressure_level` and
-  `vm.swapusage` are ALLOWED in the sandboxed test host
-  (`HostPressureLiveTests`); SANDBOX_NOTES.md records the measurement.
+- Full suite after the cooldown fix: 151 tests in 37 suites, 147 pass. The
+  4 failures are the known `PortsSamplerLiveTests` cases on this Mac
+  (Apple Development signing returns empty socket tables; see
+  SANDBOX_NOTES.md, Sept 16).
+- Direct build: `Scripts/build-direct.sh` OK, universal, 1.5.0 (17), built
+  with `f82dd11`.
+- Sandbox measurements: the pressure and swap sysctls and the `/etc/hosts`
+  read are ALLOWED in the sandboxed test host (`HostPressureLiveTests`,
+  `HostsFileLiveTests`); SANDBOX_NOTES.md records both.
 - Whole-branch review (fresh reviewer): no Critical findings. Two Important
-  findings fixed in `c01125b` (the tick carries its CPU convention so the
-  alert conversion cannot race a preference flip) and `307ea5a` (delivery
-  failures are logged). `e7c6830` and `81fd662` fix the Help color word and
-  record the sysctl measurement in SANDBOX_NOTES.md. Five minors deferred;
-  see the session change report.
+  findings fixed in `c01125b` and `307ea5a`. Five minors deferred; see the
+  session change report.
+- Manual checks with Vinny (Oct 26), all on Developer ID re-signed copies:
+  1. Port actions on the Caddy row: Open, Copy, Open as, Copy as. The
+     clipboard read `https://home.vinny.dev`. The Python row on 8765 had
+     no alias submenus. Passed.
+  2. Pressure badge in Classic and Porcelain. Passed.
+  3. CPU alert at 50% for 30 s with 30 s sampling: first notification 70 s
+     into a `yes` burst. The cooldown FAILED: a restarted `yes` alerted
+     again 2 min 40 s later. Fixed in `f82dd11` (alert identity is the
+     bundle id, else `name:<process name>`; same-name processes merge at
+     the higher reading). Live recheck with the fix: one delivery at
+     14:41:04 under `cpu-alert-name:yes`, none from a second burst inside
+     the cooldown.
+  4. Sandboxed Debug build: port menu has Open and Copy, no Quit. Passed.
 
 ## Next
-- Vinny: manual checks from the spec. Control-click a dev server row
-  (Open launches the browser at localhost:<port>, Copy pastes it); look
-  at the pressure badge in both skins (Porcelain puts it under the metric
-  picker); turn on alerts at 50% for 30 seconds and run
-  `yes > /dev/null` for 40 seconds, expect one notification and no second
-  one inside five minutes; on the sandboxed Debug build the port menu has
-  Open and Copy but no Quit.
-- Pushed; PR #9 is open against `feat/ports-force-quit` (GitHub retargets
-  it to `main` once #8 merges).
+- Three commits are local and NOT pushed: `551659f` (visible ellipsis
+  menu button on every port row), `a627405` (Open as / Copy as with
+  /etc/hosts loopback names on rows listening on 80 or 443), and
+  `f82dd11` (cooldown keyed by name for bundle-less processes). Push them
+  to PR #9 on Vinny's word; PR #9 is open against `feat/ports-force-quit`
+  and GitHub retargets it to `main` once #8 merges.
 - Release: `Scripts/release-direct.sh` with 1.5.0 (17); App Store
   "What's New" copy is not drafted yet.
+- Temp cleanup owed by Vinny (deletes are denied for the agent):
+  `.superpowers/sdd/2026-10-26-port-actions-pressure-alerts/` and the
+  scratchpad copies `devid*`, `debug-devid`, and `*.log`.
 
 ## Blockers
-- None in code. Push, PR, and release wait for Vinny.
+- None in code. Push, PR update, and release wait for Vinny.
 
 ## Assumptions
 - "1.5.0" is the literal marketing version Vinny asked for; earlier
   releases used two parts (1.0, 1.1).
 - Alert threshold is always percent of one core, whatever convention the
   list displays (spec decision, Help says so).
+- For the cooldown, "the same app" means the bundle id, or the process
+  name when there is none. Two `node` servers share one cooldown.
 
 ---
 

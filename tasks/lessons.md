@@ -25,3 +25,19 @@
   tables (SANDBOX_NOTES.md, Sept 16), so the Ports pane reads "No
   listening ports". It is not a regression. To test ports locally, copy
   the app and re-sign it with the Developer ID identity, then relaunch.
+- The alert cooldown reused the list's group key, which is the pid for
+  a bundle-less process. Fixture tests keyed by literal strings passed
+  while a restarted `yes` alerted twice in 2 minutes 40 seconds. When a
+  key is reused for a new purpose, test it through the real key builder
+  with the real inputs (no bundle id, two pids, one name), not literals.
+- A live check with the real tool is cheap and finds what fixtures skip.
+  Notification Center's unified log counts deliveries without anyone
+  watching for banners: `log show --predicate 'process == "usernoted"'`
+  and grep `scheduled for delivery`; the request id carries our key
+  (`cpu-alert-<key>`).
+- `date` in this shell is GNU coreutils (`gdate`), so BSD flags such as
+  `-v-4M` fail. Use `/bin/date` or `log show --last 5m`.
+- A Developer ID re-signed copy of the sandboxed Debug app keeps its
+  sandbox only with `--preserve-metadata=entitlements`. The termination
+  gate reads the sandbox status at runtime, so a copy signed without it
+  would offer Quit and prove nothing.
