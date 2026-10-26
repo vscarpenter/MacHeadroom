@@ -102,6 +102,7 @@ actor SamplerService {
         swapUsedBytes: swap?.usedBytes
       ),
       processMemoryMetric: processMemoryMetric,
+      convention: convention,
       logicalCoreCount: logicalCoreCount,
       sockets: sockets,
       socketFallbackNames: socketFallbackNames

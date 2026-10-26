@@ -17,8 +17,10 @@ struct MonitorTick: Sendable, Equatable {
   let processes: [ProcessMeasurement]
   let system: SystemSummary
   let processMemoryMetric: ProcessMemoryMetric
-  /// The core count the CPU percents were computed against, so the store
-  /// can convert a machine-capacity percent back to percent of one core.
+  /// The convention and core count the CPU percents were computed
+  /// under, so the store converts back to percent of one core with the
+  /// same pair even if the preference changed during the sweep.
+  let convention: CPUConvention
   let logicalCoreCount: Int
   /// nil when the port tables could not be fetched or parsed this tick;
   /// the ports pane shows its unavailable state rather than stale rows.

@@ -68,11 +68,30 @@ struct StoreAlertTests {
 
     store.evaluateAlerts(
       groups: [Self.group("chrome", cpu: 10), Self.group("slack", cpu: 5)],
-      logicalCoreCount: 14, now: Date())
+      convention: .machineCapacity, logicalCoreCount: 14, now: Date())
 
     #expect(delivery.delivered.map(\.groupKey) == ["chrome"])
     #expect(delivery.delivered.first?.percentOfCore == 140)
     #expect(delivery.delivered.first?.title == "chrome at 140% CPU")
+  }
+
+  /// The groups were computed under the tick's convention, so the
+  /// conversion must use that one even if the preference changed while
+  /// the sampler was running.
+  @Test("Evaluation converts with the convention the tick was computed under")
+  func usesTickConvention() {
+    let delivery = RecordingAlertDelivery()
+    let store = Self.makeStore(delivery: delivery)
+    store.cpuConvention = .perCore
+    store.cpuAlertsEnabled = true
+    defer { store.cpuAlertsEnabled = false }
+    store.cpuAlertSustainSeconds = 0
+
+    store.evaluateAlerts(
+      groups: [Self.group("chrome", cpu: 10)], convention: .machineCapacity,
+      logicalCoreCount: 14, now: Date())
+
+    #expect(delivery.delivered.first?.percentOfCore == 140)
   }
 
   @Test("Alerts off delivers nothing")
@@ -82,7 +101,8 @@ struct StoreAlertTests {
     store.cpuAlertSustainSeconds = 0
 
     store.evaluateAlerts(
-      groups: [Self.group("chrome", cpu: 10)], logicalCoreCount: 14, now: Date())
+      groups: [Self.group("chrome", cpu: 10)], convention: .machineCapacity,
+      logicalCoreCount: 14, now: Date())
 
     #expect(delivery.delivered.isEmpty)
     #expect(delivery.authorizationRequests == 0)

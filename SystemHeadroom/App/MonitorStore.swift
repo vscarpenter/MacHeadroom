@@ -207,18 +207,24 @@ final class MonitorStore {
     systemSummary = tick.system
     processMemoryMetric = tick.processMemoryMetric
     lastUpdated = Date()
-    evaluateAlerts(groups: topCPUGroups, logicalCoreCount: tick.logicalCoreCount, now: Date())
+    evaluateAlerts(
+      groups: topCPUGroups, convention: tick.convention,
+      logicalCoreCount: tick.logicalCoreCount, now: Date())
   }
 
   /// Internal so a test can drive it with fixture groups and a fixed
-  /// clock. The core count comes from the tick that produced the groups.
-  func evaluateAlerts(groups: [AppGroup], logicalCoreCount: Int, now: Date) {
+  /// clock. The convention and core count come from the tick that
+  /// produced the groups, not from the preference, which can change
+  /// while the sampler is mid-sweep.
+  func evaluateAlerts(
+    groups: [AppGroup], convention: CPUConvention, logicalCoreCount: Int, now: Date
+  ) {
     guard cpuAlertsEnabled else { return }
     let policy = CPUAlertPolicy(
       thresholdPercentOfCore: cpuAlertThresholdPercent,
       sustainSeconds: cpuAlertSustainSeconds)
     let candidates = Self.candidates(
-      from: groups, convention: cpuConvention, logicalCoreCount: logicalCoreCount)
+      from: groups, convention: convention, logicalCoreCount: logicalCoreCount)
     for alert in alertTracker.observe(candidates, at: now, policy: policy) {
       alertDelivery.deliver(alert)
     }
