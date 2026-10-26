@@ -84,3 +84,27 @@ private struct PortRowMenuItems: View {
     }
   }
 }
+
+/// The visible way into a port row's menu: a borderless ellipsis after
+/// the badges. A plain click opens the same items Control-click does, so
+/// the actions are discoverable without knowing the gesture. Hidden from
+/// VoiceOver because the row already exposes the items as custom actions.
+struct PortRowMenuButton: View {
+  let group: PortGroup
+  let store: MonitorStore
+  var handler: PortActionHandler = .live
+  var tint: Color = .secondary
+
+  var body: some View {
+    Menu {
+      PortRowMenuItems(group: group, store: store, handler: handler, flattened: false)
+    } label: {
+      Image(systemName: "ellipsis.circle")
+        .foregroundStyle(tint)
+    }
+    .menuStyle(.borderlessButton)
+    .menuIndicator(.hidden)
+    .fixedSize()
+    .accessibilityHidden(true)
+  }
+}

@@ -77,6 +77,8 @@ struct PortRowView: View {
       } else {
         badges
       }
+
+      PortRowMenuButton(group: group, store: store, handler: handler)
     }
     .frame(height: 26)
     .contentShape(Rectangle())

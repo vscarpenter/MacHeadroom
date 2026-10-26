@@ -663,6 +663,9 @@ private struct PorcelainPortRowView: View {
       } else {
         badges
       }
+
+      PortRowMenuButton(
+        group: group, store: store, handler: handler, tint: palette.textSecondary)
     }
     .padding(.vertical, PorcelainSpacing.xs)
     .frame(height: 44)

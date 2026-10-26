@@ -338,3 +338,14 @@ Memory threshold alerts, an alert history, opening the popover from a
 notification (MenuBarExtra has no programmatic open on macOS 14),
 killing whatever holds a port, pressure in the menu bar label, and
 localization.
+
+## Amendment (October 26, 2026, after the manual check)
+
+Vinny found the Control-click menu undiscoverable. Each port row now
+ends with a borderless ellipsis button in both skins. A plain click
+opens the same menu Control-click does. The button is hidden from
+VoiceOver because the row already exposes the items as custom actions.
+Row height and the popover size do not change. The Help fact names the
+button first and the gesture second. Chosen by Vinny from three
+options; the alternatives were a header hint line plus tooltips, or
+both.

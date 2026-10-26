@@ -73,7 +73,7 @@ struct HelpView: View {
           )
           HelpFact(
             title: "Open or copy a port",
-            detail: "Control-click a Ports row to open localhost and that port in your browser, or to copy the address."
+            detail: "Select the … at the end of a Ports row, or Control-click the row, to open localhost and that port in your browser or to copy the address."
           )
           HelpFact(
             title: "Memory pressure and swap",
@@ -142,7 +142,7 @@ struct HelpView: View {
         )
         HelpFact(
           title: "Included with your purchase",
-          detail: "There is no additional payment or account. Verification sends only your App Store purchase evidence—never process samples, computer names, or preferences."
+          detail: "There is no additional payment or account. Verification sends only your App Store purchase evidenceânever process samples, computer names, or preferences."
         )
 
         HelpStep(
@@ -171,7 +171,7 @@ struct HelpView: View {
           HStack(spacing: 8) {
             ProgressView()
               .controlSize(.small)
-            Text("Verifying your App Store purchase…")
+            Text("Verifying your App Store purchaseâ¦")
               .foregroundStyle(.secondary)
           }
         case .readyToOpen(let claimURL):
@@ -201,7 +201,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "xmark.circle") {
         HelpFact(
           title: "Quit an app group",
-          detail: "Move the pointer over a CPU, Memory, or Ports row, select the ×, then select Quit? within four seconds to confirm."
+          detail: "Move the pointer over a CPU, Memory, or Ports row, select the Ã, then select Quit? within four seconds to confirm."
         )
         HelpFact(
           title: "Force Quit only when needed",
@@ -316,7 +316,7 @@ private struct HelpFact: View {
 }
 
 #if DEBUG
-  #Preview("Help — App Store") {
+  #Preview("Help â App Store") {
     HelpView(store: PreviewFixtures.makeStore())
   }
 #endif

@@ -20,3 +20,8 @@
 - Four `project.pbxproj` edits per new file still hold. Next free IDs
   after this release: UI `H…12`, Sampling `D…0C`, Grouping `F…07`,
   App `G…05`, tests `E…18`.
+- A Direct smoke build from `Scripts/build-direct.sh` is Apple Development
+  signed, and on this Mac that signing context gets header-only socket
+  tables (SANDBOX_NOTES.md, Sept 16), so the Ports pane reads "No
+  listening ports". It is not a regression. To test ports locally, copy
+  the app and re-sign it with the Developer ID identity, then relaunch.
