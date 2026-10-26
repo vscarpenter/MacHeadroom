@@ -34,12 +34,9 @@ now with three amendments.
   4. Sandboxed Debug build: port menu has Open and Copy, no Quit. Passed.
 
 ## Next
-- Three commits are local and NOT pushed: `551659f` (visible ellipsis
-  menu button on every port row), `a627405` (Open as / Copy as with
-  /etc/hosts loopback names on rows listening on 80 or 443), and
-  `f82dd11` (cooldown keyed by name for bundle-less processes). Push them
-  to PR #9 on Vinny's word; PR #9 is open against `feat/ports-force-quit`
-  and GitHub retargets it to `main` once #8 merges.
+- Everything is pushed. PR #9 is open against `feat/ports-force-quit`,
+  mergeStateStatus CLEAN, and its description covers the amendments and
+  the cooldown fix. GitHub retargets it to `main` once #8 merges.
 - Release: `Scripts/release-direct.sh` with 1.5.0 (17); App Store
   "What's New" copy is not drafted yet.
 - Temp cleanup owed by Vinny (deletes are denied for the agent):
