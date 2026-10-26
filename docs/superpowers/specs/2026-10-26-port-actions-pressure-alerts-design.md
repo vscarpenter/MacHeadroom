@@ -362,3 +362,15 @@ The store reads the file each time the popover opens; a read failure
 means localhost only. The sandboxed test host proves the read on every
 run (`HostsFileLiveTests`). Chosen by Vinny over aliases on every port
 and over a list typed in Settings.
+
+## Amendment 3 (October 26, 2026): alert identity for bundle-less processes
+
+The manual cooldown check caught a gap. The list keys a process with
+no bundle by pid, so two `node` servers get two rows. The tracker
+reused that key, so a restarted `yes` alerted again 2 minutes and 40
+seconds after its first notification. The alert identity is now the
+bundle id when there is one and otherwise the process name, prefixed
+`name:`. Same-name processes merge into one candidate at the higher
+reading, so one episode lasts while any of them is over the threshold.
+The notification request id follows the same key. `StoreAlertTests`
+pins the keys, the merge, and a restart inside the cooldown.

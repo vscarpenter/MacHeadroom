@@ -239,16 +239,32 @@ final class MonitorStore {
 
   /// A group with no CPU reading yet (the priming tick) is not a
   /// candidate; treating it as zero would end a live episode early.
+  /// The list keys a bundle-less process by pid so two `node` servers
+  /// get two rows, but the cooldown is per app as the user sees it, so
+  /// a bundle-less process alerts by name. Same-name processes merge at
+  /// the higher reading, so one episode lasts while any of them is over
+  /// the threshold.
   static func candidates(
     from groups: [AppGroup], convention: CPUConvention, logicalCoreCount: Int
   ) -> [CPUAlertCandidate] {
-    groups.compactMap { group in
-      guard let percent = group.cpuPercent else { return nil }
+    var order: [String] = []
+    var byKey: [String: CPUAlertCandidate] = [:]
+    for group in groups {
+      guard let percent = group.cpuPercent else { continue }
       let percentOfCore =
         convention == .machineCapacity ? percent * Double(logicalCoreCount) : percent
-      return CPUAlertCandidate(
-        groupKey: group.groupKey, name: group.name, percentOfCore: percentOfCore)
+      let key = group.bundleIdentifier ?? "name:\(group.name)"
+      if let existing = byKey[key] {
+        guard percentOfCore > existing.percentOfCore else { continue }
+        byKey[key] = CPUAlertCandidate(
+          groupKey: key, name: existing.name, percentOfCore: percentOfCore)
+      } else {
+        order.append(key)
+        byKey[key] = CPUAlertCandidate(
+          groupKey: key, name: group.name, percentOfCore: percentOfCore)
+      }
     }
+    return order.compactMap { byKey[$0] }
   }
 
   /// Termination feedback is the next sample: the row disappearing (or
