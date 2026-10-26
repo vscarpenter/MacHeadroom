@@ -21,6 +21,37 @@ struct HostMemorySnapshot: Sendable, Equatable {
   let usedBytes: UInt64
 }
 
+/// kern.memorystatus_vm_pressure_level as macOS reports it: 1 normal,
+/// 2 warning, 4 critical. Any other value (a future level, a failed read)
+/// maps to nil and the badge shows Unknown rather than guessing.
+enum MemoryPressureLevel: Sendable, Equatable {
+  case normal
+  case warning
+  case critical
+
+  init?(rawPressure: Int32) {
+    switch rawPressure {
+    case 1: self = .normal
+    case 2: self = .warning
+    case 4: self = .critical
+    default: return nil
+    }
+  }
+
+  var displayName: String {
+    switch self {
+    case .normal: "Normal"
+    case .warning: "Warning"
+    case .critical: "Critical"
+    }
+  }
+}
+
+struct HostSwapSnapshot: Sendable, Equatable {
+  let usedBytes: UInt64
+  let totalBytes: UInt64
+}
+
 enum HostSampler {
   static func sampleCPUTicks() -> HostCPUTicks? {
     var cpuLoad = host_cpu_load_info_data_t()
@@ -64,5 +95,21 @@ enum HostSampler {
       UInt64(stats.active_count) + UInt64(stats.wire_count)
       + UInt64(stats.compressor_page_count)
     return HostMemorySnapshot(totalBytes: totalBytes, usedBytes: usedPages * UInt64(pageSize))
+  }
+
+  static func sampleMemoryPressure() -> MemoryPressureLevel? {
+    var level: Int32 = 0
+    var size = MemoryLayout<Int32>.size
+    guard sysctlbyname("kern.memorystatus_vm_pressure_level", &level, &size, nil, 0) == 0,
+      size == MemoryLayout<Int32>.size
+    else { return nil }
+    return MemoryPressureLevel(rawPressure: level)
+  }
+
+  static func sampleSwapUsage() -> HostSwapSnapshot? {
+    var usage = xsw_usage()
+    var size = MemoryLayout<xsw_usage>.size
+    guard sysctlbyname("vm.swapusage", &usage, &size, nil, 0) == 0 else { return nil }
+    return HostSwapSnapshot(usedBytes: usage.xsu_used, totalBytes: usage.xsu_total)
   }
 }

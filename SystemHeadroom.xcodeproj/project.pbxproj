@@ -42,6 +42,8 @@
 		E10000000000000000000011 /* SettingsWindowPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000011 /* SettingsWindowPresenterTests.swift */; };
 		E10000000000000000000012 /* MonitorStoreMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000012 /* MonitorStoreMetadataTests.swift */; };
 		E10000000000000000000013 /* PortRowActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000013 /* PortRowActionsTests.swift */; };
+		E10000000000000000000014 /* MemoryPressureLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000014 /* MemoryPressureLevelTests.swift */; };
+		E10000000000000000000015 /* HostPressureLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000015 /* HostPressureLiveTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -122,6 +124,8 @@
 		E20000000000000000000011 /* SettingsWindowPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowPresenterTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000012 /* MonitorStoreMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStoreMetadataTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000013 /* PortRowActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowActionsTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000014 /* MemoryPressureLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureLevelTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000015 /* HostPressureLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostPressureLiveTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -255,6 +259,8 @@
 				E20000000000000000000011 /* SettingsWindowPresenterTests.swift */,
 				E20000000000000000000012 /* MonitorStoreMetadataTests.swift */,
 				E20000000000000000000013 /* PortRowActionsTests.swift */,
+				E20000000000000000000014 /* MemoryPressureLevelTests.swift */,
+				E20000000000000000000015 /* HostPressureLiveTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -496,6 +502,8 @@
 				E10000000000000000000011 /* SettingsWindowPresenterTests.swift in Sources */,
 				E10000000000000000000012 /* MonitorStoreMetadataTests.swift in Sources */,
 				E10000000000000000000013 /* PortRowActionsTests.swift in Sources */,
+				E10000000000000000000014 /* MemoryPressureLevelTests.swift in Sources */,
+				E10000000000000000000015 /* HostPressureLiveTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

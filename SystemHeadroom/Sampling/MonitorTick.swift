@@ -7,6 +7,10 @@ struct SystemSummary: Sendable, Equatable {
   let cpuPercent: Double?
   let memoryUsedBytes: UInt64
   let memoryTotalBytes: UInt64
+  /// nil when the sysctl read failed this tick; the badge shows Unknown.
+  var memoryPressure: MemoryPressureLevel? = nil
+  /// Bytes of swap in use right now; nil when the read failed.
+  var swapUsedBytes: UInt64? = nil
 }
 
 struct MonitorTick: Sendable, Equatable {

@@ -80,6 +80,8 @@ actor SamplerService {
 
     let hostTicks = HostSampler.sampleCPUTicks()
     let hostMemory = HostSampler.sampleMemory()
+    let memoryPressure = HostSampler.sampleMemoryPressure()
+    let swap = HostSampler.sampleSwapUsage()
     let hostPercent = hostTicks.flatMap { current in
       HostCPUDelta.percent(previous: previousHostTicks, current: current)
     }
@@ -95,7 +97,9 @@ actor SamplerService {
       system: SystemSummary(
         cpuPercent: hostPercent,
         memoryUsedBytes: hostMemory?.usedBytes ?? 0,
-        memoryTotalBytes: hostMemory?.totalBytes ?? 0
+        memoryTotalBytes: hostMemory?.totalBytes ?? 0,
+        memoryPressure: memoryPressure,
+        swapUsedBytes: swap?.usedBytes
       ),
       processMemoryMetric: processMemoryMetric,
       sockets: sockets,
