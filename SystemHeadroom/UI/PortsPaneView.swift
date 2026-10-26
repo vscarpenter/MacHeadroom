@@ -35,6 +35,16 @@ struct PortRowView: View {
   private static let maxBadges = 4
 
   var body: some View {
+    menuRow
+      .onHover { hovering in
+        guard store.canTerminate, group.appGroup != nil else { return }
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
+          isRowHovered = hovering
+        }
+      }
+  }
+
+  private var labeledRow: some View {
     HStack(spacing: 8) {
       Image(nsImage: icon)
         .resizable()
@@ -69,11 +79,14 @@ struct PortRowView: View {
     .frame(height: 26)
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
-    .onHover { hovering in
-      guard store.canTerminate, group.appGroup != nil else { return }
-      withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
-        isRowHovered = hovering
-      }
+  }
+
+  @ViewBuilder
+  private var menuRow: some View {
+    if let appGroup = group.appGroup {
+      labeledRow.quitContextMenu(for: appGroup, store: store)
+    } else {
+      labeledRow
     }
   }
 

@@ -28,6 +28,25 @@ ditto "$src" "$dest/Sparkle.framework"
 # own schedule.
 
 identity="${EXPANDED_CODE_SIGN_IDENTITY:-}"
+# /usr/bin/codesign, not a PATH lookup: Xcode's script environment can
+# otherwise pick up a different signer. A timestamp request to Apple
+# sometimes fails on the second nested bundle ("A timestamp was expected
+# but was not found") and succeeds on an immediate retry.
+sign_timestamped() {
+  target="$1"
+  attempt=1
+  while [ "$attempt" -le 3 ]; do
+    if /usr/bin/codesign --force --options runtime --timestamp --sign "$identity" "$target"; then
+      return 0
+    fi
+    echo "warning: timestamped codesign failed for $target (attempt $attempt)" >&2
+    attempt=$((attempt + 1))
+    sleep 1
+  done
+  echo "error: timestamped codesign failed for $target" >&2
+  return 1
+}
+
 if [ -n "$identity" ] && [ "$identity" != "-" ]; then
   framework="$dest/Sparkle.framework"
   for nested in \
@@ -36,8 +55,15 @@ if [ -n "$identity" ] && [ "$identity" != "-" ]; then
     "$framework/Versions/B/Autoupdate" \
     "$framework/Versions/B/Updater.app"; do
     if [ -e "$nested" ]; then
-      codesign --force --options runtime --timestamp --sign "$identity" "$nested"
+      if [ -d "$nested/Contents/MacOS" ]; then
+        for executable in "$nested/Contents/MacOS"/*; do
+          if [ -f "$executable" ]; then
+            sign_timestamped "$executable"
+          fi
+        done
+      fi
+      sign_timestamped "$nested"
     fi
   done
-  codesign --force --options runtime --timestamp --sign "$identity" "$framework"
+  sign_timestamped "$framework"
 fi
