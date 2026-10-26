@@ -92,6 +92,17 @@ struct HelpView: View {
           )
         }
 
+        HelpSection("Alerts", systemImage: "bell") {
+          HelpFact(
+            title: "Sustained CPU alerts",
+            detail: "Turn on alerts in General to get a notification when an app stays above your threshold for as long as you choose. macOS asks once for permission. If nothing arrives, check System Settings, then Notifications, then System Headroom."
+          )
+          HelpFact(
+            title: "What counts",
+            detail: "Alerts measure against one core, the way Activity Monitor does, so a row shown as 7% of the whole Mac can still be a full core. You get one notification per episode, and the same app waits five minutes before it can alert again."
+          )
+        }
+
         processControls
 
         if requestedSection != .directEdition {
