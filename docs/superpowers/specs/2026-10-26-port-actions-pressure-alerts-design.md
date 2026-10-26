@@ -154,7 +154,7 @@ becomes a trailing-aligned VStack of picker, then badge at 11 points in
 ### Help
 
 In "Read the signal", add "Memory pressure and swap": "The light stays
-green while macOS has room. Yellow means it is compressing memory to
+green while macOS has room. Orange means it is compressing memory to
 keep up. Red means it is short on memory and apps may stall. Swap shows
 how much memory is parked on disk right now."
 

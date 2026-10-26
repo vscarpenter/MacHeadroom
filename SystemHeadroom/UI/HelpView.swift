@@ -77,7 +77,7 @@ struct HelpView: View {
           )
           HelpFact(
             title: "Memory pressure and swap",
-            detail: "The light stays green while macOS has room. Yellow means it is compressing memory to keep up. Red means it is short on memory and apps may stall. Swap shows how much memory is parked on disk right now."
+            detail: "The light stays green while macOS has room. Orange means it is compressing memory to keep up. Red means it is short on memory and apps may stall. Swap shows how much memory is parked on disk right now."
           )
         }
 
