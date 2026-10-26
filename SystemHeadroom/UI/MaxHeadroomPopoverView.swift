@@ -606,13 +606,15 @@ private struct PorcelainPortRowView: View {
   let group: PortGroup
   let palette: PorcelainPalette
   let store: MonitorStore
+  var handler: PortActionHandler = .live
   @State private var isRowHovered = false
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   private static let maxBadges = 4
 
   var body: some View {
-    menuRow
+    labeledRow
+      .portRowMenu(for: group, store: store, handler: handler)
       .onHover { hovering in
         guard store.canTerminate, group.appGroup != nil else { return }
         withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
@@ -657,15 +659,6 @@ private struct PorcelainPortRowView: View {
     .contentShape(Rectangle())
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityLabel)
-  }
-
-  @ViewBuilder
-  private var menuRow: some View {
-    if let appGroup = group.appGroup {
-      labeledRow.quitContextMenu(for: appGroup, store: store)
-    } else {
-      labeledRow
-    }
   }
 
   private var badges: some View {

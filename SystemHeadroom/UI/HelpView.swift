@@ -71,6 +71,10 @@ struct HelpView: View {
             title: "Ports",
             detail: "This shows local processes that are listening for network connections. It does not show every connection your Mac makes."
           )
+          HelpFact(
+            title: "Open or copy a port",
+            detail: "Control-click a Ports row to open localhost and that port in your browser, or to copy the address."
+          )
         }
 
         HelpSection("Keep it current", systemImage: "arrow.clockwise") {
