@@ -23,6 +23,7 @@
 		D10000000000000000000008 /* PortTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000008 /* PortTypes.swift */; };
 		D1000000000000000000000A /* PortTableParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000A /* PortTableParser.swift */; };
 		D1000000000000000000000B /* PortTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000B /* PortTableSampler.swift */; };
+		D1000000000000000000000C /* HostsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000C /* HostsFile.swift */; };
 		E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
 		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
@@ -41,14 +42,22 @@
 		E10000000000000000000010 /* DirectEditionClaimTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000010 /* DirectEditionClaimTests.swift */; };
 		E10000000000000000000011 /* SettingsWindowPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000011 /* SettingsWindowPresenterTests.swift */; };
 		E10000000000000000000012 /* MonitorStoreMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000012 /* MonitorStoreMetadataTests.swift */; };
+		E10000000000000000000013 /* PortRowActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000013 /* PortRowActionsTests.swift */; };
+		E10000000000000000000014 /* MemoryPressureLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000014 /* MemoryPressureLevelTests.swift */; };
+		E10000000000000000000015 /* HostPressureLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000015 /* HostPressureLiveTests.swift */; };
+		E10000000000000000000016 /* CPUAlertTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000016 /* CPUAlertTrackerTests.swift */; };
+		E10000000000000000000017 /* StoreAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000017 /* StoreAlertTests.swift */; };
+		E10000000000000000000018 /* HostsFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000018 /* HostsFileTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
 		F10000000000000000000004 /* PortGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000004 /* PortGroup.swift */; };
 		F10000000000000000000005 /* PortGroupBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000005 /* PortGroupBuilder.swift */; };
+		F10000000000000000000006 /* CPUAlertTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000006 /* CPUAlertTracker.swift */; };
 		G10000000000000000000001 /* MonitorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* MonitorStore.swift */; };
 		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
 		G10000000000000000000003 /* ProcessTerminator.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000003 /* ProcessTerminator.swift */; };
+		G10000000000000000000004 /* AlertDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000004 /* AlertDelivery.swift */; };
 		H10000000000000000000001 /* MetricKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000001 /* MetricKind.swift */; };
 		H10000000000000000000002 /* ValueFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000002 /* ValueFormatting.swift */; };
 		H10000000000000000000003 /* GroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000003 /* GroupRowView.swift */; };
@@ -63,6 +72,9 @@
 		H1000000000000000000000C /* PortsPaneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000C /* PortsPaneView.swift */; };
 		H1000000000000000000000D /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000D /* HelpView.swift */; };
 		H1000000000000000000000E /* SettingsWindowPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000E /* SettingsWindowPresenter.swift */; };
+		H1000000000000000000000F /* PortRowActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000F /* PortRowActions.swift */; };
+		H10000000000000000000010 /* PortRowMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000010 /* PortRowMenu.swift */; };
+		H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000011 /* MemoryPressureBadge.swift */; };
 		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -100,6 +112,7 @@
 		D20000000000000000000009 /* PortTableABI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PortTableABI.h; sourceTree = "<group>"; };
 		D2000000000000000000000A /* PortTableParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableParser.swift; sourceTree = "<group>"; };
 		D2000000000000000000000B /* PortTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableSampler.swift; sourceTree = "<group>"; };
+		D2000000000000000000000C /* HostsFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFile.swift; sourceTree = "<group>"; };
 		E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
@@ -118,14 +131,22 @@
 		E20000000000000000000010 /* DirectEditionClaimTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectEditionClaimTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000011 /* SettingsWindowPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowPresenterTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000012 /* MonitorStoreMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStoreMetadataTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000013 /* PortRowActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowActionsTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000014 /* MemoryPressureLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureLevelTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000015 /* HostPressureLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostPressureLiveTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000016 /* CPUAlertTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUAlertTrackerTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000017 /* StoreAlertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreAlertTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000018 /* HostsFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFileTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
 		F20000000000000000000004 /* PortGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000005 /* PortGroupBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroupBuilder.swift; sourceTree = "<group>"; };
+		F20000000000000000000006 /* CPUAlertTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUAlertTracker.swift; sourceTree = "<group>"; };
 		G20000000000000000000001 /* MonitorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStore.swift; sourceTree = "<group>"; };
 		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
 		G20000000000000000000003 /* ProcessTerminator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTerminator.swift; sourceTree = "<group>"; };
+		G20000000000000000000004 /* AlertDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDelivery.swift; sourceTree = "<group>"; };
 		H20000000000000000000001 /* MetricKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricKind.swift; sourceTree = "<group>"; };
 		H20000000000000000000002 /* ValueFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueFormatting.swift; sourceTree = "<group>"; };
 		H20000000000000000000003 /* GroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRowView.swift; sourceTree = "<group>"; };
@@ -140,6 +161,9 @@
 		H2000000000000000000000C /* PortsPaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortsPaneView.swift; sourceTree = "<group>"; };
 		H2000000000000000000000D /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		H2000000000000000000000E /* SettingsWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowPresenter.swift; sourceTree = "<group>"; };
+		H2000000000000000000000F /* PortRowActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowActions.swift; sourceTree = "<group>"; };
+		H20000000000000000000010 /* PortRowMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowMenu.swift; sourceTree = "<group>"; };
+		H20000000000000000000011 /* MemoryPressureBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureBadge.swift; sourceTree = "<group>"; };
 		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -195,6 +219,7 @@
 				G20000000000000000000001 /* MonitorStore.swift */,
 				G20000000000000000000002 /* SingleInstanceGuard.swift */,
 				G20000000000000000000003 /* ProcessTerminator.swift */,
+				G20000000000000000000004 /* AlertDelivery.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -248,6 +273,12 @@
 				E20000000000000000000010 /* DirectEditionClaimTests.swift */,
 				E20000000000000000000011 /* SettingsWindowPresenterTests.swift */,
 				E20000000000000000000012 /* MonitorStoreMetadataTests.swift */,
+				E20000000000000000000013 /* PortRowActionsTests.swift */,
+				E20000000000000000000014 /* MemoryPressureLevelTests.swift */,
+				E20000000000000000000015 /* HostPressureLiveTests.swift */,
+				E20000000000000000000016 /* CPUAlertTrackerTests.swift */,
+				E20000000000000000000017 /* StoreAlertTests.swift */,
+				E20000000000000000000018 /* HostsFileTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -266,6 +297,7 @@
 				D20000000000000000000009 /* PortTableABI.h */,
 				D2000000000000000000000A /* PortTableParser.swift */,
 				D2000000000000000000000B /* PortTableSampler.swift */,
+				D2000000000000000000000C /* HostsFile.swift */,
 			);
 			path = Sampling;
 			sourceTree = "<group>";
@@ -278,6 +310,7 @@
 				F20000000000000000000003 /* GroupingEngine.swift */,
 				F20000000000000000000004 /* PortGroup.swift */,
 				F20000000000000000000005 /* PortGroupBuilder.swift */,
+				F20000000000000000000006 /* CPUAlertTracker.swift */,
 			);
 			path = Grouping;
 			sourceTree = "<group>";
@@ -299,6 +332,9 @@
 				H2000000000000000000000C /* PortsPaneView.swift */,
 				H2000000000000000000000D /* HelpView.swift */,
 				H2000000000000000000000E /* SettingsWindowPresenter.swift */,
+				H2000000000000000000000F /* PortRowActions.swift */,
+				H20000000000000000000010 /* PortRowMenu.swift */,
+				H20000000000000000000011 /* MemoryPressureBadge.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -436,14 +472,17 @@
 				D10000000000000000000008 /* PortTypes.swift in Sources */,
 				D1000000000000000000000A /* PortTableParser.swift in Sources */,
 				D1000000000000000000000B /* PortTableSampler.swift in Sources */,
+				D1000000000000000000000C /* HostsFile.swift in Sources */,
 				F10000000000000000000001 /* AppMetadata.swift in Sources */,
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
 				F10000000000000000000004 /* PortGroup.swift in Sources */,
 				F10000000000000000000005 /* PortGroupBuilder.swift in Sources */,
+				F10000000000000000000006 /* CPUAlertTracker.swift in Sources */,
 				G10000000000000000000001 /* MonitorStore.swift in Sources */,
 				G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */,
 				G10000000000000000000003 /* ProcessTerminator.swift in Sources */,
+				G10000000000000000000004 /* AlertDelivery.swift in Sources */,
 				H10000000000000000000001 /* MetricKind.swift in Sources */,
 				H10000000000000000000002 /* ValueFormatting.swift in Sources */,
 				H10000000000000000000003 /* GroupRowView.swift in Sources */,
@@ -458,6 +497,9 @@
 				H1000000000000000000000C /* PortsPaneView.swift in Sources */,
 				H1000000000000000000000D /* HelpView.swift in Sources */,
 				H1000000000000000000000E /* SettingsWindowPresenter.swift in Sources */,
+				H1000000000000000000000F /* PortRowActions.swift in Sources */,
+				H10000000000000000000010 /* PortRowMenu.swift in Sources */,
+				H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +526,12 @@
 				E10000000000000000000010 /* DirectEditionClaimTests.swift in Sources */,
 				E10000000000000000000011 /* SettingsWindowPresenterTests.swift in Sources */,
 				E10000000000000000000012 /* MonitorStoreMetadataTests.swift in Sources */,
+				E10000000000000000000013 /* PortRowActionsTests.swift in Sources */,
+				E10000000000000000000014 /* MemoryPressureLevelTests.swift in Sources */,
+				E10000000000000000000015 /* HostPressureLiveTests.swift in Sources */,
+				E10000000000000000000016 /* CPUAlertTrackerTests.swift in Sources */,
+				E10000000000000000000017 /* StoreAlertTests.swift in Sources */,
+				E10000000000000000000018 /* HostsFileTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

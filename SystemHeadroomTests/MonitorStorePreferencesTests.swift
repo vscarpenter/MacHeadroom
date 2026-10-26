@@ -46,6 +46,81 @@ struct MonitorStorePreferencesTests {
     }
   }
 
+  @Test("Alert preferences default to off, 90 percent, one minute")
+  @MainActor
+  func alertPreferencesDefault() throws {
+    let (suiteName, defaults) = try makeDefaults()
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let store = MonitorStore(defaults: defaults, alertDelivery: RecordingAlertDelivery())
+
+    #expect(store.cpuAlertsEnabled == false)
+    #expect(store.cpuAlertThresholdPercent == 90)
+    #expect(store.cpuAlertSustainSeconds == 60)
+    #expect(store.isSampling == false)
+  }
+
+  @Test("Alert preferences round trip through a fresh store")
+  @MainActor
+  func alertPreferencesRoundTrip() throws {
+    let (suiteName, defaults) = try makeDefaults()
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let store = MonitorStore(defaults: defaults, alertDelivery: RecordingAlertDelivery())
+    store.cpuAlertsEnabled = true
+    store.cpuAlertThresholdPercent = 75
+    store.cpuAlertSustainSeconds = 120
+    store.cpuAlertsEnabled = false
+
+    let restored = MonitorStore(defaults: defaults, alertDelivery: RecordingAlertDelivery())
+    #expect(restored.cpuAlertsEnabled == false)
+    #expect(restored.cpuAlertThresholdPercent == 75)
+    #expect(restored.cpuAlertSustainSeconds == 120)
+  }
+
+  @Test("Enabling alerts with the popover closed starts sampling and asks once")
+  @MainActor
+  func enablingAlertsStartsSampling() throws {
+    let (suiteName, defaults) = try makeDefaults()
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let delivery = RecordingAlertDelivery()
+    let store = MonitorStore(defaults: defaults, alertDelivery: delivery)
+
+    store.cpuAlertsEnabled = true
+    defer { store.cpuAlertsEnabled = false }
+
+    #expect(store.isSampling)
+    #expect(delivery.authorizationRequests == 1)
+  }
+
+  @Test("Disabling alerts with the popover closed and menu text off stops sampling")
+  @MainActor
+  func disablingAlertsStopsSampling() throws {
+    let (suiteName, defaults) = try makeDefaults()
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let store = MonitorStore(defaults: defaults, alertDelivery: RecordingAlertDelivery())
+
+    store.cpuAlertsEnabled = true
+    store.cpuAlertsEnabled = false
+
+    #expect(store.isSampling == false)
+  }
+
+  @Test("Disabling alerts with the popover open keeps sampling")
+  @MainActor
+  func disablingAlertsWithPopoverOpenKeepsSampling() throws {
+    let (suiteName, defaults) = try makeDefaults()
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let store = MonitorStore(defaults: defaults, alertDelivery: RecordingAlertDelivery())
+
+    store.popoverDidAppear()
+    defer { store.popoverDidDisappear() }
+    store.cpuAlertsEnabled = true
+    store.cpuAlertsEnabled = false
+
+    #expect(store.isSampling)
+  }
+
   private func makeDefaults() throws -> (String, UserDefaults) {
     let suiteName = "com.vinnycarpenter.SystemHeadroomTests.preferences.\(UUID().uuidString)"
     let defaults = try #require(UserDefaults(suiteName: suiteName))

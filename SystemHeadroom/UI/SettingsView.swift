@@ -5,6 +5,8 @@ struct SettingsView: View {
   let directEditionClaimURL: URL?
 
   private let intervalOptions: [TimeInterval] = [2, 5, 10, 30]
+  private let thresholdOptions = [50, 75, 90]
+  private let sustainOptions = [30, 60, 120, 300]
   @State private var selectedTab: SettingsTab = .general
   @State private var requestedHelpSection: HelpDestination?
 
@@ -60,6 +62,30 @@ struct SettingsView: View {
             set: { store.cpuConvention = $0 ? .perCore : .machineCapacity }
           )
         )
+      }
+
+      Section("Alerts") {
+        Toggle("Notify me about sustained CPU use", isOn: $store.cpuAlertsEnabled)
+
+        Picker("Above", selection: $store.cpuAlertThresholdPercent) {
+          ForEach(thresholdOptions, id: \.self) { percent in
+            Text("\(percent)%").tag(percent)
+          }
+        }
+        .disabled(!store.cpuAlertsEnabled)
+
+        Picker("For at least", selection: $store.cpuAlertSustainSeconds) {
+          ForEach(sustainOptions, id: \.self) { seconds in
+            Text(CPUAlertPolicy.describe(sustainSeconds: seconds)).tag(seconds)
+          }
+        }
+        .disabled(!store.cpuAlertsEnabled)
+
+        Text(
+          "Percent of one core, the way Activity Monitor counts. Alerts keep sampling running while the popover is closed, like the menu bar percent does."
+        )
+        .font(.caption)
+        .foregroundStyle(.secondary)
       }
 
       Section("Appearance") {

@@ -80,6 +80,21 @@ struct QuitAffordanceView<Value: View>: View {
   }
 }
 
+/// The two quit buttons shared by the metric rows' context menu and the
+/// port rows' menu. Callers gate on `store.canTerminate`; this view does
+/// not, so it never has to know which menu it sits in.
+struct QuitMenuItems: View {
+  let group: AppGroup
+  let store: MonitorStore
+
+  var body: some View {
+    Button("Quit \(group.name)") { store.quit(group) }
+    Button("Force Quit \(group.name)", role: .destructive) {
+      store.forceQuit(group)
+    }
+  }
+}
+
 extension View {
   /// Row-level quit context menu and VoiceOver actions. Applied only
   /// when the store can terminate, so the sandboxed build's hierarchy
@@ -89,10 +104,7 @@ extension View {
     if store.canTerminate {
       self
         .contextMenu {
-          Button("Quit \(group.name)") { store.quit(group) }
-          Button("Force Quit \(group.name)", role: .destructive) {
-            store.forceQuit(group)
-          }
+          QuitMenuItems(group: group, store: store)
         }
         .accessibilityAction(named: "Quit") { store.quit(group) }
         .accessibilityAction(named: "Force Quit") { store.forceQuit(group) }

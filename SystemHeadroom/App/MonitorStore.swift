@@ -15,6 +15,9 @@ final class MonitorStore {
     static let showsMenuBarText = "showsMenuBarText"
     static let usesPorcelainAppearance = "usesPorcelainAppearance"
     static let legacyMaxHeadroomModeEnabled = "maxHeadroomModeEnabled"
+    static let cpuAlertsEnabled = "cpuAlertsEnabled"
+    static let cpuAlertThresholdPercent = "cpuAlertThresholdPercent"
+    static let cpuAlertSustainSeconds = "cpuAlertSustainSeconds"
   }
 
   private(set) var topCPUGroups: [AppGroup] = []
@@ -27,6 +30,9 @@ final class MonitorStore {
     cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
   private(set) var processMemoryMetric = ProcessMemoryMetric.current
   private(set) var lastUpdated: Date?
+  /// Loopback names from /etc/hosts, read each time the popover opens.
+  /// Port rows on 80 or 443 offer them as Open and Copy targets.
+  private(set) var localHostnames: [String] = []
 
   var samplingInterval: TimeInterval {
     didSet {
@@ -51,11 +57,47 @@ final class MonitorStore {
       defaults.set(showsMenuBarText, forKey: DefaultsKey.showsMenuBarText)
       if showsMenuBarText {
         start()
-      } else if !isPopoverOpen {
-        stop()
+      } else {
+        stopIfIdle()
       }
     }
   }
+
+  /// Off by default. On, it asks macOS once for notification permission
+  /// and keeps sampling alive while the popover is closed, like the menu
+  /// bar percent does, so a runaway app is caught with nothing open.
+  var cpuAlertsEnabled: Bool {
+    didSet {
+      defaults.set(cpuAlertsEnabled, forKey: DefaultsKey.cpuAlertsEnabled)
+      if cpuAlertsEnabled {
+        alertDelivery.requestAuthorization()
+        start()
+      } else {
+        alertTracker = CPUAlertTracker()
+        stopIfIdle()
+      }
+    }
+  }
+
+  /// Percent of one core, the way Activity Monitor counts, whatever
+  /// convention the list displays: under machine capacity one saturated
+  /// core is about 7% on a 14-core Mac, which no sensible threshold
+  /// would catch.
+  var cpuAlertThresholdPercent: Int {
+    didSet {
+      defaults.set(cpuAlertThresholdPercent, forKey: DefaultsKey.cpuAlertThresholdPercent)
+    }
+  }
+
+  var cpuAlertSustainSeconds: Int {
+    didSet {
+      defaults.set(cpuAlertSustainSeconds, forKey: DefaultsKey.cpuAlertSustainSeconds)
+    }
+  }
+
+  /// Whether the sampling timer is running; the start and stop rules
+  /// above are what the tests pin.
+  var isSampling: Bool { timerTask != nil }
 
   /// Porcelain Native is the default presentation. Users can still select
   /// the classic compact view without changing sampling or measurements.
@@ -84,25 +126,41 @@ final class MonitorStore {
   private let terminator: ProcessTerminator
   private let sampler: SamplerService
   private let defaults: UserDefaults
+  private let alertDelivery: AlertDelivery
+  private let hostnamesReader: () -> [String]?
   private let topListLimit = 10
   private var timerTask: Task<Void, Never>?
   private var isPopoverOpen = false
+  private var alertTracker = CPUAlertTracker()
+
+  private var needsBackgroundSampling: Bool {
+    showsMenuBarText || cpuAlertsEnabled
+  }
 
   init(
     sampler: SamplerService = SamplerService(),
     defaults: UserDefaults = .standard,
     capability: TerminationCapability = .current,
-    terminator: ProcessTerminator = .live()
+    terminator: ProcessTerminator = .live(),
+    alertDelivery: AlertDelivery = NotificationAlertDelivery(),
+    hostnamesReader: @escaping () -> [String]? = { HostsFile.readLoopbackNames() }
   ) {
     self.canTerminate = capability == .available
     self.terminator = terminator
     self.sampler = sampler
     self.defaults = defaults
+    self.alertDelivery = alertDelivery
+    self.hostnamesReader = hostnamesReader
     let storedInterval = defaults.double(forKey: DefaultsKey.samplingInterval)
     samplingInterval = storedInterval > 0 ? storedInterval : 5
     cpuConvention =
       defaults.bool(forKey: DefaultsKey.perCoreConvention) ? .perCore : .machineCapacity
     showsMenuBarText = defaults.bool(forKey: DefaultsKey.showsMenuBarText)
+    cpuAlertsEnabled = defaults.bool(forKey: DefaultsKey.cpuAlertsEnabled)
+    let storedThreshold = defaults.integer(forKey: DefaultsKey.cpuAlertThresholdPercent)
+    cpuAlertThresholdPercent = storedThreshold > 0 ? storedThreshold : 90
+    let storedSustain = defaults.integer(forKey: DefaultsKey.cpuAlertSustainSeconds)
+    cpuAlertSustainSeconds = storedSustain > 0 ? storedSustain : 60
     if let storedAppearance = defaults.object(
       forKey: DefaultsKey.usesPorcelainAppearance
     ) as? Bool {
@@ -116,9 +174,9 @@ final class MonitorStore {
       usesPorcelainAppearance = true
     }
     launchAtLogin = SMAppService.mainApp.status == .enabled
-    // Property observers don't run during init, so the menu bar text option
-    // has to start its live sampling here on relaunch.
-    if showsMenuBarText {
+    // Property observers don't run during init, so the menu bar text and
+    // alert options have to start their live sampling here on relaunch.
+    if needsBackgroundSampling {
       start()
     }
   }
@@ -129,6 +187,7 @@ final class MonitorStore {
   /// stack two ticks back to back.
   func popoverDidAppear() {
     isPopoverOpen = true
+    localHostnames = hostnamesReader() ?? []
     if timerTask == nil {
       start()
     } else {
@@ -138,9 +197,7 @@ final class MonitorStore {
 
   func popoverDidDisappear() {
     isPopoverOpen = false
-    if !showsMenuBarText {
-      stop()
-    }
+    stopIfIdle()
   }
 
   func refreshNow() async {
@@ -157,6 +214,57 @@ final class MonitorStore {
     systemSummary = tick.system
     processMemoryMetric = tick.processMemoryMetric
     lastUpdated = Date()
+    evaluateAlerts(
+      groups: topCPUGroups, convention: tick.convention,
+      logicalCoreCount: tick.logicalCoreCount, now: Date())
+  }
+
+  /// Internal so a test can drive it with fixture groups and a fixed
+  /// clock. The convention and core count come from the tick that
+  /// produced the groups, not from the preference, which can change
+  /// while the sampler is mid-sweep.
+  func evaluateAlerts(
+    groups: [AppGroup], convention: CPUConvention, logicalCoreCount: Int, now: Date
+  ) {
+    guard cpuAlertsEnabled else { return }
+    let policy = CPUAlertPolicy(
+      thresholdPercentOfCore: cpuAlertThresholdPercent,
+      sustainSeconds: cpuAlertSustainSeconds)
+    let candidates = Self.candidates(
+      from: groups, convention: convention, logicalCoreCount: logicalCoreCount)
+    for alert in alertTracker.observe(candidates, at: now, policy: policy) {
+      alertDelivery.deliver(alert)
+    }
+  }
+
+  /// A group with no CPU reading yet (the priming tick) is not a
+  /// candidate; treating it as zero would end a live episode early.
+  /// The list keys a bundle-less process by pid so two `node` servers
+  /// get two rows, but the cooldown is per app as the user sees it, so
+  /// a bundle-less process alerts by name. Same-name processes merge at
+  /// the higher reading, so one episode lasts while any of them is over
+  /// the threshold.
+  static func candidates(
+    from groups: [AppGroup], convention: CPUConvention, logicalCoreCount: Int
+  ) -> [CPUAlertCandidate] {
+    var order: [String] = []
+    var byKey: [String: CPUAlertCandidate] = [:]
+    for group in groups {
+      guard let percent = group.cpuPercent else { continue }
+      let percentOfCore =
+        convention == .machineCapacity ? percent * Double(logicalCoreCount) : percent
+      let key = group.bundleIdentifier ?? "name:\(group.name)"
+      if let existing = byKey[key] {
+        guard percentOfCore > existing.percentOfCore else { continue }
+        byKey[key] = CPUAlertCandidate(
+          groupKey: key, name: existing.name, percentOfCore: percentOfCore)
+      } else {
+        order.append(key)
+        byKey[key] = CPUAlertCandidate(
+          groupKey: key, name: group.name, percentOfCore: percentOfCore)
+      }
+    }
+    return order.compactMap { byKey[$0] }
   }
 
   /// Termination feedback is the next sample: the row disappearing (or
@@ -207,6 +315,13 @@ final class MonitorStore {
     timerTask = nil
   }
 
+  /// Sampling stays alive while anything needs it: the open popover, the
+  /// menu bar percent, or alerts.
+  private func stopIfIdle() {
+    guard !isPopoverOpen, !needsBackgroundSampling else { return }
+    stop()
+  }
+
   private static func currentAppMetadata() -> [Int32: AppMetadata] {
     metadataTable(
       from: NSWorkspace.shared.runningApplications.map { app in
@@ -254,7 +369,8 @@ extension MonitorStore {
       terminator: ProcessTerminator(
         runningApplication: { _ in nil },
         currentStartIdentity: { _ in nil },
-        sendSignal: { _, _ in 0 }))
+        sendSignal: { _, _ in 0 }),
+      alertDelivery: NoOpAlertDelivery())
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
     store.portGroups = portGroups

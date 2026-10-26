@@ -71,6 +71,14 @@ struct HelpView: View {
             title: "Ports",
             detail: "This shows local processes that are listening for network connections. It does not show every connection your Mac makes."
           )
+          HelpFact(
+            title: "Open or copy a port",
+            detail: "Select the … at the end of a Ports row, or Control-click the row, to open localhost and that port in your browser or to copy the address. Rows listening on 80 or 443 also offer the loopback names from your hosts file, so a reverse proxy opens under the name it routes by."
+          )
+          HelpFact(
+            title: "Memory pressure and swap",
+            detail: "The light stays green while macOS has room. Orange means it is compressing memory to keep up. Red means it is short on memory and apps may stall. Swap shows how much memory is parked on disk right now."
+          )
         }
 
         HelpSection("Keep it current", systemImage: "arrow.clockwise") {
@@ -81,6 +89,17 @@ struct HelpView: View {
           HelpFact(
             title: "Adjust the cadence",
             detail: "In General, choose a sampling interval, show CPU in the menu bar, or launch System Headroom when you sign in."
+          )
+        }
+
+        HelpSection("Alerts", systemImage: "bell") {
+          HelpFact(
+            title: "Sustained CPU alerts",
+            detail: "Turn on alerts in General to get a notification when an app stays above your threshold for as long as you choose. macOS asks once for permission. If nothing arrives, check System Settings, then Notifications, then System Headroom."
+          )
+          HelpFact(
+            title: "What counts",
+            detail: "Alerts measure against one core, the way Activity Monitor does. A row shown as 7% of the whole Mac can still be a full core. You get one notification per episode, and the same app waits five minutes before it can alert again."
           )
         }
 
@@ -123,7 +142,7 @@ struct HelpView: View {
         )
         HelpFact(
           title: "Included with your purchase",
-          detail: "There is no additional payment or account. Verification sends only your App Store purchase evidence—never process samples, computer names, or preferences."
+          detail: "There is no additional payment or account. Verification sends only your App Store purchase evidenceânever process samples, computer names, or preferences."
         )
 
         HelpStep(
@@ -152,7 +171,7 @@ struct HelpView: View {
           HStack(spacing: 8) {
             ProgressView()
               .controlSize(.small)
-            Text("Verifying your App Store purchase…")
+            Text("Verifying your App Store purchaseâ¦")
               .foregroundStyle(.secondary)
           }
         case .readyToOpen(let claimURL):
@@ -182,7 +201,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "xmark.circle") {
         HelpFact(
           title: "Quit an app group",
-          detail: "Move the pointer over a CPU, Memory, or Ports row, select the ×, then select Quit? within four seconds to confirm."
+          detail: "Move the pointer over a CPU, Memory, or Ports row, select the Ã, then select Quit? within four seconds to confirm."
         )
         HelpFact(
           title: "Force Quit only when needed",
@@ -297,7 +316,7 @@ private struct HelpFact: View {
 }
 
 #if DEBUG
-  #Preview("Help — App Store") {
+  #Preview("Help â App Store") {
     HelpView(store: PreviewFixtures.makeStore())
   }
 #endif
