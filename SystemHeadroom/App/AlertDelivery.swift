@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import os
 
 /// How a CPU alert reaches the user. The store talks to this, never to
 /// UNUserNotificationCenter directly, so tests inject a recorder.
@@ -13,14 +14,25 @@ protocol AlertDelivery: AnyObject {
 /// touched only inside the two methods, never in init, so constructing a
 /// store in a test never prompts. The request identifier is per app
 /// group, so a newer alert for the same app replaces the older one in
-/// Notification Center instead of stacking.
+/// Notification Center instead of stacking. Failures go to the unified
+/// log, the only field-debugging path this app has.
 @MainActor
 final class NotificationAlertDelivery: NSObject, AlertDelivery, UNUserNotificationCenterDelegate {
+  private static let log = Logger(
+    subsystem: "com.vinnycarpenter.SystemHeadroom", category: "alerts")
+
   func requestAuthorization() {
     let center = UNUserNotificationCenter.current()
     center.delegate = self
     Task {
-      _ = try? await center.requestAuthorization(options: [.alert, .sound])
+      do {
+        let granted = try await center.requestAuthorization(options: [.alert, .sound])
+        Self.log.notice(
+          "notification authorization \(granted ? "granted" : "denied", privacy: .public)")
+      } catch {
+        Self.log.error(
+          "notification authorization failed: \(error.localizedDescription, privacy: .public)")
+      }
     }
   }
 
@@ -34,7 +46,12 @@ final class NotificationAlertDelivery: NSObject, AlertDelivery, UNUserNotificati
     let center = UNUserNotificationCenter.current()
     center.delegate = self
     Task {
-      try? await center.add(request)
+      do {
+        try await center.add(request)
+      } catch {
+        Self.log.error(
+          "notification delivery failed for \(alert.groupKey): \(error.localizedDescription, privacy: .public)")
+      }
     }
   }
 
