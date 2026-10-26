@@ -182,7 +182,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "xmark.circle") {
         HelpFact(
           title: "Quit an app group",
-          detail: "Move the pointer over a CPU or Memory row, select the ×, then select Quit? within four seconds to confirm."
+          detail: "Move the pointer over a CPU, Memory, or Ports row, select the ×, then select Quit? within four seconds to confirm."
         )
         HelpFact(
           title: "Force Quit only when needed",

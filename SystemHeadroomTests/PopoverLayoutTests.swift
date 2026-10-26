@@ -149,4 +149,37 @@ struct PopoverLayoutTests {
 
     #expect(offSize == onSize)
   }
+
+  @Test("Quit capability does not change classic ports popover size")
+  @MainActor
+  func classicPortsCapabilityDoesNotChangeSize() {
+    let gatedOff = PreviewFixtures.makeStore(usesPorcelainAppearance: false)
+    let gatedOn = PreviewFixtures.makeStore(
+      usesPorcelainAppearance: false, canTerminate: true)
+
+    let offSize = NSHostingView(
+      rootView: PopoverView(store: gatedOff, initialTab: .ports)
+    ).intrinsicContentSize
+    let onSize = NSHostingView(
+      rootView: PopoverView(store: gatedOn, initialTab: .ports)
+    ).intrinsicContentSize
+
+    #expect(offSize == onSize)
+  }
+
+  @Test("Quit capability does not change Porcelain ports popover size")
+  @MainActor
+  func porcelainPortsCapabilityDoesNotChangeSize() {
+    let gatedOff = PreviewFixtures.makeStore()
+    let gatedOn = PreviewFixtures.makeStore(canTerminate: true)
+
+    let offSize = NSHostingView(
+      rootView: PopoverView(store: gatedOff, initialTab: .ports)
+    ).intrinsicContentSize
+    let onSize = NSHostingView(
+      rootView: PopoverView(store: gatedOn, initialTab: .ports)
+    ).intrinsicContentSize
+
+    #expect(offSize == onSize)
+  }
 }
