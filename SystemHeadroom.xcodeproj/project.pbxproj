@@ -68,6 +68,7 @@
 		H1000000000000000000000E /* SettingsWindowPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000E /* SettingsWindowPresenter.swift */; };
 		H1000000000000000000000F /* PortRowActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000F /* PortRowActions.swift */; };
 		H10000000000000000000010 /* PortRowMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000010 /* PortRowMenu.swift */; };
+		H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000011 /* MemoryPressureBadge.swift */; };
 		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -150,6 +151,7 @@
 		H2000000000000000000000E /* SettingsWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowPresenter.swift; sourceTree = "<group>"; };
 		H2000000000000000000000F /* PortRowActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowActions.swift; sourceTree = "<group>"; };
 		H20000000000000000000010 /* PortRowMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowMenu.swift; sourceTree = "<group>"; };
+		H20000000000000000000011 /* MemoryPressureBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureBadge.swift; sourceTree = "<group>"; };
 		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -314,6 +316,7 @@
 				H2000000000000000000000E /* SettingsWindowPresenter.swift */,
 				H2000000000000000000000F /* PortRowActions.swift */,
 				H20000000000000000000010 /* PortRowMenu.swift */,
+				H20000000000000000000011 /* MemoryPressureBadge.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -475,6 +478,7 @@
 				H1000000000000000000000E /* SettingsWindowPresenter.swift in Sources */,
 				H1000000000000000000000F /* PortRowActions.swift in Sources */,
 				H10000000000000000000010 /* PortRowMenu.swift in Sources */,
+				H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

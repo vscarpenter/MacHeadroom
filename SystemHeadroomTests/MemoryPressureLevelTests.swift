@@ -28,3 +28,30 @@ struct MemoryPressureLevelTests {
     #expect(MemoryPressureLevel.critical.displayName == "Critical")
   }
 }
+
+@Suite("Memory pressure badge text")
+struct MemoryPressureBadgeTextTests {
+  @Test("Level text names the state, Unknown for nil")
+  func levelText() {
+    #expect(MemoryPressureBadge.levelText(nil) == "Unknown")
+    #expect(MemoryPressureBadge.levelText(.warning) == "Warning")
+  }
+
+  @Test("Swap text formats bytes, dash for nil")
+  func swapText() {
+    #expect(MemoryPressureBadge.swapText(nil) == "Swap —")
+    #expect(
+      MemoryPressureBadge.swapText(1_200_000_000)
+        == "Swap \(ValueFormatting.bytes(1_200_000_000))")
+  }
+
+  @Test("Accessibility label reads the state and the swap figure")
+  func accessibilityLabel() {
+    #expect(
+      MemoryPressureBadge.accessibilityLabel(level: .normal, swapUsedBytes: 1_200_000_000)
+        == "Memory pressure normal, \(ValueFormatting.bytes(1_200_000_000)) of swap in use")
+    #expect(
+      MemoryPressureBadge.accessibilityLabel(level: nil, swapUsedBytes: nil)
+        == "Memory pressure unknown, swap unknown")
+  }
+}

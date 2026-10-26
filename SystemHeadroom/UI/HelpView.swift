@@ -75,6 +75,10 @@ struct HelpView: View {
             title: "Open or copy a port",
             detail: "Control-click a Ports row to open localhost and that port in your browser, or to copy the address."
           )
+          HelpFact(
+            title: "Memory pressure and swap",
+            detail: "The light stays green while macOS has room. Yellow means it is compressing memory to keep up. Red means it is short on memory and apps may stall. Swap shows how much memory is parked on disk right now."
+          )
         }
 
         HelpSection("Keep it current", systemImage: "arrow.clockwise") {

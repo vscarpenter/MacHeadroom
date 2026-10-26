@@ -127,8 +127,18 @@ struct PorcelainPopoverView: View {
 
         Spacer(minLength: 0)
 
-        PorcelainMetricPicker(selection: $selectedTab, palette: palette)
-          .frame(width: 240)
+        VStack(alignment: .trailing, spacing: PorcelainSpacing.sm) {
+          PorcelainMetricPicker(selection: $selectedTab, palette: palette)
+            .frame(width: 240)
+
+          MemoryPressureBadge(
+            level: store.systemSummary.memoryPressure,
+            swapUsedBytes: store.systemSummary.swapUsedBytes,
+            secondaryColor: palette.textSecondary
+          )
+          .font(.system(size: 11))
+          .foregroundStyle(palette.textSecondary)
+        }
       }
     }
     .padding(.horizontal, PorcelainSpacing.lg)

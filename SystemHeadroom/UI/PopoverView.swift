@@ -68,6 +68,13 @@ struct PopoverView: View {
       }
       .font(.caption)
       .foregroundStyle(.secondary)
+
+      MemoryPressureBadge(
+        level: store.systemSummary.memoryPressure,
+        swapUsedBytes: store.systemSummary.swapUsedBytes
+      )
+      .font(.caption)
+      .foregroundStyle(.secondary)
     }
     .padding(12)
   }

@@ -182,4 +182,44 @@ struct PopoverLayoutTests {
 
     #expect(offSize == onSize)
   }
+
+  /// The pressure badge renders in every state, so a nil reading and a
+  /// critical reading with swap in use must produce identical sizes.
+  @Test("Memory pressure state does not change classic popover size")
+  @MainActor
+  func classicPressureDoesNotChangeSize() {
+    let plain = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [],
+      summary: SystemSummary(cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0),
+      usesPorcelainAppearance: false)
+    let pressured = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [],
+      summary: SystemSummary(
+        cpuPercent: 34.2, memoryUsedBytes: 12_800_000_000, memoryTotalBytes: 36_000_000_000,
+        memoryPressure: .critical, swapUsedBytes: 3_000_000_000),
+      usesPorcelainAppearance: false)
+
+    let plainSize = NSHostingView(rootView: PopoverView(store: plain)).intrinsicContentSize
+    let pressuredSize = NSHostingView(rootView: PopoverView(store: pressured)).intrinsicContentSize
+
+    #expect(plainSize == pressuredSize)
+  }
+
+  @Test("Memory pressure state does not change Porcelain popover size")
+  @MainActor
+  func porcelainPressureDoesNotChangeSize() {
+    let plain = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [],
+      summary: SystemSummary(cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0))
+    let pressured = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [],
+      summary: SystemSummary(
+        cpuPercent: 34.2, memoryUsedBytes: 12_800_000_000, memoryTotalBytes: 36_000_000_000,
+        memoryPressure: .critical, swapUsedBytes: 3_000_000_000))
+
+    let plainSize = NSHostingView(rootView: PopoverView(store: plain)).intrinsicContentSize
+    let pressuredSize = NSHostingView(rootView: PopoverView(store: pressured)).intrinsicContentSize
+
+    #expect(plainSize == pressuredSize)
+  }
 }
