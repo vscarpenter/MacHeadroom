@@ -62,6 +62,7 @@
 		E1000000000000000000001E /* DriveSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001E /* DriveSamplerLiveTests.swift */; };
 		E1000000000000000000001F /* DriveHealthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001F /* DriveHealthTests.swift */; };
 		E10000000000000000000020 /* HardwareTickTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000020 /* HardwareTickTests.swift */; };
+		E10000000000000000000021 /* HardwarePresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000021 /* HardwarePresentationTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -90,6 +91,7 @@
 		H1000000000000000000000F /* PortRowActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000000000000000000000F /* PortRowActions.swift */; };
 		H10000000000000000000010 /* PortRowMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000010 /* PortRowMenu.swift */; };
 		H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000011 /* MemoryPressureBadge.swift */; };
+		H10000000000000000000012 /* StatRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000012 /* StatRow.swift */; };
 		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -168,6 +170,7 @@
 		E2000000000000000000001E /* DriveSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSamplerLiveTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000001F /* DriveHealthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveHealthTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000020 /* HardwareTickTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareTickTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000021 /* HardwarePresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwarePresentationTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -196,6 +199,7 @@
 		H2000000000000000000000F /* PortRowActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowActions.swift; sourceTree = "<group>"; };
 		H20000000000000000000010 /* PortRowMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowMenu.swift; sourceTree = "<group>"; };
 		H20000000000000000000011 /* MemoryPressureBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureBadge.swift; sourceTree = "<group>"; };
+		H20000000000000000000012 /* StatRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatRow.swift; sourceTree = "<group>"; };
 		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -319,6 +323,7 @@
 				E2000000000000000000001E /* DriveSamplerLiveTests.swift */,
 				E2000000000000000000001F /* DriveHealthTests.swift */,
 				E20000000000000000000020 /* HardwareTickTests.swift */,
+				E20000000000000000000021 /* HardwarePresentationTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -384,6 +389,7 @@
 				H2000000000000000000000F /* PortRowActions.swift */,
 				H20000000000000000000010 /* PortRowMenu.swift */,
 				H20000000000000000000011 /* MemoryPressureBadge.swift */,
+				H20000000000000000000012 /* StatRow.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -556,6 +562,7 @@
 				H1000000000000000000000F /* PortRowActions.swift in Sources */,
 				H10000000000000000000010 /* PortRowMenu.swift in Sources */,
 				H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */,
+				H10000000000000000000012 /* StatRow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -596,6 +603,7 @@
 				E1000000000000000000001E /* DriveSamplerLiveTests.swift in Sources */,
 				E1000000000000000000001F /* DriveHealthTests.swift in Sources */,
 				E10000000000000000000020 /* HardwareTickTests.swift in Sources */,
+				E10000000000000000000021 /* HardwarePresentationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
