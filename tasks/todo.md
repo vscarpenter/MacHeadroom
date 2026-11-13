@@ -23,7 +23,9 @@ nothing pushed). Spec:
 
 ## Next
 - Vinny's manual checks, listed in the spec under "Manual check". The
-  sandboxed Debug build was left running for it.
+  App Store flavor Release build at
+  `build/release-check/Build/Products/Release/System Headroom.app` was
+  left running for it. It carries only the sandbox entitlement.
 - Then push and open a PR. Both wait for Vinny.
 - CI is unverified for the new live tests. They skip their hardware
   assertions when `kern.hv_vmm_present` is 1, which should cover the
@@ -40,9 +42,10 @@ nothing pushed). Spec:
 - The Intel Mac and macOS 14 to 26 behavior is unmeasured. Both tabs
   fall back to their unavailable state when a key is missing.
 - Owner items: the probe created `~/Library/Containers/` folders for
-  `com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID` and
-  `...MetricsProbeAppleDev`. Scratch builds are under `build/`
-  (`unsandboxed-tests`, `release-check`), which git ignores.
+  `com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID`,
+  `...MetricsProbeAppleDev`, and `...HostsProbe`. Scratch builds are
+  under `build/` (`unsandboxed-tests`, `release-check`, `debug-plain`),
+  which git ignores.
 
 ---
 

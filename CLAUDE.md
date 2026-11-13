@@ -25,6 +25,14 @@ xcodebuild test ... -only-testing:SystemHeadroomTests/GroupingEngineTests
 - Tests are hosted inside the app (`TEST_HOST`), so `xcodebuild test`
   needs the destination, not just a build, and test code runs inside the
   real sandboxed app process — sampler tests exercise the real syscalls.
+  One caveat, measured Nov 13, 2026: the test action signs the host with
+  extra temporary exceptions (read-only access to `/`, plus testmanagerd
+  lookups). A plain Debug build has only the sandbox and
+  `get-task-allow`. So a live test proves sysctl and IOKit behavior, but
+  it cannot prove a file read is allowed in the shipping sandbox. Prove
+  those with a standalone probe signed with only the app-sandbox
+  entitlement (`Evidence/gpu-drives-spike/` has the recipe), and run
+  manual checks on a plain build, not the test host.
 - The app and test targets must be signed with the same development
   team (`DEVELOPMENT_TEAM` in the pbxproj, both targets). If the test
   bundle fails to load with "different Team IDs", the signing drifted.

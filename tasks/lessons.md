@@ -12,6 +12,12 @@
   system memory` tracks what the GPU holds; `In use system memory` only
   rises while GPU work runs. A five-minute experiment (allocate, touch,
   blit, release) settled which one to show.
+- The test host is not the shipping sandbox for file reads. The test
+  action adds a temporary exception for read-only access to `/`. The
+  October `/etc/hosts` live test passed under that exception. A probe
+  signed with only the app-sandbox entitlement confirmed the read is
+  allowed anyway (38 lines), so 1.5.0 is fine, but only the probe proved
+  it.
 - This shell cannot read the sandboxed test host's container, so the
   rendered PNGs there are out of reach. An unsandboxed test host writes
   them to the normal temp folder. CLAUDE.md has the command.
