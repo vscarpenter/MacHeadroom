@@ -299,3 +299,41 @@ This Mac allows no screenshots, so the last look is Vinny's.
 Everything under Non-goals, plus Intel Mac verification. An Intel Mac
 may report different keys. The tabs degrade to the unavailable state
 there until someone measures one.
+
+## Amendment (November 13, 2026): findings from the branch review
+
+An independent review of the finished branch found four gaps between
+the build and this design. Each is fixed, and each supersedes the text
+above where they differ.
+
+Deltas after a pause. Sampling stops while the popover is closed, and
+the first sample after reopening divided the GPU and disk counters by
+the whole closed period. The reviewer measured a write at 159 MB/s that
+way and 1,473 MB/s two seconds later. That is a stale number under
+"Updated just now", which the anti-goals rule out. The GPU and disk
+deltas now keep their own baseline. The store marks the first sample
+after sampling restarts, the sampler primes again on it, and the store
+follows with one quick sample. The ranking reads "Measuring…" for about
+a second after the popover opens. CPU on `main` has the same averaging
+and is unchanged here, apart from the quick sample shortening it.
+
+Deltas in a burst. Two ticks 3 ms apart gave one process 18.6% of the
+GPU while the device read 0%, because one WindowServer frame fills that
+window. A tick within 250 ms of the hardware baseline now repeats the
+last figures and leaves the baseline in place.
+
+Per-app time that is not reported. The design said an Intel Mac would
+show the unavailable state. It would not: a driver that reports
+utilization but no `AppUsage` produced an empty ranking, and the pane
+said "No GPU activity" beside a busy GPU. The reading now records
+whether any client carried a usage list. Without one, the ranking says
+"App figures unavailable". This path is still unmeasured on an Intel
+Mac.
+
+Two GPUs. "The first accelerator that reports" is an arbitrary pick on
+a Mac with two. The headline figures now come from the accelerator with
+the highest device utilization, and client GPU time merges across both.
+
+Drives header. With rows listed but no startup volume among them, the
+header said "Drives unavailable" above a list of drives. It now says
+"Startup drive unavailable". "Drives unavailable" is for an empty list.

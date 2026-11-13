@@ -6,12 +6,14 @@ is implemented and committed on `feat/gpu-drives-tabs` (from `main`,
 nothing pushed). Spec:
 `docs/superpowers/specs/2026-11-13-gpu-drives-tabs-design.md`.
 
-- Full suite: 236 tests in 49 suites, 232 pass. The 4 failures are the
+- An independent review ran on the finished branch. Its findings are
+  fixed and recorded in the spec's amendment.
+- Full suite: 245 tests in 50 suites, 241 pass. The 4 failures are the
   known `PortsSamplerLiveTests` cases on this Mac (Apple Development
   signing returns empty socket tables; SANDBOX_NOTES.md, Sept 16). The
   baseline before this work was 151 tests with the same 4 failures.
 - One test skips in the sandboxed host by design: the live SMART read.
-  It passes in an unsandboxed host (disk0, 3% used, 49 C).
+  It passes in an unsandboxed host (disk0, 3% used, 54 C).
 - `Scripts/build-direct.sh` OK: universal, unsandboxed, 1.5.0 (17).
 - App Store flavor Release build OK: only the sandbox entitlement, no
   Sparkle in the bundle.
@@ -30,6 +32,13 @@ nothing pushed). Spec:
 - CI is unverified for the new live tests. They skip their hardware
   assertions when `kern.hv_vmm_present` is 1, which should cover the
   GitHub runner, but that has not run yet.
+
+- Decision for Vinny: CPU percents on `main` are also averaged across
+  the time the popover was closed, for the first sample after it
+  reopens. The GPU and disk figures no longer are, and the quick
+  follow-up sample now shortens the CPU case to about a second. Making
+  CPU prime again too would show "Waiting for a signal…" briefly on
+  every open.
 
 ## Blockers
 - None in code.

@@ -294,5 +294,11 @@ Exact copy: titles "GPU Utilization", "GPU Memory", "Disk Activity", "SSD Health
 - The Porcelain header grew 50 points, not the "about 40" quoted at
   approval. The list kept its height, so each tab shows as many rows as
   before.
+- An independent review of the branch followed. Its findings and the
+  fixes are in the spec's amendment: a separate hardware baseline with a
+  minimum window and a reset after a pause, a state for drivers that
+  report no per-app GPU time, the busier of two GPUs, and the Drives
+  header wording. It also found double-encoded characters in the Help
+  view that were already on `main`; those are fixed too.
 - Left for Vinny: the manual checks in the spec, and the Intel and CI
   runs that this Mac cannot perform.

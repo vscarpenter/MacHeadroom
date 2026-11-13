@@ -33,6 +33,20 @@
   four `project.pbxproj` edits safe to repeat. Next free IDs: Sampling
   `D…15`, Grouping `F…08`, UI `H…14`, tests `E…22`. Headers take a file
   reference and a group entry only.
+- A delta needs a window with a floor and a ceiling. The first sample
+  after the popover reopened divided by the whole closed period, and a
+  refresh 3 ms after a tick gave one process 18.6% of an idle GPU. Both
+  came from reusing the CPU's timestamp. The hardware deltas now keep
+  their own baseline. CPU on `main` still averages across a pause.
+- "Empty" and "not reported" are different states. A driver that
+  publishes no per-app GPU time produced an empty ranking, and the pane
+  called the GPU idle. Ask of every empty list what else could empty it.
+- Mojibake in terminal output can be real. `HelpView.swift` held
+  double-encoded bytes for three characters since `fa86c1a`, and Help
+  showed "Ã" for "×". Check the bytes before blaming the terminal.
+- An independent reviewer that builds its own harness finds what a
+  self-review explains away. I had noted the pause averaging and called
+  it inherited behavior.
 - Mockups can carry another platform's vocabulary. The GPU mockup's
   rows came from NVIDIA telemetry, and five of seven had no source on a
   Mac. Check each drawn value for a source before estimating the build.

@@ -501,5 +501,11 @@ the read itself.
 Caveats carried into the design: the property names are undocumented,
 and this spike measured one Apple silicon Mac on one OS release. Every
 reading maps a missing key to an unavailable state. `GPUSamplerLiveTests`
-and `DriveSamplerLiveTests` re-prove the open reads inside the sandboxed
+and `DriveSamplerLiveTests` re-run the open reads inside the sandboxed
 test host on every run.
+
+One limit on those tests, measured the same day: the test action signs
+the host with a temporary exception for read-only access to `/`. The
+registry reads do not pass through it, so the tests are sound proof for
+them. The volume values are file-backed, so for those the probe above,
+signed with only the app-sandbox entitlement, is the proof.
