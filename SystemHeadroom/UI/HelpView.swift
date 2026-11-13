@@ -48,8 +48,8 @@ struct HelpView: View {
           )
           HelpStep(
             number: 2,
-            title: "Choose CPU, Memory, or Ports",
-            detail: "Use the picker at the top to change what you are investigating."
+            title: "Choose a tab",
+            detail: "Use the picker at the top to switch between CPU, Memory, GPU, Drives, and Ports."
           )
           HelpStep(
             number: 3,
@@ -66,6 +66,14 @@ struct HelpView: View {
           HelpFact(
             title: "CPU and Memory",
             detail: memoryDetail
+          )
+          HelpFact(
+            title: "GPU",
+            detail: "The large number is how much of the graphics processor is idle. Top GPU apps ranks apps by the share of GPU time they used. On Apple silicon, GPU memory comes out of the Mac's own memory."
+          )
+          HelpFact(
+            title: "Drives",
+            detail: drivesDetail
           )
           HelpFact(
             title: "Ports",
@@ -122,6 +130,21 @@ struct HelpView: View {
       "Each row groups an app with its related helper processes. Memory uses physical footprint, matching Activity Monitor's Memory column."
     case .residentSize:
       "Each row groups an app with its related helper processes. Memory values marked RSS use resident size because the App Store sandbox blocks Activity Monitor's physical-footprint metric; GPU-heavy apps can differ substantially."
+    }
+  }
+
+  /// Follows the running build, like the memory text above: only the
+  /// unsandboxed edition can read a drive's health report.
+  private var drivesDetail: String {
+    let shared =
+      "The large number is the free share of your startup drive, counted the way Finder counts it. Disk Activity shows how fast each drive is reading and writing."
+    switch DriveHealthCapability.current {
+    case .available:
+      return shared
+        + " SSD Health reports the drive's own wear estimate and any warning it raises."
+    case .sandboxed:
+      return shared
+        + " SSD health and drive temperature appear only in the Direct edition, because the App Store sandbox blocks a drive's health report."
     }
   }
 
@@ -201,7 +224,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "xmark.circle") {
         HelpFact(
           title: "Quit an app group",
-          detail: "Move the pointer over a CPU, Memory, or Ports row, select the Ã, then select Quit? within four seconds to confirm."
+          detail: "Move the pointer over a CPU, Memory, GPU, or Ports row, select the Ã, then select Quit? within four seconds to confirm."
         )
         HelpFact(
           title: "Force Quit only when needed",
@@ -212,7 +235,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "lock") {
         HelpFact(
           title: "This edition monitors only",
-          detail: "The App Store edition can show resource use and listening ports, but macOS sandboxing prevents it from quitting or force quitting other processes."
+          detail: "The App Store edition can show resource use, drives, and listening ports, but macOS sandboxing prevents it from quitting or force quitting other processes."
         )
         Text("Build: \(TerminationCapability.current.buildFlavorName)")
           .font(.caption)
