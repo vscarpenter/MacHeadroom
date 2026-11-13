@@ -179,6 +179,12 @@ Free space is the important-usage figure when it is above zero, else
 plain available capacity. The important-usage figure is what Finder
 shows, and it reads zero off the startup volume.
 
+The important-usage read measured about 11 ms a call, against under
+1 ms for the rest of the sweep. `SamplerService` therefore reads the
+purgeable share (important usage minus available) at most once every 60
+seconds, and adds it to each tick's live available figure. Free space
+stays current and the slow read stays off the per-tick path.
+
 `SamplerService` keeps the previous byte counters per physical disk.
 Throughput is the delta divided by wall time. The first tick, a new
 disk, and a counter that moves backward yield no reading.

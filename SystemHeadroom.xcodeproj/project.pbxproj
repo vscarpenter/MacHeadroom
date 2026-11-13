@@ -27,6 +27,8 @@
 		D1000000000000000000000D /* GPUStatsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000D /* GPUStatsParser.swift */; };
 		D1000000000000000000000E /* IORegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000E /* IORegistry.swift */; };
 		D1000000000000000000000F /* GPUSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000F /* GPUSampler.swift */; };
+		D10000000000000000000010 /* VolumeSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000010 /* VolumeSampler.swift */; };
+		D10000000000000000000011 /* DiskActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000011 /* DiskActivity.swift */; };
 		E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
 		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
@@ -54,6 +56,9 @@
 		E10000000000000000000019 /* GPUStatsParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000019 /* GPUStatsParserTests.swift */; };
 		E1000000000000000000001A /* GPUUsageBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001A /* GPUUsageBuilderTests.swift */; };
 		E1000000000000000000001B /* GPUSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001B /* GPUSamplerLiveTests.swift */; };
+		E1000000000000000000001C /* VolumeClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001C /* VolumeClassifierTests.swift */; };
+		E1000000000000000000001D /* DiskActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001D /* DiskActivityTests.swift */; };
+		E1000000000000000000001E /* DriveSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001E /* DriveSamplerLiveTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -123,6 +128,8 @@
 		D2000000000000000000000D /* GPUStatsParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUStatsParser.swift; sourceTree = "<group>"; };
 		D2000000000000000000000E /* IORegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IORegistry.swift; sourceTree = "<group>"; };
 		D2000000000000000000000F /* GPUSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUSampler.swift; sourceTree = "<group>"; };
+		D20000000000000000000010 /* VolumeSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeSampler.swift; sourceTree = "<group>"; };
+		D20000000000000000000011 /* DiskActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskActivity.swift; sourceTree = "<group>"; };
 		E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
@@ -150,6 +157,9 @@
 		E20000000000000000000019 /* GPUStatsParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUStatsParserTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000001A /* GPUUsageBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUUsageBuilderTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000001B /* GPUSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUSamplerLiveTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000001C /* VolumeClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeClassifierTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000001D /* DiskActivityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskActivityTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000001E /* DriveSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSamplerLiveTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -296,6 +306,9 @@
 				E20000000000000000000019 /* GPUStatsParserTests.swift */,
 				E2000000000000000000001A /* GPUUsageBuilderTests.swift */,
 				E2000000000000000000001B /* GPUSamplerLiveTests.swift */,
+				E2000000000000000000001C /* VolumeClassifierTests.swift */,
+				E2000000000000000000001D /* DiskActivityTests.swift */,
+				E2000000000000000000001E /* DriveSamplerLiveTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -318,6 +331,8 @@
 				D2000000000000000000000D /* GPUStatsParser.swift */,
 				D2000000000000000000000E /* IORegistry.swift */,
 				D2000000000000000000000F /* GPUSampler.swift */,
+				D20000000000000000000010 /* VolumeSampler.swift */,
+				D20000000000000000000011 /* DiskActivity.swift */,
 			);
 			path = Sampling;
 			sourceTree = "<group>";
@@ -497,6 +512,8 @@
 				D1000000000000000000000D /* GPUStatsParser.swift in Sources */,
 				D1000000000000000000000E /* IORegistry.swift in Sources */,
 				D1000000000000000000000F /* GPUSampler.swift in Sources */,
+				D10000000000000000000010 /* VolumeSampler.swift in Sources */,
+				D10000000000000000000011 /* DiskActivity.swift in Sources */,
 				F10000000000000000000001 /* AppMetadata.swift in Sources */,
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
@@ -560,6 +577,9 @@
 				E10000000000000000000019 /* GPUStatsParserTests.swift in Sources */,
 				E1000000000000000000001A /* GPUUsageBuilderTests.swift in Sources */,
 				E1000000000000000000001B /* GPUSamplerLiveTests.swift in Sources */,
+				E1000000000000000000001C /* VolumeClassifierTests.swift in Sources */,
+				E1000000000000000000001D /* DiskActivityTests.swift in Sources */,
+				E1000000000000000000001E /* DriveSamplerLiveTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
