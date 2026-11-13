@@ -24,14 +24,19 @@ nothing pushed). Spec:
   health rows.
 
 ## Next
-- Vinny's manual checks, listed in the spec under "Manual check". The
-  App Store flavor Release build at
-  `build/release-check/Build/Products/Release/System Headroom.app` was
-  left running for it. It carries only the sandbox entitlement.
-- Then push and open a PR. Both wait for Vinny.
-- CI is unverified for the new live tests. They skip their hardware
-  assertions when `kern.hv_vmm_present` is 1, which should cover the
-  GitHub runner, but that has not run yet.
+- Release 1.6.0 (18). On November 13, 2026 Vinny chose: version 1.6.0,
+  route through a PR with CI and a merge commit, release from `main`,
+  both editions, and publish Direct as soon as staging verifies.
+- The release record is not in this file. The Direct run's
+  `workflow.json` under `build/direct-runs/` says prepared, staged, or
+  published. The App Store archive and upload log sit in
+  `build/appstore/1.6.0-18/`. The live feed at
+  `https://www.macheadroom.com/direct/appcast.xml` says what Direct
+  users have.
+- After the App Store upload, Vinny creates version 1.6.0 in App Store
+  Connect, attaches build 18, pastes the What's New text, and submits.
+- Vinny's on-screen checks from the spec's "Manual check" list still
+  apply to the installed build.
 
 - Decision for Vinny: CPU percents on `main` are also averaged across
   the time the popover was closed, for the first sample after it
@@ -44,7 +49,7 @@ nothing pushed). Spec:
 - None in code.
 
 ## Assumptions
-- The version stays 1.5.0 (17) until Vinny names the release.
+- The version is 1.6.0 (18), named by Vinny on November 13, 2026.
 - Disk images and network mounts are not drives and stay hidden.
 - Free space matches Finder: it counts purgeable space on the startup
   volume.
