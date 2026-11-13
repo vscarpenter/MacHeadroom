@@ -1,0 +1,6 @@
+baseline: inUse 960 MB (delta 0), alloc 4707 MB (delta 0)
+after allocating 8 x 256 MB shared buffers (untouched): inUse 1228 MB (delta 267), alloc 6700 MB (delta 1992)
+after writing every page: inUse 1082 MB (delta 122), alloc 6691 MB (delta 1984)
+after a GPU blit over every buffer: inUse 3009 MB (delta 2049), alloc 6646 MB (delta 1938)
+after 4 x 256 MB private buffers: inUse 961 MB (delta 1), alloc 7645 MB (delta 2937)
+after releasing everything: inUse 1220 MB (delta 260), alloc 6612 MB (delta 1905)
