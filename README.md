@@ -6,7 +6,12 @@ process that belongs to one app into a single row. Fourteen Chrome
 processes show up as one "Chrome" row, with a process count and a tap
 to expand.
 
-A third Ports tab lists every local listening port grouped the same
+A GPU tab ranks apps by GPU time the same way, next to GPU utilization
+and GPU memory. A Drives tab shows each drive's free space and how fast
+it is reading and writing. The Direct build adds SSD wear and drive
+temperature there.
+
+A Ports tab lists every local listening port grouped the same
 way — one row per app with its ports as badges — so a runaway `node`
 or `python` dev server still squatting on port 3000 is one glance (and,
 in the Direct build, one click) from gone.
@@ -131,6 +136,10 @@ and [DirectEditionSettingsOptionA.md](Documentation/DirectEditionSettingsOptionA
   `proc_pidinfo`, then computes CPU percent from the delta between two
   samples. `SamplerService` is the actor that owns that state and runs
   the timer loop.
+- `Sampling/` also reads the GPU and drives. `GPUSampler` and
+  `VolumeSampler` read IORegistry properties, which the App Sandbox
+  allows. `DriveHealthSampler` reads NVMe SMART data, which needs a user
+  client the sandbox denies, so only the Direct build calls it.
 - `Grouping/` is pure. `GroupingEngine` consolidates a flat process
   list into `AppGroup` rows. It walks the parent pid chain to the
   nearest app, then falls back to name matching. No syscalls live in
@@ -141,7 +150,8 @@ and [DirectEditionSettingsOptionA.md](Documentation/DirectEditionSettingsOptionA
 - `App/SingleInstanceGuard.swift` keeps one copy running. A new launch
   broadcasts a takeover notice and any older instance quits, so the
   newest build always wins.
-- `UI/` is the SwiftUI popover: a segmented CPU/Memory/Ports header,
+- `UI/` is the SwiftUI popover: a five-tab header (CPU, Memory, GPU,
+  Drives, Ports),
   the list, and a footer. A built-in glossary gives system daemons like
   `corespotlightd` a friendly name, the technical name as a subtitle,
   and a one-line explanation on hover. Porcelain Native is the default
