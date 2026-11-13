@@ -10,6 +10,8 @@ actor SamplerService {
   private var previousHostTicks: HostCPUTicks?
   private var previousTimestamp: UInt64?
   private var lastSocketsFailed = false
+  private var lastGPUMissing = false
+  private var lastDriveHealthCount: Int?
   private var previousGPUTimeByPID: [Int32: UInt64]?
   private var previousDiskCounters: [String: DiskCounters] = [:]
   private var slowReadTimestamp: UInt64?
@@ -23,6 +25,8 @@ actor SamplerService {
 
   private static let log = Logger(
     subsystem: "com.vinnycarpenter.SystemHeadroom", category: "ports")
+  private static let hardwareLog = Logger(
+    subsystem: "com.vinnycarpenter.SystemHeadroom", category: "hardware")
 
   init(
     timebase: mach_timebase_info_data_t = SamplerService.currentTimebase(),
@@ -141,9 +145,16 @@ actor SamplerService {
     snapshotsByPID: [Int32: ProcessSnapshot], wallTime: UInt64
   ) -> GPUSample? {
     guard let reading = GPUSampler.sample() else {
+      // Logged on the transition only, like the ports failure: an Intel
+      // Mac or a virtual machine would otherwise log every tick.
+      if !lastGPUMissing {
+        Self.hardwareLog.notice("no accelerator reports utilization; GPU tab unavailable")
+      }
+      lastGPUMissing = true
       previousGPUTimeByPID = nil
       return nil
     }
+    lastGPUMissing = false
     var percents: [Int32: Double]?
     if let previous = previousGPUTimeByPID, wallTime > 0 {
       percents = GPUDelta.percents(
@@ -208,6 +219,10 @@ actor SamplerService {
     purgeableBytes = startupMountPath.flatMap(VolumeSampler.purgeableBytes(forMountPath:))
     if let driveHealthReader {
       driveHealth = driveHealthReader()
+      if driveHealth.count != lastDriveHealthCount {
+        Self.hardwareLog.notice("drive health read \(self.driveHealth.count) NVMe device(s)")
+        lastDriveHealthCount = driveHealth.count
+      }
     }
   }
 }

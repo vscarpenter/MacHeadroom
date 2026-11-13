@@ -58,10 +58,10 @@ struct HardwareTickTests {
     #expect(tick.driveHealth.isEmpty)
   }
 
-  @Test("The sandboxed build installs no drive health reader")
-  func sandboxedDefaultReader() {
-    #expect(AppSandboxStatus.current == .enabled)
-    #expect(SamplerService.liveDriveHealthReader() == nil)
+  @Test("Only an unsandboxed build installs a drive health reader")
+  func defaultReaderFollowsSandbox() {
+    let isSandboxed = AppSandboxStatus.current == .enabled
+    #expect((SamplerService.liveDriveHealthReader() == nil) == isSandboxed)
   }
 
   @Test("Volumes arrive on the first tick")
@@ -128,10 +128,12 @@ struct HardwareTickTests {
     await store.refreshNow()
 
     #expect(store.volumes.first?.isStartup == true)
-    #expect(store.driveHealth.isEmpty)
     if !TestHardware.isVirtualMachine {
       #expect(store.gpu != nil)
       #expect(store.topGPUApps != nil)
+      // The default sampler reads SMART only when unsandboxed, so this
+      // same test proves both editions' behavior from either host.
+      #expect(store.driveHealth.isEmpty == (AppSandboxStatus.current == .enabled))
     }
   }
 }
