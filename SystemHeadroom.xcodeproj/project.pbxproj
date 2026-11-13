@@ -25,6 +25,8 @@
 		D1000000000000000000000B /* PortTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000B /* PortTableSampler.swift */; };
 		D1000000000000000000000C /* HostsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000C /* HostsFile.swift */; };
 		D1000000000000000000000D /* GPUStatsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000D /* GPUStatsParser.swift */; };
+		D1000000000000000000000E /* IORegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000E /* IORegistry.swift */; };
+		D1000000000000000000000F /* GPUSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000F /* GPUSampler.swift */; };
 		E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
 		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
@@ -50,12 +52,15 @@
 		E10000000000000000000017 /* StoreAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000017 /* StoreAlertTests.swift */; };
 		E10000000000000000000018 /* HostsFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000018 /* HostsFileTests.swift */; };
 		E10000000000000000000019 /* GPUStatsParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000019 /* GPUStatsParserTests.swift */; };
+		E1000000000000000000001A /* GPUUsageBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001A /* GPUUsageBuilderTests.swift */; };
+		E1000000000000000000001B /* GPUSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001B /* GPUSamplerLiveTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
 		F10000000000000000000004 /* PortGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000004 /* PortGroup.swift */; };
 		F10000000000000000000005 /* PortGroupBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000005 /* PortGroupBuilder.swift */; };
 		F10000000000000000000006 /* CPUAlertTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000006 /* CPUAlertTracker.swift */; };
+		F10000000000000000000007 /* GPUAppUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000007 /* GPUAppUsage.swift */; };
 		G10000000000000000000001 /* MonitorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* MonitorStore.swift */; };
 		G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* SingleInstanceGuard.swift */; };
 		G10000000000000000000003 /* ProcessTerminator.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000003 /* ProcessTerminator.swift */; };
@@ -116,6 +121,8 @@
 		D2000000000000000000000B /* PortTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableSampler.swift; sourceTree = "<group>"; };
 		D2000000000000000000000C /* HostsFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFile.swift; sourceTree = "<group>"; };
 		D2000000000000000000000D /* GPUStatsParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUStatsParser.swift; sourceTree = "<group>"; };
+		D2000000000000000000000E /* IORegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IORegistry.swift; sourceTree = "<group>"; };
+		D2000000000000000000000F /* GPUSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUSampler.swift; sourceTree = "<group>"; };
 		E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
@@ -141,12 +148,15 @@
 		E20000000000000000000017 /* StoreAlertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreAlertTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000018 /* HostsFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFileTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000019 /* GPUStatsParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUStatsParserTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000001A /* GPUUsageBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUUsageBuilderTests.swift; sourceTree = "<group>"; };
+		E2000000000000000000001B /* GPUSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUSamplerLiveTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
 		F20000000000000000000004 /* PortGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000005 /* PortGroupBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortGroupBuilder.swift; sourceTree = "<group>"; };
 		F20000000000000000000006 /* CPUAlertTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUAlertTracker.swift; sourceTree = "<group>"; };
+		F20000000000000000000007 /* GPUAppUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUAppUsage.swift; sourceTree = "<group>"; };
 		G20000000000000000000001 /* MonitorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorStore.swift; sourceTree = "<group>"; };
 		G20000000000000000000002 /* SingleInstanceGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceGuard.swift; sourceTree = "<group>"; };
 		G20000000000000000000003 /* ProcessTerminator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessTerminator.swift; sourceTree = "<group>"; };
@@ -284,6 +294,8 @@
 				E20000000000000000000017 /* StoreAlertTests.swift */,
 				E20000000000000000000018 /* HostsFileTests.swift */,
 				E20000000000000000000019 /* GPUStatsParserTests.swift */,
+				E2000000000000000000001A /* GPUUsageBuilderTests.swift */,
+				E2000000000000000000001B /* GPUSamplerLiveTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -304,6 +316,8 @@
 				D2000000000000000000000B /* PortTableSampler.swift */,
 				D2000000000000000000000C /* HostsFile.swift */,
 				D2000000000000000000000D /* GPUStatsParser.swift */,
+				D2000000000000000000000E /* IORegistry.swift */,
+				D2000000000000000000000F /* GPUSampler.swift */,
 			);
 			path = Sampling;
 			sourceTree = "<group>";
@@ -317,6 +331,7 @@
 				F20000000000000000000004 /* PortGroup.swift */,
 				F20000000000000000000005 /* PortGroupBuilder.swift */,
 				F20000000000000000000006 /* CPUAlertTracker.swift */,
+				F20000000000000000000007 /* GPUAppUsage.swift */,
 			);
 			path = Grouping;
 			sourceTree = "<group>";
@@ -480,12 +495,15 @@
 				D1000000000000000000000B /* PortTableSampler.swift in Sources */,
 				D1000000000000000000000C /* HostsFile.swift in Sources */,
 				D1000000000000000000000D /* GPUStatsParser.swift in Sources */,
+				D1000000000000000000000E /* IORegistry.swift in Sources */,
+				D1000000000000000000000F /* GPUSampler.swift in Sources */,
 				F10000000000000000000001 /* AppMetadata.swift in Sources */,
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
 				F10000000000000000000004 /* PortGroup.swift in Sources */,
 				F10000000000000000000005 /* PortGroupBuilder.swift in Sources */,
 				F10000000000000000000006 /* CPUAlertTracker.swift in Sources */,
+				F10000000000000000000007 /* GPUAppUsage.swift in Sources */,
 				G10000000000000000000001 /* MonitorStore.swift in Sources */,
 				G10000000000000000000002 /* SingleInstanceGuard.swift in Sources */,
 				G10000000000000000000003 /* ProcessTerminator.swift in Sources */,
@@ -540,6 +558,8 @@
 				E10000000000000000000017 /* StoreAlertTests.swift in Sources */,
 				E10000000000000000000018 /* HostsFileTests.swift in Sources */,
 				E10000000000000000000019 /* GPUStatsParserTests.swift in Sources */,
+				E1000000000000000000001A /* GPUUsageBuilderTests.swift in Sources */,
+				E1000000000000000000001B /* GPUSamplerLiveTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
