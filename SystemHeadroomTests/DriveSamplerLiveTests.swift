@@ -3,9 +3,12 @@ import Testing
 
 @testable import SystemHeadroom
 
-/// Live reads inside the sandboxed TEST_HOST. These re-prove on every
-/// run that the App Sandbox allows the volume values and the registry
-/// walk the Drives tab depends on (SANDBOX_NOTES.md, November 13, 2026).
+/// Live reads inside the TEST_HOST. They re-prove on every run that the
+/// App Sandbox allows the registry walk and the byte counters. They do
+/// not prove the volume values: those are file-backed reads, and the
+/// test action gives the host read-only access to "/". The proof for
+/// those is the probe in Evidence/gpu-drives-spike/, signed with only
+/// the app-sandbox entitlement. Here they guard against regressions.
 @Suite("Drive sampler live")
 struct DriveSamplerLiveTests {
   @Test("Sandboxed volume read returns the startup volume with capacity")
@@ -50,7 +53,8 @@ struct DriveSamplerLiveTests {
   func sweepCost() {
     let elapsed = ContinuousClock().measure { _ = VolumeSampler.sampleFacts() }
     print("VOLUME_SWEEP \(elapsed)")
-    // Generous: CI runs timing-sensitive work up to 2.6x slower.
-    #expect(elapsed < .milliseconds(100))
+    // A cold call measured 4 to 10 ms and CI runs up to 2.6x slower,
+    // so this leaves about ten times the worst case.
+    #expect(elapsed < .milliseconds(250))
   }
 }

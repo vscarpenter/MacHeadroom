@@ -67,7 +67,7 @@ struct DriveHealthTests {
     let drive = try #require(DriveHealthSampler.sample().first)
 
     #expect(drive.physicalDisk?.hasPrefix("disk") == true)
-    #expect((0...255).contains(drive.percentageUsed))
+    #expect(drive.availableSpareThresholdPercent <= 100)
     let celsius = try #require(drive.temperatureCelsius)
     #expect((0...110).contains(celsius))
     print("DRIVE_HEALTH \(drive)")

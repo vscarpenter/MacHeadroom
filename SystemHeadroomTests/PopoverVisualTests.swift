@@ -98,30 +98,33 @@ struct PopoverVisualTests {
   }
 
   /// The Direct edition's Drives pane adds the SSD health and
-  /// temperature rows. The sandboxed build never has them.
-  @Test("Porcelain Drives pane renders the Direct edition's health rows")
+  /// temperature rows. The sandboxed build never has them. The two
+  /// renders must differ, or the rows are not being drawn.
+  @Test("Porcelain Drives pane draws the Direct edition's health rows")
   @MainActor
   func porcelainDrivesRendersHealthRows() throws {
-    let store = PreviewFixtures.makeStore(includesDriveHealth: true)
-    let hosting = NSHostingView(
-      rootView: PopoverView(store: store, initialTab: .drives)
-        .environment(\.colorScheme, .light)
-    )
+    func render(includesDriveHealth: Bool) throws -> Data {
+      let store = PreviewFixtures.makeStore(includesDriveHealth: includesDriveHealth)
+      let hosting = NSHostingView(
+        rootView: PopoverView(store: store, initialTab: .drives)
+          .environment(\.colorScheme, .light)
+      )
+      hosting.frame = CGRect(origin: .zero, size: hosting.intrinsicContentSize)
+      hosting.layoutSubtreeIfNeeded()
+      let bitmap = try #require(
+        hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
+      )
+      hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
+      return try #require(bitmap.representation(using: .png, properties: [:]))
+    }
 
-    let size = hosting.intrinsicContentSize
-    hosting.frame = CGRect(origin: .zero, size: size)
-    hosting.layoutSubtreeIfNeeded()
-
-    let bitmap = try #require(
-      hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
-    )
-    hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
-    let data = try #require(bitmap.representation(using: .png, properties: [:]))
-    #expect(data.count > 40_000)
+    let withHealth = try render(includesDriveHealth: true)
+    let withoutHealth = try render(includesDriveHealth: false)
+    #expect(withHealth != withoutHealth)
 
     let url = FileManager.default.temporaryDirectory
       .appendingPathComponent("SystemHeadroom-Porcelain-drives-direct-light.png")
-    try data.write(to: url)
+    try withHealth.write(to: url)
     print("UI_RENDER drives-direct-light \(url.path)")
   }
 
