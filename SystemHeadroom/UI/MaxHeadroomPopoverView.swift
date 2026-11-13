@@ -6,12 +6,15 @@ struct PorcelainPopoverView: View {
   @State private var selectedTab: PopoverTab
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Environment(\.colorScheme) private var colorScheme
+  @Environment(\.locale) private var locale
   @Environment(\.openSettings) private var openSettings
 
   init(store: MonitorStore, initialTab: PopoverTab = .cpu) {
     self.store = store
     _selectedTab = State(initialValue: initialTab)
   }
+
+  private var hasSampled: Bool { store.lastUpdated != nil }
 
   private var palette: PorcelainPalette {
     PorcelainPalette(colorScheme: colorScheme)
@@ -27,10 +30,14 @@ struct PorcelainPopoverView: View {
   }
 
   private var headerTitle: String {
-    selectedTab == .ports ? "Local ports" : "\(selectedTab.rawValue) headroom"
+    switch selectedTab {
+    case .cpu, .memory, .gpu: "\(selectedTab.rawValue) headroom"
+    case .drives: "Drive headroom"
+    case .ports: "Local ports"
+    }
   }
 
-  /// The header's big number: headroom percent for the metric tabs,
+  /// The header's big number: headroom percent for every tab but ports,
   /// total listening-port count for the ports tab, nil when unknown.
   private var headlineNumber: Int? {
     switch selectedTab {
@@ -44,6 +51,10 @@ struct PorcelainPopoverView: View {
         used: Double(store.systemSummary.memoryUsedBytes),
         capacity: Double(store.systemSummary.memoryTotalBytes)
       )
+    case .gpu:
+      GPUPresentation.headroomPercent(store.gpu)
+    case .drives:
+      DrivesPresentation.headroomPercent(store.volumes)
     case .ports:
       store.portGroups.map { $0.reduce(0) { $0 + $1.ports.count } }
     }
@@ -55,9 +66,12 @@ struct PorcelainPopoverView: View {
 
   private var headlineAccessibilityLabel: String {
     switch selectedTab {
-    case .cpu, .memory:
+    case .cpu, .memory, .gpu:
       return headlineNumber.map { "\($0) percent \(selectedTab.rawValue) headroom" }
         ?? "\(selectedTab.rawValue) headroom unavailable"
+    case .drives:
+      return headlineNumber.map { "\($0) percent drive headroom" }
+        ?? "Drive headroom unavailable"
     case .ports:
       return headlineNumber.map { "\($0) listening ports" } ?? "Ports unavailable"
     }
@@ -73,6 +87,10 @@ struct PorcelainPopoverView: View {
     case .memory:
       return "\(ValueFormatting.bytes(store.systemSummary.memoryUsedBytes)) in use · "
         + "\(ValueFormatting.bytes(store.systemSummary.memoryTotalBytes)) total"
+    case .gpu:
+      return GPUPresentation.usageDetail(store.gpu, hasSampled: hasSampled)
+    case .drives:
+      return DrivesPresentation.usageDetail(store.volumes, hasSampled: hasSampled)
     case .ports:
       guard let rows = store.portGroups else { return "Ports unavailable" }
       let processWord = rows.count == 1 ? "process" : "processes"
@@ -92,6 +110,9 @@ struct PorcelainPopoverView: View {
     .foregroundStyle(palette.textPrimary)
   }
 
+  /// The tab bar spans the full width on its own row: five labels do
+  /// not fit beside the headline. The height is fixed, like the list's,
+  /// so no tab or reading can change the popover's size.
   private var header: some View {
     VStack(alignment: .leading, spacing: PorcelainSpacing.md) {
       Capsule()
@@ -99,37 +120,13 @@ struct PorcelainPopoverView: View {
         .frame(width: 38, height: 3)
         .accessibilityHidden(true)
 
-      HStack(alignment: .center, spacing: PorcelainSpacing.lg) {
-        VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+      VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+        HStack(alignment: .firstTextBaseline, spacing: PorcelainSpacing.md) {
           Text(headerTitle)
             .font(.system(size: 20, weight: .regular))
-
-          HStack(alignment: .firstTextBaseline, spacing: 2) {
-            Text(headlineText)
-              .font(.system(size: 54, weight: .regular, design: .rounded))
-              .monospacedDigit()
-              .contentTransition(.numericText())
-
-            if headlineNumber != nil, selectedTab != .ports {
-              Text("%")
-                .font(.system(size: 30, weight: .regular, design: .rounded))
-            }
-          }
-          .accessibilityElement(children: .combine)
-          .accessibilityLabel(headlineAccessibilityLabel)
-
-          Text(usageDetail)
-            .font(.system(size: 13))
-            .foregroundStyle(palette.textSecondary)
             .lineLimit(1)
-            .minimumScaleFactor(0.82)
-        }
 
-        Spacer(minLength: 0)
-
-        VStack(alignment: .trailing, spacing: PorcelainSpacing.sm) {
-          PorcelainMetricPicker(selection: $selectedTab, palette: palette)
-            .frame(width: 240)
+          Spacer(minLength: 0)
 
           MemoryPressureBadge(
             level: store.systemSummary.memoryPressure,
@@ -139,67 +136,209 @@ struct PorcelainPopoverView: View {
           .font(.system(size: 11))
           .foregroundStyle(palette.textSecondary)
         }
+
+        HStack(alignment: .firstTextBaseline, spacing: 2) {
+          Text(headlineText)
+            .font(.system(size: 54, weight: .regular, design: .rounded))
+            .monospacedDigit()
+            .contentTransition(.numericText())
+
+          if headlineNumber != nil, selectedTab != .ports {
+            Text("%")
+              .font(.system(size: 30, weight: .regular, design: .rounded))
+          }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(headlineAccessibilityLabel)
+
+        Text(usageDetail)
+          .font(.system(size: 13))
+          .foregroundStyle(palette.textSecondary)
+          .lineLimit(1)
+          .minimumScaleFactor(0.82)
       }
+
+      PorcelainMetricPicker(selection: $selectedTab, palette: palette)
     }
     .padding(.horizontal, PorcelainSpacing.lg)
     .padding(.top, PorcelainSpacing.lg)
     .padding(.bottom, PorcelainSpacing.md)
-    .frame(height: 172, alignment: .topLeading)
-    .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: selectedTab)
+    .frame(height: 222, alignment: .topLeading)
   }
 
   private var list: some View {
     ScrollView {
       LazyVStack(spacing: 0) {
-        if let metric = selectedTab.metricKind {
-          if groups.isEmpty {
-            emptyState(
-              icon: "waveform.path", title: "Waiting for a signal…",
-              detail: "The first sample will appear in a moment.")
-          } else {
-            ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
-              PorcelainGroupRowView(
-                group: group,
-                metric: metric,
-                maxValue: maxValue,
-                isTopConsumer: index == 0,
-                palette: palette,
-                store: store
-              )
-
-              if group.id != groups.last?.id {
-                porcelainRowDivider
-              }
-            }
-          }
-        } else if let rows = store.portGroups {
-          if rows.isEmpty {
-            emptyState(
-              icon: "app.connected.to.app.below.fill", title: "No listening ports",
-              detail: "Nothing is serving on this Mac right now.")
-          } else {
-            ForEach(rows) { row in
-              PorcelainPortRowView(group: row, palette: palette, store: store)
-
-              if row.id != rows.last?.id {
-                porcelainRowDivider
-              }
-            }
-          }
-        } else {
-          emptyState(
-            icon: "exclamationmark.triangle", title: "Ports unavailable",
-            detail: "The port tables could not be read this sample.")
+        switch selectedTab {
+        case .cpu: rankingRows(.cpu)
+        case .memory: rankingRows(.memory)
+        case .gpu: gpuRows
+        case .drives: driveRows
+        case .ports: portRows
         }
       }
       .padding(.horizontal, PorcelainSpacing.lg)
       .padding(.vertical, PorcelainSpacing.xs)
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: groups)
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: store.portGroups)
+      .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: store.topGPUApps)
     }
     // MenuBarExtra(.window) fixes its size at presentation time. Keep this
     // independent of list contents so the first live sample cannot collapse it.
     .frame(height: 468)
+  }
+
+  @ViewBuilder
+  private func rankingRows(_ metric: MetricKind) -> some View {
+    if groups.isEmpty {
+      waitingState
+    } else {
+      ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
+        PorcelainGroupRowView(
+          group: group,
+          metric: metric,
+          maxValue: maxValue,
+          isTopConsumer: index == 0,
+          palette: palette,
+          store: store
+        )
+
+        if group.id != groups.last?.id {
+          porcelainRowDivider
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var portRows: some View {
+    if let rows = store.portGroups {
+      if rows.isEmpty {
+        emptyState(
+          icon: "app.connected.to.app.below.fill", title: "No listening ports",
+          detail: "Nothing is serving on this Mac right now.")
+      } else {
+        ForEach(rows) { row in
+          PorcelainPortRowView(group: row, palette: palette, store: store)
+
+          if row.id != rows.last?.id {
+            porcelainRowDivider
+          }
+        }
+      }
+    } else {
+      emptyState(
+        icon: "exclamationmark.triangle", title: "Ports unavailable",
+        detail: "The port tables could not be read this sample.")
+    }
+  }
+
+  @ViewBuilder
+  private var gpuRows: some View {
+    switch GPUPresentation.paneState(gpu: store.gpu, hasSampled: hasSampled) {
+    case .waiting:
+      waitingState
+    case .unavailable:
+      emptyState(
+        icon: "exclamationmark.triangle", title: "GPU statistics unavailable",
+        detail: "This Mac's graphics driver reports no utilization.")
+    case .ready:
+      if let gpu = store.gpu {
+        statRows(
+          GPUPresentation.statRows(
+            gpu, installedMemoryBytes: store.systemSummary.memoryTotalBytes))
+        sectionLabel("Top GPU apps")
+        gpuRanking(for: gpu)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func gpuRanking(for gpu: GPUSample) -> some View {
+    let apps = store.topGPUApps ?? []
+    switch GPUPresentation.rankingState(gpu: gpu, apps: store.topGPUApps) {
+    case .unreported:
+      inlineMessage(
+        "App figures unavailable",
+        detail: "This Mac's graphics driver does not report GPU time per app.")
+    case .measuring:
+      inlineMessage("Measuring…", detail: "App figures need two samples.")
+    case .idle:
+      inlineMessage("No GPU activity", detail: "No app is drawing on the GPU right now.")
+    case .ranked:
+      ForEach(Array(apps.enumerated()), id: \.element.id) { index, usage in
+        PorcelainGPUAppRowView(
+          usage: usage,
+          maxValue: apps.first?.gpuPercent ?? 0,
+          isTopConsumer: index == 0,
+          palette: palette,
+          store: store
+        )
+
+        if usage.id != apps.last?.id {
+          porcelainRowDivider
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var driveRows: some View {
+    switch DrivesPresentation.paneState(volumes: store.volumes, hasSampled: hasSampled) {
+    case .waiting:
+      waitingState
+    case .unavailable:
+      emptyState(
+        icon: "exclamationmark.triangle", title: "Drives unavailable",
+        detail: "No volume could be read this sample.")
+    case .ready:
+      statRows(
+        DrivesPresentation.rows(
+          volumes: store.volumes, activity: store.diskActivity, health: store.driveHealth,
+          locale: locale))
+    }
+  }
+
+  @ViewBuilder
+  private func statRows(_ rows: [StatRow]) -> some View {
+    ForEach(rows) { row in
+      PorcelainStatRowView(row: row, palette: palette)
+
+      if row.id != rows.last?.id {
+        porcelainRowDivider
+      }
+    }
+  }
+
+  private var waitingState: some View {
+    emptyState(
+      icon: "waveform.path", title: "Waiting for a signal…",
+      detail: "The first sample will appear in a moment.")
+  }
+
+  private func sectionLabel(_ text: String) -> some View {
+    Text(text)
+      .font(.system(size: 11, weight: .medium))
+      .foregroundStyle(palette.textSecondary)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.horizontal, PorcelainSpacing.xs)
+      .padding(.top, PorcelainSpacing.md)
+      .padding(.bottom, PorcelainSpacing.xs)
+      .accessibilityAddTraits(.isHeader)
+  }
+
+  /// A short message inside a pane that already shows rows above it.
+  private func inlineMessage(_ title: String, detail: String) -> some View {
+    VStack(spacing: PorcelainSpacing.xs) {
+      Text(title)
+        .font(.system(size: 13, weight: .medium))
+      Text(detail)
+        .font(.caption)
+        .foregroundStyle(palette.textSecondary)
+    }
+    .frame(maxWidth: .infinity)
+    .padding(.vertical, PorcelainSpacing.lg)
+    .accessibilityElement(children: .combine)
   }
 
   private var porcelainRowDivider: some View {
@@ -602,6 +741,183 @@ private struct PorcelainChildRowView: View {
     .padding(.vertical, PorcelainSpacing.xs)
     .accessibilityElement(children: .combine)
     .accessibilityLabel("\(measurement.snapshot.name), \(valueText)")
+  }
+}
+
+/// A GPU or Drives stat row: the app rows' anatomy with a symbol in the
+/// icon chip and a bar that is a share of a known whole.
+private struct PorcelainStatRowView: View {
+  let row: StatRow
+  let palette: PorcelainPalette
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+      HStack(spacing: PorcelainSpacing.md) {
+        Image(systemName: row.symbol)
+          .font(.system(size: 15, weight: .medium))
+          .foregroundStyle(palette.textPrimary)
+          .frame(width: 32, height: 32)
+          .background(palette.raisedSurface, in: RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(palette.iconBorder, lineWidth: 1)
+          }
+          .shadow(color: palette.iconShadowAmbient, radius: 4, y: 2)
+          .shadow(color: palette.iconShadowDirect, radius: 1, y: 1)
+
+        VStack(alignment: .leading, spacing: 2) {
+          Text(row.title)
+            .font(.system(size: 15, weight: row.isAccented ? .semibold : .medium))
+            .lineLimit(1)
+
+          Text(row.subtitle)
+            .font(.system(size: 13))
+            .foregroundStyle(palette.textSecondary)
+            .lineLimit(1)
+        }
+
+        Spacer(minLength: PorcelainSpacing.sm)
+
+        Text(row.value)
+          .font(.system(size: 15, weight: row.isAccented ? .semibold : .regular))
+          .monospacedDigit()
+          .foregroundStyle(row.isAccented ? palette.textPrimary : palette.textSecondary)
+          .lineLimit(1)
+          .fixedSize()
+      }
+
+      if let usedFraction = row.usedFraction {
+        PorcelainShareBar(
+          fraction: usedFraction,
+          fill: row.isAccented ? palette.accent : palette.indicatorFill,
+          track: palette.indicatorTrack)
+      }
+    }
+    .padding(.horizontal, PorcelainSpacing.xs)
+    .padding(.vertical, PorcelainSpacing.sm)
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(row.accessibilityLabel)
+  }
+}
+
+private struct PorcelainShareBar: View {
+  let fraction: Double
+  let fill: Color
+  let track: Color
+
+  var body: some View {
+    GeometryReader { proxy in
+      ZStack(alignment: .leading) {
+        Capsule()
+          .fill(track)
+
+        Capsule()
+          .fill(fill)
+          .frame(width: proxy.size.width * min(max(fraction, 0), 1))
+      }
+    }
+    .frame(height: 3)
+    .padding(.leading, 48)
+  }
+}
+
+/// One row of the GPU ranking. App rows carry the same hover-quit
+/// affordance and context menu as CPU and Memory rows; system rows,
+/// which the same-user process table cannot see, carry neither.
+private struct PorcelainGPUAppRowView: View {
+  let usage: GPUAppUsage
+  let maxValue: Double
+  let isTopConsumer: Bool
+  let palette: PorcelainPalette
+  let store: MonitorStore
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @State private var isRowHovered = false
+
+  /// The same visual scale the CPU and Memory rankings use: the top
+  /// row fills five eighths of the track.
+  private var ratio: Double {
+    guard maxValue > 0 else { return 0 }
+    return min(max(usage.gpuPercent / (maxValue * 1.6), 0), 1)
+  }
+
+  private var subtitle: String {
+    if usage.isSystem { return "System process" }
+    return usage.processCount == 1 ? "1 process" : "\(usage.processCount) processes"
+  }
+
+  var body: some View {
+    if let appGroup = usage.appGroup {
+      content {
+        QuitAffordanceView(
+          group: appGroup, store: store,
+          accent: palette.accent, secondary: palette.textSecondary,
+          isRowHovered: isRowHovered
+        ) {
+          valueText
+        }
+        .accessibilityHidden(true)
+      }
+      .quitContextMenu(for: appGroup, store: store)
+      .onHover { hovering in
+        guard store.canTerminate else { return }
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.12)) {
+          isRowHovered = hovering
+        }
+      }
+    } else {
+      content { valueText }
+    }
+  }
+
+  private var valueText: some View {
+    Text(ValueFormatting.percent(usage.gpuPercent))
+      .font(.system(size: 15, weight: isTopConsumer ? .semibold : .regular))
+      .monospacedDigit()
+      .foregroundStyle(isTopConsumer ? palette.textPrimary : palette.textSecondary)
+  }
+
+  private func content<Value: View>(@ViewBuilder value: () -> Value) -> some View {
+    VStack(alignment: .leading, spacing: PorcelainSpacing.sm) {
+      HStack(spacing: PorcelainSpacing.md) {
+        Image(nsImage: GPUAppRowPresentation.icon(for: usage))
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 32, height: 32)
+          .background(palette.raisedSurface, in: RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(palette.iconBorder, lineWidth: 1)
+          }
+          .shadow(color: palette.iconShadowAmbient, radius: 4, y: 2)
+          .shadow(color: palette.iconShadowDirect, radius: 1, y: 1)
+
+        VStack(alignment: .leading, spacing: 2) {
+          Text(usage.name)
+            .font(.system(size: 15, weight: isTopConsumer ? .semibold : .medium))
+            .lineLimit(1)
+
+          Text(subtitle)
+            .font(.system(size: 13))
+            .foregroundStyle(palette.textSecondary)
+            .lineLimit(1)
+        }
+
+        Spacer(minLength: PorcelainSpacing.sm)
+
+        value()
+      }
+
+      PorcelainShareBar(
+        fraction: ratio,
+        fill: isTopConsumer ? palette.accent : palette.indicatorFill,
+        track: palette.indicatorTrack)
+    }
+    .padding(.horizontal, PorcelainSpacing.xs)
+    .padding(.vertical, PorcelainSpacing.sm)
+    .contentShape(Rectangle())
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(GPUAppRowPresentation.accessibilityLabel(for: usage))
+    .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: usage.gpuPercent)
   }
 }
 

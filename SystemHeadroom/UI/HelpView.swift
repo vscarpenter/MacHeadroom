@@ -48,8 +48,8 @@ struct HelpView: View {
           )
           HelpStep(
             number: 2,
-            title: "Choose CPU, Memory, or Ports",
-            detail: "Use the picker at the top to change what you are investigating."
+            title: "Choose a tab",
+            detail: "Use the picker at the top to switch between CPU, Memory, GPU, Drives, and Ports."
           )
           HelpStep(
             number: 3,
@@ -66,6 +66,14 @@ struct HelpView: View {
           HelpFact(
             title: "CPU and Memory",
             detail: memoryDetail
+          )
+          HelpFact(
+            title: "GPU",
+            detail: "The large number is how much of the graphics processor is idle. Top GPU apps ranks apps by the share of GPU time they used. On Apple silicon, GPU memory comes out of the Mac's own memory."
+          )
+          HelpFact(
+            title: "Drives",
+            detail: drivesDetail
           )
           HelpFact(
             title: "Ports",
@@ -125,6 +133,21 @@ struct HelpView: View {
     }
   }
 
+  /// Follows the running build, like the memory text above: only the
+  /// unsandboxed edition can read a drive's health report.
+  private var drivesDetail: String {
+    let shared =
+      "The large number is the free share of your startup drive, counted the way Finder counts it. Disk Activity shows how fast each drive is reading and writing."
+    switch DriveHealthCapability.current {
+    case .available:
+      return shared
+        + " SSD Health reports the drive's own wear estimate and any warning it raises."
+    case .sandboxed:
+      return shared
+        + " SSD health and drive temperature appear only in the Direct edition, because the App Store sandbox blocks a drive's health report."
+    }
+  }
+
   @ViewBuilder
   private var directEditionTransfer: some View {
     if DirectEditionAccessPresentation.isVisible(
@@ -142,7 +165,7 @@ struct HelpView: View {
         )
         HelpFact(
           title: "Included with your purchase",
-          detail: "There is no additional payment or account. Verification sends only your App Store purchase evidenceânever process samples, computer names, or preferences."
+          detail: "There is no additional payment or account. Verification sends only your App Store purchase evidence, never process samples, computer names, or preferences."
         )
 
         HelpStep(
@@ -171,7 +194,7 @@ struct HelpView: View {
           HStack(spacing: 8) {
             ProgressView()
               .controlSize(.small)
-            Text("Verifying your App Store purchaseâ¦")
+            Text("Verifying your App Store purchase…")
               .foregroundStyle(.secondary)
           }
         case .readyToOpen(let claimURL):
@@ -201,7 +224,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "xmark.circle") {
         HelpFact(
           title: "Quit an app group",
-          detail: "Move the pointer over a CPU, Memory, or Ports row, select the Ã, then select Quit? within four seconds to confirm."
+          detail: "Move the pointer over a CPU, Memory, GPU, or Ports row, select the ×, then select Quit? within four seconds to confirm."
         )
         HelpFact(
           title: "Force Quit only when needed",
@@ -212,7 +235,7 @@ struct HelpView: View {
       HelpSection("Process controls", systemImage: "lock") {
         HelpFact(
           title: "This edition monitors only",
-          detail: "The App Store edition can show resource use and listening ports, but macOS sandboxing prevents it from quitting or force quitting other processes."
+          detail: "The App Store edition can show resource use, drives, and listening ports, but macOS sandboxing prevents it from quitting or force quitting other processes."
         )
         Text("Build: \(TerminationCapability.current.buildFlavorName)")
           .font(.caption)
@@ -316,7 +339,7 @@ private struct HelpFact: View {
 }
 
 #if DEBUG
-  #Preview("Help â App Store") {
+  #Preview("Help: App Store") {
     HelpView(store: PreviewFixtures.makeStore())
   }
 #endif

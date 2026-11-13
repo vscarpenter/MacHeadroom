@@ -6,8 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 System Headroom is a sandboxed, Mac App Store-targeted macOS menu bar app
 (SwiftUI `MenuBarExtra`, macOS 14+, Swift 6 strict concurrency, zero
-dependencies, no network) that shows top-10 CPU and memory consumers,
-collapsing every process that belongs to one app into a single row. The
+dependencies, no network) that shows top-10 CPU, memory, and GPU
+consumers, collapsing every process that belongs to one app into a
+single row, plus drive headroom and listening ports. The
 original build brief is `claude-code-prompt-menu-bar-monitor.md`; the
 sandbox constraints and why memory means resident size (not
 `phys_footprint`) are documented with evidence in `SANDBOX_NOTES.md`.
@@ -24,6 +25,14 @@ xcodebuild test ... -only-testing:SystemHeadroomTests/GroupingEngineTests
 - Tests are hosted inside the app (`TEST_HOST`), so `xcodebuild test`
   needs the destination, not just a build, and test code runs inside the
   real sandboxed app process — sampler tests exercise the real syscalls.
+  One caveat, measured Nov 13, 2026: the test action signs the host with
+  extra temporary exceptions (read-only access to `/`, plus testmanagerd
+  lookups). A plain Debug build has only the sandbox and
+  `get-task-allow`. So a live test proves sysctl and IOKit behavior, but
+  it cannot prove a file read is allowed in the shipping sandbox. Prove
+  those with a standalone probe signed with only the app-sandbox
+  entitlement (`Evidence/gpu-drives-spike/` has the recipe), and run
+  manual checks on a plain build, not the test host.
 - The app and test targets must be signed with the same development
   team (`DEVELOPMENT_TEAM` in the pbxproj, both targets). If the test
   bundle fails to load with "different Team IDs", the signing drifted.
@@ -52,6 +61,11 @@ logic fixture-testable:
   before an actor hop goes stale under contention, and dividing a
   sweep's CPU accrual by a near-zero wall time once inflated CPU
   percentages a thousandfold (`SamplerBurstTests` guards this).
+- `Sampling/` also reads the GPU (`GPUSampler`) and drives
+  (`VolumeSampler`, `DriveHealthSampler`). Each has a pure half that
+  fixtures test: `GPUStatsParser`, `GPUDelta`, `VolumeClassifier`,
+  `DiskActivityDelta`. `SamplerService` keeps the previous counters and
+  computes the deltas with the same clock as the CPU delta.
 - `Grouping/` is pure — no syscalls, no AppKit. `GroupingEngine`
   resolves each process to an app via parent-pid ancestry, then
   " Helper" name-stripping, then standalone fallback.
@@ -66,7 +80,10 @@ logic fixture-testable:
   the newest launch always wins. Practical effect: to redeploy a new
   build, just build and `open` it — no pkill or scripted quit needed.
 - `UI/` is the popover, settings (tabbed: General + About), the process
-  glossary, and the menu bar glyph.
+  glossary, and the menu bar glyph. The popover has two skins (Classic
+  in `PopoverView`, Porcelain in `MaxHeadroomPopoverView`), and a new
+  tab must exist in both. `UI/StatRow.swift` builds the GPU and Drives
+  rows as plain values so both skins draw the same strings.
 
 ## Hard-won constraints (violating these reintroduces fixed bugs)
 
@@ -130,6 +147,23 @@ logic fixture-testable:
   entries emit INPCB-first — and the live test's oracle is netstat, not
   a self-bound listener. Measured Aug 1, 2026; see the SANDBOX_NOTES.md
   ports addendum before "fixing" any of this.
+- **GPU and drive readings are registry properties only.** Under the
+  App Sandbox, reading an IORegistry property is allowed and opening a
+  user client is not (measured Nov 13, 2026; see the SANDBOX_NOTES.md
+  addendum). GPU utilization, GPU memory, per-process GPU time, and disk
+  byte counters are properties. NVMe SMART and IOReport need a user
+  client. Drive health stays behind `DriveHealthCapability`, and only
+  the unsandboxed Direct build reads it. Do not add SSD health or drive
+  temperature to the Mac App Store build.
+- **Two drive reads are paced, not per-tick.** Finder's free-space
+  figure (`volumeAvailableCapacityForImportantUsage`) measured about
+  11 ms a call, and SMART opens a user client on the drive.
+  `SamplerService` runs both on the first tick and then once per 60
+  seconds. The rest of the hardware sweep is about 2 ms once warm,
+  and 5,000 sweeps in a scratch harness leaked no memory or Mach ports.
+- **The bridging header is `Sampling/BridgingHeader.h`,** set in
+  `Shared.xcconfig` and in both test configurations. It includes
+  `PortTableABI.h` (layouts untouched) and `NVMeSMARTBridge.h`.
 
 ## Verifying UI changes on this machine
 
@@ -146,6 +180,15 @@ permission: no screenshots, no synthetic clicks. What works:
 - `defaults write com.vinnycarpenter.SystemHeadroom …` from the shell hits
   `~/Library/Preferences`, which the sandboxed app never reads; its real
   prefs are in `~/Library/Containers/com.vinnycarpenter.SystemHeadroom/`.
+- `PopoverVisualTests` renders every tab to PNG, but the sandboxed test
+  host writes inside its container, which this shell cannot read. Run
+  that suite in an unsandboxed host and read the `UI_RENDER` paths from
+  the log: add `-derivedDataPath build/unsandboxed-tests
+  ENABLE_APP_SANDBOX=NO
+  CODE_SIGN_ENTITLEMENTS=SystemHeadroom/SystemHeadroomDirect.entitlements
+  -only-testing:SystemHeadroomTests/PopoverVisualTests`. The same host
+  runs the one live test the sandbox denies (`DriveHealthTests`). Do not
+  run the whole suite this way: several tests assert the sandbox is on.
 - Final visual confirmation is Vinny's — ask rather than guess. A newly
   launched menu bar icon can land in Control Center's hidden overflow
   area on a crowded menu bar (README documents this gotcha).

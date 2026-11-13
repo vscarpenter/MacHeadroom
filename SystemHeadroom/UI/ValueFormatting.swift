@@ -36,6 +36,44 @@ enum ValueFormatting {
     return metric == .residentSize ? "\(formatted) RSS" : formatted
   }
 
+  /// Drive sizes in decimal units, the way Finder counts them. Memory
+  /// uses `bytes`, which counts in binary units.
+  static func diskBytes(_ value: UInt64) -> String {
+    let formatter = ByteCountFormatter()
+    formatter.countStyle = .file
+    formatter.allowsNonnumericFormatting = false
+    return formatter.string(fromByteCount: Int64(clamping: value))
+  }
+
+  /// Decimal megabytes, one decimal below 10 so a quiet disk still
+  /// shows movement.
+  static func megabytesPerSecond(_ bytesPerSecond: Double) -> String {
+    let megabytes = max(bytesPerSecond, 0) / 1_000_000
+    let tenths = (megabytes * 10).rounded() / 10
+    if tenths < 10 {
+      return String(format: "%.1f", tenths)
+    }
+    return "\(Int(megabytes.rounded()))"
+  }
+
+  static func throughput(_ activity: DiskActivity?) -> String {
+    guard let activity else { return "R — · W — MB/s" }
+    return "R \(megabytesPerSecond(activity.readBytesPerSecond)) · "
+      + "W \(megabytesPerSecond(activity.writeBytesPerSecond)) MB/s"
+  }
+
+  /// In the unit the reader's region uses for weather, so 38 C reads as
+  /// 100°F in the United States.
+  static func temperature(celsius: Int, locale: Locale) -> String {
+    Measurement(value: Double(celsius), unit: UnitTemperature.celsius)
+      .formatted(
+        .measurement(
+          width: .abbreviated, usage: .weather,
+          numberFormatStyle: .number.precision(.fractionLength(0))
+        )
+        .locale(locale))
+  }
+
   static func headroomPercent(used: Double?, capacity: Double) -> Int? {
     guard let used, used.isFinite, capacity.isFinite, capacity > 0 else { return nil }
     let remaining = min(max(1 - (used / capacity), 0), 1)

@@ -1,3 +1,68 @@
+# GPU and Drives tabs (2026-11-13)
+
+## Resuming From Here
+DONE: every task in `docs/superpowers/plans/2026-11-13-gpu-drives-tabs.md`
+is implemented and committed on `feat/gpu-drives-tabs` (from `main`,
+nothing pushed). Spec:
+`docs/superpowers/specs/2026-11-13-gpu-drives-tabs-design.md`.
+
+- An independent review ran on the finished branch. Its findings are
+  fixed and recorded in the spec's amendment.
+- Full suite: 245 tests in 50 suites, 241 pass. The 4 failures are the
+  known `PortsSamplerLiveTests` cases on this Mac (Apple Development
+  signing returns empty socket tables; SANDBOX_NOTES.md, Sept 16). The
+  baseline before this work was 151 tests with the same 4 failures.
+- One test skips in the sandboxed host by design: the live SMART read.
+  It passes in an unsandboxed host (disk0, 3% used, 54 C).
+- `Scripts/build-direct.sh` OK: universal, unsandboxed, 1.5.0 (17).
+- App Store flavor Release build OK: only the sandbox entitlement, no
+  Sparkle in the bundle.
+- No sandbox denial naming System Headroom in the unified log across the
+  test runs, so the sandboxed build never attempts the SMART read.
+- Renders checked by reading the PNGs from an unsandboxed test host:
+  GPU and Drives in Porcelain light and dark, Classic, and the Direct
+  health rows.
+
+## Next
+- Release 1.6.0 (18). On November 13, 2026 Vinny chose: version 1.6.0,
+  route through a PR with CI and a merge commit, release from `main`,
+  both editions, and publish Direct as soon as staging verifies.
+- The release record is not in this file. The Direct run's
+  `workflow.json` under `build/direct-runs/` says prepared, staged, or
+  published. The App Store archive and upload log sit in
+  `build/appstore/1.6.0-18/`. The live feed at
+  `https://www.macheadroom.com/direct/appcast.xml` says what Direct
+  users have.
+- After the App Store upload, Vinny creates version 1.6.0 in App Store
+  Connect, attaches build 18, pastes the What's New text, and submits.
+- Vinny's on-screen checks from the spec's "Manual check" list still
+  apply to the installed build.
+
+- Decision for Vinny: CPU percents on `main` are also averaged across
+  the time the popover was closed, for the first sample after it
+  reopens. The GPU and disk figures no longer are, and the quick
+  follow-up sample now shortens the CPU case to about a second. Making
+  CPU prime again too would show "Waiting for a signal…" briefly on
+  every open.
+
+## Blockers
+- None in code.
+
+## Assumptions
+- The version is 1.6.0 (18), named by Vinny on November 13, 2026.
+- Disk images and network mounts are not drives and stay hidden.
+- Free space matches Finder: it counts purgeable space on the startup
+  volume.
+- The Intel Mac and macOS 14 to 26 behavior is unmeasured. Both tabs
+  fall back to their unavailable state when a key is missing.
+- Owner items: the probe created `~/Library/Containers/` folders for
+  `com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID`,
+  `...MetricsProbeAppleDev`, and `...HostsProbe`. Scratch builds are
+  under `build/` (`unsandboxed-tests`, `release-check`, `debug-plain`),
+  which git ignores.
+
+---
+
 # 1.5.0 (17): port actions, memory pressure, CPU alerts (2026-10-26)
 
 ## Resuming From Here

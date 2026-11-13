@@ -13,6 +13,26 @@ struct SystemSummary: Sendable, Equatable {
   var swapUsedBytes: UInt64? = nil
 }
 
+/// The GPU's state for one tick. The registry reading plus the
+/// per-process percents the sampler service computed from it.
+struct GPUSample: Sendable, Equatable {
+  let model: String?
+  let coreCount: Int?
+  let utilizationPercent: Double
+  let rendererPercent: Double?
+  let tilerPercent: Double?
+  let allocatedMemoryBytes: UInt64?
+  let inUseMemoryBytes: UInt64?
+  /// false when the driver publishes no per-app GPU time at all. The
+  /// ranking then says so, instead of calling every app idle.
+  let reportsProcessUsage: Bool
+  /// Share of wall time per pid. nil until two ticks span a usable
+  /// window; a pid is absent when its own delta is unknown.
+  let processPercents: [Int32: Double]?
+  /// Registry names for pids outside the same-user process table.
+  let processNames: [Int32: String]
+}
+
 struct MonitorTick: Sendable, Equatable {
   let processes: [ProcessMeasurement]
   let system: SystemSummary
@@ -28,4 +48,13 @@ struct MonitorTick: Sendable, Equatable {
   /// p_comm names for socket-owning pids outside the snapshot set (root
   /// listeners). A vanished process may be absent here.
   let socketFallbackNames: [Int32: String]
+  /// nil when no accelerator reported utilization this tick; the GPU
+  /// tab shows its unavailable state.
+  let gpu: GPUSample?
+  /// Drives only, startup volume first. Empty when none could be read.
+  let volumes: [VolumeSnapshot]
+  /// Keyed by physical disk. A disk is absent until its second tick.
+  let diskActivity: [String: DiskActivity]
+  /// Always empty in the sandboxed build, which may not read SMART.
+  let driveHealth: [DriveHealth]
 }

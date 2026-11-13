@@ -26,6 +26,18 @@ final class MonitorStore {
   /// [] = genuinely nothing listening. Starts [] so launch shows the
   /// empty state, not the failure state, before the first sample.
   private(set) var portGroups: [PortGroup]? = []
+  /// nil when no GPU reported utilization: an unsupported Mac or a
+  /// virtual machine. Also nil before the first sample; `lastUpdated`
+  /// tells the two apart.
+  private(set) var gpu: GPUSample?
+  /// nil until a second sample gives the GPU counters a delta.
+  private(set) var topGPUApps: [GPUAppUsage]?
+  /// Drives only, startup volume first. Empty when none could be read.
+  private(set) var volumes: [VolumeSnapshot] = []
+  /// Keyed by physical disk. A disk is absent until its second sample.
+  private(set) var diskActivity: [String: DiskActivity] = [:]
+  /// Always empty in the sandboxed build, which may not read SMART.
+  private(set) var driveHealth: [DriveHealth] = []
   private(set) var systemSummary = SystemSummary(
     cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
   private(set) var processMemoryMetric = ProcessMemoryMetric.current
@@ -132,6 +144,10 @@ final class MonitorStore {
   private var timerTask: Task<Void, Never>?
   private var isPopoverOpen = false
   private var alertTracker = CPUAlertTracker()
+  /// Set whenever the sampling loop starts and spent by the next
+  /// sample. The sampler then primes its GPU and disk deltas again
+  /// rather than measure across however long sampling was stopped.
+  private var resumesAfterPause = true
 
   private var needsBackgroundSampling: Bool {
     showsMenuBarText || cpuAlertsEnabled
@@ -201,7 +217,9 @@ final class MonitorStore {
   }
 
   func refreshNow() async {
-    let tick = await sampler.tick(convention: cpuConvention)
+    let resuming = resumesAfterPause
+    resumesAfterPause = false
+    let tick = await sampler.tick(convention: cpuConvention, resumingAfterPause: resuming)
     let metadata = Self.currentAppMetadata()
     let groups = GroupingEngine.group(measurements: tick.processes, metadataByPID: metadata)
 
@@ -211,12 +229,32 @@ final class MonitorStore {
     portGroups = PortGroupBuilder.build(
       sockets: tick.sockets, groups: groups,
       fallbackNamesByPID: tick.socketFallbackNames)
+    gpu = tick.gpu
+    topGPUApps = tick.gpu?.processPercents.map { percents in
+      GPUUsageBuilder.build(
+        percentByPID: percents, groups: groups,
+        fallbackNamesByPID: tick.gpu?.processNames ?? [:], limit: topListLimit)
+    }
+    volumes = tick.volumes
+    diskActivity = tick.diskActivity
+    driveHealth = tick.driveHealth
     systemSummary = tick.system
     processMemoryMetric = tick.processMemoryMetric
     lastUpdated = Date()
     evaluateAlerts(
       groups: topCPUGroups, convention: tick.convention,
       logicalCoreCount: tick.logicalCoreCount, now: Date())
+  }
+
+  /// True while something on screen has one sample and needs two: CPU
+  /// percents, the GPU app ranking, or disk throughput. The loop below
+  /// answers it with one quick follow-up sample. A driver that reports
+  /// no per-app GPU time has nothing to wait for.
+  var awaitsSecondSample: Bool {
+    if systemSummary.cpuPercent == nil { return true }
+    if let gpu, gpu.reportsProcessUsage, topGPUApps == nil { return true }
+    let hasCountedDisk = volumes.contains { $0.physicalDisk != nil }
+    return hasCountedDisk && diskActivity.isEmpty
   }
 
   /// Internal so a test can drive it with fixture groups and a fixed
@@ -288,18 +326,20 @@ final class MonitorStore {
 
   private func start() {
     guard timerTask == nil else { return }
+    resumesAfterPause = true
     timerTask = Task { [weak self] in
-      // The first tick after launch only primes the CPU baseline (every
-      // delta needs two samples), so it publishes no CPU numbers. Follow
-      // it with one quick sample so real data lands in about a second
-      // instead of a full interval later. Once only: if the host reading
-      // ever failed outright, this must not tighten the loop to 1s forever.
+      // The first tick after a start only primes a baseline (every
+      // delta needs two samples): CPU on launch, and the GPU and disk
+      // deltas on every restart. Follow it with one quick sample so
+      // real data lands in about a second instead of a full interval
+      // later. Once only: if a reading ever failed outright, this must
+      // not tighten the loop to 1s forever.
       var usedQuickFollowUp = false
       while let self, !Task.isCancelled {
         await self.refreshNow()
         guard !Task.isCancelled else { return }
         let delay: TimeInterval
-        if !usedQuickFollowUp, self.systemSummary.cpuPercent == nil {
+        if !usedQuickFollowUp, self.awaitsSecondSample {
           usedQuickFollowUp = true
           delay = min(1, self.samplingInterval)
         } else {
@@ -356,7 +396,12 @@ extension MonitorStore {
     summary: SystemSummary,
     usesPorcelainAppearance: Bool = true,
     canTerminate: Bool = false,
-    portGroups: [PortGroup]? = []
+    portGroups: [PortGroup]? = [],
+    gpu: GPUSample? = nil,
+    gpuApps: [GPUAppUsage]? = [],
+    volumes: [VolumeSnapshot] = [],
+    diskActivity: [String: DiskActivity] = [:],
+    driveHealth: [DriveHealth] = []
   ) -> MonitorStore {
     let suiteName = "com.vinnycarpenter.SystemHeadroom.preview"
     guard let defaults = UserDefaults(suiteName: suiteName) else {
@@ -374,6 +419,11 @@ extension MonitorStore {
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
     store.portGroups = portGroups
+    store.gpu = gpu
+    store.topGPUApps = gpuApps
+    store.volumes = volumes
+    store.diskActivity = diskActivity
+    store.driveHealth = driveHealth
     store.systemSummary = summary
     store.processMemoryMetric = canTerminate ? .physicalFootprint : .residentSize
     store.lastUpdated = Date()

@@ -1,0 +1,86 @@
+# probe pid=9939 sandboxContainerEnv=com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID
+## GPU (IORegistry)
+gpu.match kr=0x0
+gpu.accelerator class=AGXAcceleratorG16X model=Apple M4 Pro cores=20 perfStats=READABLE
+gpu.stat Device Utilization % = 2
+gpu.stat Renderer Utilization % = 2
+gpu.stat Tiler Utilization % = 1
+gpu.stat In use system memory = 1039384576
+gpu.stat Alloc system memory = 4571840512
+gpu.children kr=0x0
+gpu.client sample creator=[pid 653, WindowServer] usage=( )
+gpu.client sample creator=[pid 653, WindowServer] usage=(         {         API = Metal;         accumulatedGPUTime = 6879467451583;         lastSubmittedTime = 323290699499708;     },         {         API = Metal;         accumulatedGPUTime = 122007416;         lastSubmittedTime = 322483267299041;     },         {         API = Metal;         accumulatedGPUTime = 0;         lastSubmittedTime = 0;     },         {         API = Metal;         accumulatedGPUTime = 142360541;         lastSubmittedTime = 231098090102250;     } )
+gpu.client sample creator=[pid 783, storagekitd] usage=( )
+gpu.clients total=118 withCreator=118 withAppUsage=118
+gpu.accelerators count=1
+## GPU (Metal, public API)
+metal name=Apple M4 Pro unifiedMemory=1 recommendedMaxWorkingSetSize=40200896512
+## Volumes (public Foundation API)
+volumes count=4
+volume path=/ name=Macintosh HD total=994662584320 avail=140138074112 availImportant=179612178956 internal=1 removable=0 ejectable=0 local=1 format=APFS root=1 bsd=disk3s1s1 fs=apfs error=(null)
+map disk3s1s1 driverFound=1 physicalDisk=disk0 stats=READABLE interconnect=Apple Fabric location=Internal medium=Solid State product=APPLE SSD AP1024Z hops=9
+volume path=/Volumes/EXTERNAL-BACKUP name=EXTERNAL-BACKUP total=8001352437760 avail=4418738233344 availImportant=0 internal=0 removable=0 ejectable=0 local=1 format=APFS (Case-sensitive) root=0 bsd=disk7s2 fs=apfs error=(null)
+map disk7s2 driverFound=1 physicalDisk=disk6 stats=READABLE interconnect=USB location=External medium=Rotational product=One Touch hops=8
+volume path=/Volumes/MountedImage name=MountedImage total=454041600 avail=55296000 availImportant=0 internal=(null) removable=1 ejectable=1 local=1 format=APFS root=0 bsd=disk27s1 fs=apfs error=(null)
+map disk27s1 driverFound=1 physicalDisk=disk26 stats=READABLE interconnect=Virtual Interface location=File medium=Solid State product=Disk Image hops=8
+volume path=/Users/vinnycarpenter/OrbStack name=OrbStack total=181126823936 avail=133020209152 availImportant=0 internal=(null) removable=0 ejectable=0 local=0 format=Network File System (NFS) root=0 bsd=OrbStack:/OrbStack fs=nfs error=(null)
+map OrbStack:/OrbStack media=NOT-FOUND
+## Disk activity (IORegistry counters, two samples)
+blockstats drivers=12 unreadable=0
+blockstats scratchWrite ok=1 dir=/Users/vinnycarpenter/Library/Containers/com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID/Data/tmp/ error=(null)
+blockstats disk0 totalRead=1072556625920 totalWrite=531779129344 deltaRead=221184 deltaWrite=51314688
+## NVMe SMART (IOKit/storage/nvme/NVMeSMARTLibExternal.h)
+smart.match kr=0x0
+smart.device class=IOEmbeddedNVMeBlockDevice createPlugIn kr=0xe00002be plugin=NULL
+smart.capableDevices count=1
+## File access
+files NSHomeDirectory=/Users/vinnycarpenter/Library/Containers/com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID/Data realHome=/Users/vinnycarpenter
+files list /Users/vinnycarpenter => DENIED (The file “vinnycarpenter” couldn’t be opened because you don’t have permission to view it.)
+files list /Users/vinnycarpenter/Movies => DENIED (The file “Movies” couldn’t be opened because you don’t have permission to view it.)
+files list /Applications => 74 items
+## PRIVATE: IOReport (GPU energy)
+ioreport subscription=NULL (DENIED)
+## PRIVATE: IOHIDEventSystem temperature sensors
+hid temperatureServices=70
+hid sensor PMU tdie5 = 44.6 C
+hid sensor PMU tdie8 = 45.7 C
+hid sensor PMU tdie11 = 44.4 C
+hid sensor PMU tdie2 = 44.0 C
+hid sensor PMU tdie1 = 44.5 C
+hid sensor PMU tdie9 = 44.4 C
+hid sensor PMU tdie14 = 44.6 C
+hid sensor PMU tdie4 = 43.4 C
+hid sensor PMU tdie7 = 45.2 C
+hid sensor PMU tdie10 = 44.0 C
+hid sensor PMU tdie11 = 44.0 C
+hid sensor PMU tdie13 = 43.8 C
+hid sensor PMU tdie3 = 43.6 C
+hid sensor PMU tdie9 = 44.1 C
+hid sensor PMU tdie12 = 45.0 C
+hid sensor PMU tdie13 = 44.2 C
+hid sensor PMU tdie2 = 43.5 C
+hid sensor NAND CH0 temp = 38.0 C
+hid sensor PMU tdie3 = 43.6 C
+hid sensor PMU tdie5 = 44.4 C
+hid sensor PMU tdie10 = 43.3 C
+hid sensor PMU tdie8 = 44.8 C
+hid sensor PMU tdie5 = 44.4 C
+hid sensor PMU tdie11 = 44.2 C
+hid sensor PMU tdie1 = 44.5 C
+hid sensor PMU tdie6 = 45.6 C
+hid sensor PMU tdie14 = 44.3 C
+hid sensor PMU tdie4 = 43.7 C
+hid sensor PMU tdie7 = 44.9 C
+hid sensor PMU tdie13 = 43.7 C
+hid sensor PMU tdie6 = 45.8 C
+hid sensor PMU tdie7 = 45.0 C
+hid sensor PMU tdie8 = 45.6 C
+hid sensor PMU tdie1 = 44.9 C
+hid sensor PMU tdie10 = 43.6 C
+hid sensor PMU tdie14 = 44.6 C
+hid sensor PMU tdie3 = 43.6 C
+hid sensor PMU tdie6 = 45.2 C
+hid sensor PMU tdie4 = 43.8 C
+hid sensor PMU tdie9 = 44.6 C
+hid sensorsWithValue=70
+# done

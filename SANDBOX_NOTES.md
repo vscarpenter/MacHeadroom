@@ -452,3 +452,60 @@ nil and the badge shows Unknown rather than a guessed value.
 The same day, `/etc/hosts` was read from the sandboxed test host for the
 port rows' hostname aliases (`HostsFileLiveTests`): allowed, no
 entitlement needed. A failed read leaves the menu at localhost only.
+
+## GPU and drive readings spike (November 13, 2026)
+
+Same machine, macOS 27.2.1 (26B131), Apple M4 Pro. Probe source and raw
+results live in [`Evidence/gpu-drives-spike/`](Evidence/gpu-drives-spike/).
+The design that consumed these findings is
+`docs/superpowers/specs/2026-11-13-gpu-drives-tabs-design.md`.
+
+One probe binary ran three ways: unsandboxed, sandboxed with a Developer
+ID signature, and sandboxed with an Apple Development signature. Both
+sandboxed runs carried only `com.apple.security.app-sandbox`, and they
+agreed on every reading.
+
+Open under the sandbox, with no further entitlement:
+
+- GPU utilization, GPU memory, model, and core count from the
+  `IOAccelerator` property `PerformanceStatistics`.
+- Per-process GPU time from each `AGXDeviceUserClient` child
+  (`IOUserClientCreator` names the pid, `AppUsage` carries
+  `accumulatedGPUTime` in nanoseconds). All 118 clients were readable,
+  root-owned ones included.
+- Volume capacity and flags from Foundation's volume resource values.
+- The physical disk behind a volume, found by walking the registry from
+  the volume's `IOMedia` up to its `IOBlockStorageDriver`, plus that
+  driver's byte counters.
+
+Closed under the sandbox:
+
+- NVMe SMART. `IOCreatePlugInInterfaceForService` returned `0xe00002be`
+  and the kernel logged `deny(1) iokit-open-user-client
+  AppleNVMeSMARTUserClient`. The unsandboxed control read 3% used, 100%
+  spare, and 311 K through the public `NVMeSMARTLibExternal.h` interface.
+- IOReport (GPU energy and frequency). Private, and denied anyway:
+  `deny(1) iokit-open-user-client IOReportUserClient`.
+- The home folder. `deny(1) file-read-data`, so no folder sizes.
+
+The boundary has one shape: reading a registry property is allowed, and
+opening a user client is not. It matches the earlier findings that task
+info is readable and fd lists are not.
+
+Consequence: the GPU and Drives tabs ship in both editions from registry
+properties and Foundation values. SSD health and drive temperature are
+capability-gated to the unsandboxed Direct build, the same rule as
+termination. Do not add them to the Mac App Store build; the OS denies
+the read itself.
+
+Caveats carried into the design: the property names are undocumented,
+and this spike measured one Apple silicon Mac on one OS release. Every
+reading maps a missing key to an unavailable state. `GPUSamplerLiveTests`
+and `DriveSamplerLiveTests` re-run the open reads inside the sandboxed
+test host on every run.
+
+One limit on those tests, measured the same day: the test action signs
+the host with a temporary exception for read-only access to `/`. The
+registry reads do not pass through it, so the tests are sound proof for
+them. The volume values are file-backed, so for those the probe above,
+signed with only the app-sandbox entitlement, is the proof.

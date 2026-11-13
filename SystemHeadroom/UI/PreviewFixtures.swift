@@ -2,9 +2,12 @@
   import Foundation
 
   enum PreviewFixtures {
+    /// `includesDriveHealth` stands in for the Direct edition, the only
+    /// build that reads SMART.
     @MainActor
     static func makeStore(
-      usesPorcelainAppearance: Bool = true, canTerminate: Bool = false
+      usesPorcelainAppearance: Bool = true, canTerminate: Bool = false,
+      includesDriveHealth: Bool = false
     ) -> MonitorStore {
       var chromeChildren: [ProcessMeasurement] = []
       for index in 1...14 {
@@ -106,9 +109,60 @@
           cpuPercent: 34.2, memoryUsedBytes: 12_800_000_000, memoryTotalBytes: 36_000_000_000),
         usesPorcelainAppearance: usesPorcelainAppearance,
         canTerminate: canTerminate,
-        portGroups: makePortGroups(from: cpuGroups)
+        portGroups: makePortGroups(from: cpuGroups),
+        gpu: gpuSample,
+        gpuApps: makeGPUApps(from: cpuGroups),
+        volumes: volumes,
+        diskActivity: diskActivity,
+        driveHealth: includesDriveHealth ? [driveHealth] : []
       )
     }
+
+    /// The readings measured on an M4 Pro (Evidence/gpu-drives-spike/).
+    static let gpuSample = GPUSample(
+      model: "Apple M4 Pro", coreCount: 20, utilizationPercent: 27, rendererPercent: 27,
+      tilerPercent: 12, allocatedMemoryBytes: 5_182_881_792,
+      inUseMemoryBytes: 1_850_884_096, reportsProcessUsage: true, processPercents: [:],
+      processNames: [:])
+
+    /// Three app rows and one system row, so both row variants render.
+    static func makeGPUApps(from groups: [AppGroup]) -> [GPUAppUsage] {
+      var rows = zip(groups, [14.2, 6.4, 0.6]).map { group, percent in
+        GPUAppUsage(
+          groupKey: group.groupKey, name: group.name,
+          bundleIdentifier: group.bundleIdentifier,
+          representativePID: group.representativePID, gpuPercent: percent,
+          processCount: group.processCount, appGroup: group)
+      }
+      rows.insert(
+        GPUAppUsage(
+          groupKey: "gpu-pid:653", name: "WindowServer", bundleIdentifier: nil,
+          representativePID: 653, gpuPercent: 1.4, processCount: 1, appGroup: nil),
+        at: min(2, rows.count))
+      return rows
+    }
+
+    static let volumes = [
+      VolumeSnapshot(
+        mountPath: "/", name: "Macintosh HD", totalBytes: 994_662_584_320,
+        freeBytes: 179_612_178_956, isStartup: true, location: .internal,
+        medium: .solidState, interconnect: "Apple Fabric", formatDescription: "APFS",
+        physicalDisk: "disk0"),
+      VolumeSnapshot(
+        mountPath: "/Volumes/Backup", name: "Backup", totalBytes: 8_001_352_437_760,
+        freeBytes: 4_418_738_233_344, isStartup: false, location: .external,
+        medium: .rotational, interconnect: "USB",
+        formatDescription: "APFS (Case-sensitive)", physicalDisk: "disk6"),
+    ]
+
+    static let diskActivity = [
+      "disk0": DiskActivity(readBytesPerSecond: 221_184, writeBytesPerSecond: 51_314_688),
+      "disk6": DiskActivity(readBytesPerSecond: 0, writeBytesPerSecond: 0),
+    ]
+
+    static let driveHealth = DriveHealth(
+      criticalWarning: 0, temperatureKelvin: 311, availableSpare: 100,
+      availableSpareThreshold: 99, percentageUsed: 3, physicalDisk: "disk0")
 
     /// Port fixtures shaped to exercise every row variant: app rows
     /// with tcp+udp badges, one row crowded enough for the +N overflow

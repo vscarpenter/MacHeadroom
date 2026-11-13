@@ -82,28 +82,36 @@ struct PopoverView: View {
   private var list: some View {
     ScrollView {
       LazyVStack(spacing: 10) {
-        if let metric = selectedTab.metricKind {
-          if groups.isEmpty {
-            Text("No data yet")
-              .foregroundStyle(.secondary)
-              .padding(.vertical, 20)
-          } else {
-            ForEach(groups) { group in
-              GroupRowView(group: group, metric: metric, maxValue: maxValue, store: store)
-            }
-          }
-        } else {
-          PortsPaneView(store: store)
+        switch selectedTab {
+        case .cpu: rankingRows(.cpu)
+        case .memory: rankingRows(.memory)
+        case .gpu: GPUPaneView(store: store)
+        case .drives: DrivesPaneView(store: store)
+        case .ports: PortsPaneView(store: store)
         }
       }
       .padding(12)
       .animation(reduceMotion ? nil : .default, value: groups)
       .animation(reduceMotion ? nil : .default, value: store.portGroups)
+      .animation(reduceMotion ? nil : .default, value: store.topGPUApps)
     }
     // A fixed height, not maxHeight: the MenuBarExtra window sizes itself
     // once, at open, before the first sample lands. The ideal height must
     // not depend on list content or the rows arrive into zero space.
     .frame(height: 360)
+  }
+
+  @ViewBuilder
+  private func rankingRows(_ metric: MetricKind) -> some View {
+    if groups.isEmpty {
+      Text("No data yet")
+        .foregroundStyle(.secondary)
+        .padding(.vertical, 20)
+    } else {
+      ForEach(groups) { group in
+        GroupRowView(group: group, metric: metric, maxValue: maxValue, store: store)
+      }
+    }
   }
 
   private var footer: some View {
