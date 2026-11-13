@@ -1,3 +1,51 @@
+# GPU and Drives tabs (2026-11-13)
+
+## Resuming From Here
+DONE: every task in `docs/superpowers/plans/2026-11-13-gpu-drives-tabs.md`
+is implemented and committed on `feat/gpu-drives-tabs` (from `main`,
+nothing pushed). Spec:
+`docs/superpowers/specs/2026-11-13-gpu-drives-tabs-design.md`.
+
+- Full suite: 236 tests in 49 suites, 232 pass. The 4 failures are the
+  known `PortsSamplerLiveTests` cases on this Mac (Apple Development
+  signing returns empty socket tables; SANDBOX_NOTES.md, Sept 16). The
+  baseline before this work was 151 tests with the same 4 failures.
+- One test skips in the sandboxed host by design: the live SMART read.
+  It passes in an unsandboxed host (disk0, 3% used, 49 C).
+- `Scripts/build-direct.sh` OK: universal, unsandboxed, 1.5.0 (17).
+- App Store flavor Release build OK: only the sandbox entitlement, no
+  Sparkle in the bundle.
+- No sandbox denial naming System Headroom in the unified log across the
+  test runs, so the sandboxed build never attempts the SMART read.
+- Renders checked by reading the PNGs from an unsandboxed test host:
+  GPU and Drives in Porcelain light and dark, Classic, and the Direct
+  health rows.
+
+## Next
+- Vinny's manual checks, listed in the spec under "Manual check". The
+  sandboxed Debug build was left running for it.
+- Then push and open a PR. Both wait for Vinny.
+- CI is unverified for the new live tests. They skip their hardware
+  assertions when `kern.hv_vmm_present` is 1, which should cover the
+  GitHub runner, but that has not run yet.
+
+## Blockers
+- None in code.
+
+## Assumptions
+- The version stays 1.5.0 (17) until Vinny names the release.
+- Disk images and network mounts are not drives and stay hidden.
+- Free space matches Finder: it counts purgeable space on the startup
+  volume.
+- The Intel Mac and macOS 14 to 26 behavior is unmeasured. Both tabs
+  fall back to their unavailable state when a key is missing.
+- Owner items: the probe created `~/Library/Containers/` folders for
+  `com.vinnycarpenter.SystemHeadroom.MetricsProbeDevID` and
+  `...MetricsProbeAppleDev`. Scratch builds are under `build/`
+  (`unsandboxed-tests`, `release-check`), which git ignores.
+
+---
+
 # 1.5.0 (17): port actions, memory pressure, CPU alerts (2026-10-26)
 
 ## Resuming From Here

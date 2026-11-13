@@ -1,3 +1,36 @@
+# Lessons from the GPU and Drives tabs (November 13, 2026)
+
+- Under the App Sandbox, reading an IORegistry property works and
+  opening a user client does not. That one rule sorted every reading:
+  GPU counters and disk byte counters are properties, SMART and IOReport
+  are user clients. Check which kind a reading is before designing on it.
+- Measure a sweep's cost before putting it on the tick. One innocent
+  resource key, `volumeAvailableCapacityForImportantUsage`, took 11 ms a
+  call while the other six took under 1 ms together. Time each read
+  alone to find the slow one.
+- Two counters with similar names can mean different things. `Alloc
+  system memory` tracks what the GPU holds; `In use system memory` only
+  rises while GPU work runs. A five-minute experiment (allocate, touch,
+  blit, release) settled which one to show.
+- This shell cannot read the sandboxed test host's container, so the
+  rendered PNGs there are out of reach. An unsandboxed test host writes
+  them to the normal temp folder. CLAUDE.md has the command.
+- `SingleInstanceGuard` uses one notice name for both editions and the
+  test host. Every test run quits a copy of the app that was running.
+- A new `PopoverTab` case breaks exhaustive switches in both skins, so
+  Classic and Porcelain have to change in one commit.
+- Swift 6 rejects a static stored `[String: Any]` fixture. Use a static
+  function that builds it.
+- `Mutex` needs macOS 15. On the macOS 14 target, a counting test
+  closure uses `OSAllocatedUnfairLock`.
+- A scratch script that inserts after the last same-prefix line made the
+  four `project.pbxproj` edits safe to repeat. Next free IDs: Sampling
+  `D…15`, Grouping `F…08`, UI `H…14`, tests `E…22`. Headers take a file
+  reference and a group entry only.
+- Mockups can carry another platform's vocabulary. The GPU mockup's
+  rows came from NVIDIA telemetry, and five of seven had no source on a
+  Mac. Check each drawn value for a source before estimating the build.
+
 # Lessons from the 1.5.0 release work (October 26, 2026)
 
 - `View` is `@MainActor` in the macOS 14+ SDK, so a `static func` on a

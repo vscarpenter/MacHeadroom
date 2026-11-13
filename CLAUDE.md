@@ -151,7 +151,8 @@ logic fixture-testable:
   figure (`volumeAvailableCapacityForImportantUsage`) measured about
   11 ms a call, and SMART opens a user client on the drive.
   `SamplerService` runs both on the first tick and then once per 60
-  seconds. The rest of the hardware sweep is about 4 ms.
+  seconds. The rest of the hardware sweep is about 2 ms once warm,
+  and 5,000 sweeps in a scratch harness leaked no memory or Mach ports.
 - **The bridging header is `Sampling/BridgingHeader.h`,** set in
   `Shared.xcconfig` and in both test configurations. It includes
   `PortTableABI.h` (layouts untouched) and `NVMeSMARTBridge.h`.

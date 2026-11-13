@@ -1,6 +1,6 @@
 # GPU and Drives tabs implementation plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add GPU and Drives tabs to the System Headroom popover in both appearances, with SSD health and temperature in the Direct edition only.
 
@@ -38,8 +38,8 @@
 
 **Files:** `Evidence/gpu-drives-spike/*`, `SANDBOX_NOTES.md`, this plan, the spec.
 
-- [ ] Commit the spike evidence and the sandbox addendum (`docs(sandbox): …`).
-- [ ] Commit the spec and plan (`docs(spec): …`).
+- [x] Commit the spike evidence and the sandbox addendum (`docs(sandbox): …`).
+- [x] Commit the spec and plan (`docs(spec): …`).
 
 ### Task 1: GPU reading, parser, and delta (pure)
 
@@ -71,9 +71,9 @@ enum GPUDelta {
 }
 ```
 
-- [ ] Tests first: a full reading (27, 27, 12, both memory counters, model, cores); no `Device Utilization %` returns nil; `model` as `Data` with a trailing NUL; two clients for one pid sum; a client with an empty `AppUsage` contributes 0; `parseCreator("pid 653, WindowServer")` is `(653, "WindowServer")`; `"pid x, y"`, `"653"`, and `"pid 99999999999, z"` are nil; a name containing a comma keeps the comma.
-- [ ] Delta tests: 187,564,500 ns over 13,649,697,292 ns is 1.374% within 0.001; no previous entry yields no key; a backward counter yields no key; zero wall time yields an empty result; `identityChanged` true yields no key.
-- [ ] Implement, run `GPUStatsParserTests`, commit.
+- [x] Tests first: a full reading (27, 27, 12, both memory counters, model, cores); no `Device Utilization %` returns nil; `model` as `Data` with a trailing NUL; two clients for one pid sum; a client with an empty `AppUsage` contributes 0; `parseCreator("pid 653, WindowServer")` is `(653, "WindowServer")`; `"pid x, y"`, `"653"`, and `"pid 99999999999, z"` are nil; a name containing a comma keeps the comma.
+- [x] Delta tests: 187,564,500 ns over 13,649,697,292 ns is 1.374% within 0.001; no previous entry yields no key; a backward counter yields no key; zero wall time yields an empty result; `identityChanged` true yields no key.
+- [x] Implement, run `GPUStatsParserTests`, commit.
 
 ### Task 2: GPU sampler and app ranking
 
@@ -108,9 +108,9 @@ enum GPUUsageBuilder {
 }
 ```
 
-- [ ] Builder tests: two pids of one group sum into one row; a pid in no group becomes a system row keyed `gpu-pid:<pid>` named from the fallback, or `pid <pid>` without one; 0.04 is dropped and 0.05 kept; equal percents order by name then key; 12 rows in, 10 out.
-- [ ] Live tests (sandboxed host): `GPUSampler.sample()` is non-nil with utilization in 0 to 100; at least one client pid; the sweep finishes in under 250 ms and prints its duration.
-- [ ] Implement, run both suites, commit.
+- [x] Builder tests: two pids of one group sum into one row; a pid in no group becomes a system row keyed `gpu-pid:<pid>` named from the fallback, or `pid <pid>` without one; 0.04 is dropped and 0.05 kept; equal percents order by name then key; 12 rows in, 10 out.
+- [x] Live tests (sandboxed host): `GPUSampler.sample()` is non-nil with utilization in 0 to 100; at least one client pid; the sweep finishes in under 250 ms and prints its duration.
+- [x] Implement, run both suites, commit.
 
 ### Task 3: Volumes and disk activity
 
@@ -148,10 +148,10 @@ enum VolumeClassifier {
 enum VolumeSampler { static func sampleFacts() -> [VolumeFacts] }
 ```
 
-- [ ] Classifier tests, with the measured shapes as fixtures: internal APFS startup volume kept, free space 179,612,178,956 from important usage; external USB rotational volume kept, free space from plain available because important usage is 0; `Virtual Interface` disk image dropped; non-local NFS mount dropped; a startup volume with no physical disk kept; zero-total volume dropped; order is startup first, then `localizedStandardCompare` on name; `usedFraction` clamps when free exceeds total.
-- [ ] Activity tests: no previous is nil; 51,314,688 bytes over 1 s is 51,314,688 bytes per second; half a second doubles the rate; a backward counter is nil; zero wall time is nil.
-- [ ] Live tests (sandboxed host): facts contain a startup volume with total above 0, a physical disk, and counters; `snapshots` keeps it; a tick carries volumes.
-- [ ] Implement, run the three suites, commit.
+- [x] Classifier tests, with the measured shapes as fixtures: internal APFS startup volume kept, free space 179,612,178,956 from important usage; external USB rotational volume kept, free space from plain available because important usage is 0; `Virtual Interface` disk image dropped; non-local NFS mount dropped; a startup volume with no physical disk kept; zero-total volume dropped; order is startup first, then `localizedStandardCompare` on name; `usedFraction` clamps when free exceeds total.
+- [x] Activity tests: no previous is nil; 51,314,688 bytes over 1 s is 51,314,688 bytes per second; half a second doubles the rate; a backward counter is nil; zero wall time is nil.
+- [x] Live tests (sandboxed host): facts contain a startup volume with total above 0, a physical disk, and counters; `snapshots` keeps it; a tick carries volumes.
+- [x] Implement, run the three suites, commit.
 
 ### Task 4: Drive health (Direct only)
 
@@ -181,8 +181,8 @@ struct DriveHealth: Sendable, Equatable, Identifiable {
 enum DriveHealthSampler { static func sample() -> [DriveHealth] }
 ```
 
-- [ ] Tests: 311 K is 38 C; 0 K is nil; warning byte 0 with spare 100 over threshold 99 has no warning; warning byte 1 has one; spare 5 under threshold 10 has one; the capability is `.sandboxed` in the sandboxed host and `.available` in an unsandboxed one; in an unsandboxed host only (`.enabled(if:)`), the live read returns at least one device with wear in 0 to 255.
-- [ ] Implement, run `DriveHealthTests` sandboxed and unsandboxed, run `PortTableABITests` to prove the bridging header move, commit.
+- [x] Tests: 311 K is 38 C; 0 K is nil; warning byte 0 with spare 100 over threshold 99 has no warning; warning byte 1 has one; spare 5 under threshold 10 has one; the capability is `.sandboxed` in the sandboxed host and `.available` in an unsandboxed one; in an unsandboxed host only (`.enabled(if:)`), the live read returns at least one device with wear in 0 to 255.
+- [x] Implement, run `DriveHealthTests` sandboxed and unsandboxed, run `PortTableABITests` to prove the bridging header move, commit.
 
 ### Task 5: Tick, sampler service, and store
 
@@ -214,8 +214,8 @@ private(set) var diskActivity: [String: DiskActivity]
 private(set) var driveHealth: [DriveHealth]
 ```
 
-- [ ] Tests: a counting reader with the default interval is called once across two ticks; with interval 0 it is called twice; a nil reader leaves `driveHealth` empty; the first tick has `gpu?.processPercents == nil` and the second has a dictionary; the second tick has disk activity for the startup disk; after `refreshNow` twice the store publishes `gpu`, `topGPUApps`, and `volumes`.
-- [ ] Implement, run the suites plus `SamplerBurstTests`, commit.
+- [x] Tests: a counting reader with the default interval is called once across two ticks; with interval 0 it is called twice; a nil reader leaves `driveHealth` empty; the first tick has `gpu?.processPercents == nil` and the second has a dictionary; the second tick has disk activity for the startup disk; after `refreshNow` twice the store publishes `gpu`, `topGPUApps`, and `volumes`.
+- [x] Implement, run the suites plus `SamplerBurstTests`, commit.
 
 ### Task 6: Presentation (pure)
 
@@ -250,29 +250,49 @@ static func temperature(celsius: Int, locale: Locale) -> String
 
 Exact copy: titles "GPU Utilization", "GPU Memory", "Disk Activity", "SSD Health", "Drive Temperature". Health value "Healthy" or "Check drive". Health subtitle "No warnings · N% wear" or "Warning reported · N% wear". Kind line parts joined by " · ": "Internal SSD", "Internal HDD", "External SSD", "External HDD", "Internal", "External", or "Drive"; then the capacity; then the format when internal or the interconnect when external and known. Unavailable detail lines: "GPU statistics unavailable", "Drives unavailable".
 
-- [ ] Tests cover every string above, the 27/12 subtitle, allocated over installed as the memory bar, the startup row accent, the wear bar clamp at 1.0 for 130% wear with "130% wear" in the text, a nil temperature omitting the row, `en_US` showing °F and `en_GB` showing °C, throughput at 0, 0.2, 9.96, 51, and nil.
-- [ ] Implement, run the suite, commit.
+- [x] Tests cover every string above, the 27/12 subtitle, allocated over installed as the memory bar, the startup row accent, the wear bar clamp at 1.0 for 130% wear with "130% wear" in the text, a nil temperature omitting the row, `en_US` showing °F and `en_GB` showing °C, throughput at 0, 0.2, 9.96, 51, and nil.
+- [x] Implement, run the suite, commit.
 
 ### Task 7: Five tabs and the Classic panes
 
 **Files:** Modify `UI/PopoverTab.swift`, `UI/PopoverView.swift`. Create `UI/HardwarePaneViews.swift`. Extend `PopoverLayoutTests`.
 
-- [ ] Layout tests first: Classic GPU and Drives panes equal the CPU pane's height when populated, empty, and unavailable; health rows present and absent change nothing; capability on and off changes nothing on the GPU tab.
-- [ ] Implement `StatRowView`, `GPUAppRowView`, `GPUPaneView`, `DrivesPaneView`; branch the list on the tab; run `PopoverLayoutTests`, commit.
+- [x] Layout tests first: Classic GPU and Drives panes equal the CPU pane's height when populated, empty, and unavailable; health rows present and absent change nothing; capability on and off changes nothing on the GPU tab.
+- [x] Implement `StatRowView`, `GPUAppRowView`, `GPUPaneView`, `DrivesPaneView`; branch the list on the tab; run `PopoverLayoutTests`, commit.
 
 ### Task 8: Porcelain header and panes
 
 **Files:** Modify `UI/MaxHeadroomPopoverView.swift`. Extend `PopoverLayoutTests`, `PopoverVisualTests`.
 
-- [ ] Layout tests first: the Porcelain equivalents of Task 7, plus header height independent of tab.
-- [ ] Move the tab bar to a full-width row, header height 222. Add `PorcelainStatRowView` and `PorcelainGPUAppRowView`. Add GPU and Drives fixtures to the visual test's list.
-- [ ] Render unsandboxed, read the PNGs for both tabs in light and dark and for Classic, fix what the look shows, commit.
+- [x] Layout tests first: the Porcelain equivalents of Task 7, plus header height independent of tab.
+- [x] Move the tab bar to a full-width row, header height 222. Add `PorcelainStatRowView` and `PorcelainGPUAppRowView`. Add GPU and Drives fixtures to the visual test's list.
+- [x] Render unsandboxed, read the PNGs for both tabs in light and dark and for Classic, fix what the look shows, commit.
 
 ### Task 9: Help, docs, and the full pass
 
 **Files:** Modify `UI/HelpView.swift`, `README.md`, `CLAUDE.md`, `tasks/todo.md`, `tasks/lessons.md`.
 
-- [ ] Help copy per the spec. README feature and architecture lines. CLAUDE.md gains the registry-only and health-gating constraint.
-- [ ] Full suite: the only failures are the four known live-port cases.
-- [ ] `Scripts/build-direct.sh`, launch the Direct build, confirm in the unified log that the health read ran. Launch the sandboxed Debug build, confirm no SMART denial is logged.
-- [ ] Update `tasks/todo.md` with Resuming From Here, commit.
+- [x] Help copy per the spec. README feature and architecture lines. CLAUDE.md gains the registry-only and health-gating constraint.
+- [x] Full suite: the only failures are the four known live-port cases.
+- [x] `Scripts/build-direct.sh`, launch the Direct build, confirm in the unified log that the health read ran. Launch the sandboxed Debug build, confirm no SMART denial is logged.
+- [x] Update `tasks/todo.md` with Resuming From Here, commit.
+
+## Execution notes
+
+- Tasks 7 and 8 landed as one commit. A new `PopoverTab` case makes the
+  exhaustive switches in both skins fail to compile, so the two
+  appearances cannot change separately.
+- The layout tests were not run red on their own. They cannot compile
+  before the tab cases exist, and the fixed heights they pin went in
+  with the views.
+- `VolumeFacts.importantAvailableBytes` is filled by `SamplerService`,
+  not by the sampler. The important-usage read measured 11 ms, so it is
+  paced with the SMART read. The spec records this.
+- The GPU Memory row leads with allocated memory. The approved sketch
+  led with in-use memory; the counter experiment showed in-use is
+  transient.
+- The Porcelain header grew 50 points, not the "about 40" quoted at
+  approval. The list kept its height, so each tab shows as many rows as
+  before.
+- Left for Vinny: the manual checks in the spec, and the Intel and CI
+  runs that this Mac cannot perform.
