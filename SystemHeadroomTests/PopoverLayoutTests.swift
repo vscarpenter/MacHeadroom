@@ -222,4 +222,84 @@ struct PopoverLayoutTests {
 
     #expect(plainSize == pressuredSize)
   }
+
+  @MainActor
+  private func size(_ store: MonitorStore, _ tab: PopoverTab) -> CGSize {
+    NSHostingView(rootView: PopoverView(store: store, initialTab: tab)).intrinsicContentSize
+  }
+
+  @Test("Every tab opens at the same size", arguments: [true, false])
+  @MainActor
+  func everyTabSameSize(usesPorcelain: Bool) {
+    let store = PreviewFixtures.makeStore(usesPorcelainAppearance: usesPorcelain)
+    let reference = size(store, .cpu)
+
+    for tab in PopoverTab.allCases {
+      #expect(size(store, tab) == reference, "\(tab.rawValue)")
+    }
+    #expect(reference.width == (usesPorcelain ? 460 : 340))
+  }
+
+  /// The hardware panes have more states than a ranking: no GPU, a GPU
+  /// whose app figures are still being measured, an idle GPU, drives
+  /// with and without the Direct edition's health rows. None may move
+  /// the popover's size.
+  @Test("GPU and Drives panes keep the metric pane's size in every state", arguments: [true, false])
+  @MainActor
+  func hardwarePanesKeepSize(usesPorcelain: Bool) {
+    let emptySummary = SystemSummary(
+      cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
+    let unavailable = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [], summary: emptySummary,
+      usesPorcelainAppearance: usesPorcelain)
+    let measuring = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [], summary: emptySummary,
+      usesPorcelainAppearance: usesPorcelain, gpu: PreviewFixtures.gpuSample, gpuApps: nil,
+      volumes: PreviewFixtures.volumes)
+    let idle = MonitorStore.preview(
+      cpuGroups: [], memoryGroups: [], summary: emptySummary,
+      usesPorcelainAppearance: usesPorcelain, gpu: PreviewFixtures.gpuSample, gpuApps: [],
+      volumes: PreviewFixtures.volumes)
+    let populated = PreviewFixtures.makeStore(usesPorcelainAppearance: usesPorcelain)
+    let withHealth = PreviewFixtures.makeStore(
+      usesPorcelainAppearance: usesPorcelain, includesDriveHealth: true)
+
+    let reference = size(populated, .cpu)
+    for store in [unavailable, measuring, idle, populated, withHealth] {
+      #expect(size(store, .gpu) == reference)
+      #expect(size(store, .drives) == reference)
+    }
+  }
+
+  @Test("A store that has not sampled yet opens the hardware panes at the same size", arguments: [true, false])
+  @MainActor
+  func waitingPanesKeepSize(usesPorcelain: Bool) throws {
+    let suiteName = "com.vinnycarpenter.SystemHeadroom.layout-tests"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defaults.removePersistentDomain(forName: suiteName)
+    let waiting = MonitorStore(
+      defaults: defaults, capability: .sandboxed,
+      terminator: ProcessTerminator(
+        runningApplication: { _ in nil },
+        currentStartIdentity: { _ in nil },
+        sendSignal: { _, _ in 0 }),
+      alertDelivery: NoOpAlertDelivery())
+    waiting.usesPorcelainAppearance = usesPorcelain
+    #expect(waiting.lastUpdated == nil)
+
+    let reference = size(
+      PreviewFixtures.makeStore(usesPorcelainAppearance: usesPorcelain), .cpu)
+    #expect(size(waiting, .gpu) == reference)
+    #expect(size(waiting, .drives) == reference)
+  }
+
+  @Test("Quit capability does not change the GPU pane's size", arguments: [true, false])
+  @MainActor
+  func gpuCapabilityDoesNotChangeSize(usesPorcelain: Bool) {
+    let gatedOff = PreviewFixtures.makeStore(usesPorcelainAppearance: usesPorcelain)
+    let gatedOn = PreviewFixtures.makeStore(
+      usesPorcelainAppearance: usesPorcelain, canTerminate: true)
+
+    #expect(size(gatedOff, .gpu) == size(gatedOn, .gpu))
+  }
 }

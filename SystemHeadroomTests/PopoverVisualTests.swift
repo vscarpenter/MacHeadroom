@@ -16,6 +16,10 @@ struct PopoverVisualTests {
       ("memory-dark", .memory, .dark),
       ("ports-light", .ports, .light),
       ("ports-dark", .ports, .dark),
+      ("gpu-light", .gpu, .light),
+      ("gpu-dark", .gpu, .dark),
+      ("drives-light", .drives, .light),
+      ("drives-dark", .drives, .dark),
     ]
 
     for fixture in fixtures {
@@ -64,16 +68,47 @@ struct PopoverVisualTests {
   @Test("Classic compact appearance remains available")
   @MainActor
   func classicCompactAppearanceRenders() throws {
-    let store = PreviewFixtures.makeStore(usesPorcelainAppearance: false)
+    for tab in PopoverTab.allCases {
+      let store = PreviewFixtures.makeStore(
+        usesPorcelainAppearance: false, includesDriveHealth: true)
+      let hosting = NSHostingView(
+        rootView: PopoverView(store: store, initialTab: tab)
+          .environment(\.colorScheme, .light)
+      )
+
+      let size = hosting.intrinsicContentSize
+      #expect(size.width >= 340)
+      #expect(size.height > 350)
+
+      hosting.frame = CGRect(origin: .zero, size: size)
+      hosting.layoutSubtreeIfNeeded()
+
+      let bitmap = try #require(
+        hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds)
+      )
+      hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
+      let data = try #require(bitmap.representation(using: .png, properties: [:]))
+      #expect(data.count > 10_000)
+
+      let url = FileManager.default.temporaryDirectory
+        .appendingPathComponent("SystemHeadroom-Classic-\(tab.rawValue).png")
+      try data.write(to: url)
+      print("UI_RENDER classic-\(tab.rawValue) \(url.path)")
+    }
+  }
+
+  /// The Direct edition's Drives pane adds the SSD health and
+  /// temperature rows. The sandboxed build never has them.
+  @Test("Porcelain Drives pane renders the Direct edition's health rows")
+  @MainActor
+  func porcelainDrivesRendersHealthRows() throws {
+    let store = PreviewFixtures.makeStore(includesDriveHealth: true)
     let hosting = NSHostingView(
-      rootView: PopoverView(store: store)
+      rootView: PopoverView(store: store, initialTab: .drives)
         .environment(\.colorScheme, .light)
     )
 
     let size = hosting.intrinsicContentSize
-    #expect(size.width >= 340)
-    #expect(size.height > 350)
-
     hosting.frame = CGRect(origin: .zero, size: size)
     hosting.layoutSubtreeIfNeeded()
 
@@ -82,7 +117,12 @@ struct PopoverVisualTests {
     )
     hosting.cacheDisplay(in: hosting.bounds, to: bitmap)
     let data = try #require(bitmap.representation(using: .png, properties: [:]))
-    #expect(data.count > 10_000)
+    #expect(data.count > 40_000)
+
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent("SystemHeadroom-Porcelain-drives-direct-light.png")
+    try data.write(to: url)
+    print("UI_RENDER drives-direct-light \(url.path)")
   }
 
   @Test("Settings renders the appearance preference")

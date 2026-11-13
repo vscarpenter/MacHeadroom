@@ -92,6 +92,7 @@
 		H10000000000000000000010 /* PortRowMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000010 /* PortRowMenu.swift */; };
 		H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000011 /* MemoryPressureBadge.swift */; };
 		H10000000000000000000012 /* StatRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000012 /* StatRow.swift */; };
+		H10000000000000000000013 /* HardwarePaneViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000013 /* HardwarePaneViews.swift */; };
 		I10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -200,6 +201,7 @@
 		H20000000000000000000010 /* PortRowMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowMenu.swift; sourceTree = "<group>"; };
 		H20000000000000000000011 /* MemoryPressureBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureBadge.swift; sourceTree = "<group>"; };
 		H20000000000000000000012 /* StatRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatRow.swift; sourceTree = "<group>"; };
+		H20000000000000000000013 /* HardwarePaneViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwarePaneViews.swift; sourceTree = "<group>"; };
 		I20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -390,6 +392,7 @@
 				H20000000000000000000010 /* PortRowMenu.swift */,
 				H20000000000000000000011 /* MemoryPressureBadge.swift */,
 				H20000000000000000000012 /* StatRow.swift */,
+				H20000000000000000000013 /* HardwarePaneViews.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -563,6 +566,7 @@
 				H10000000000000000000010 /* PortRowMenu.swift in Sources */,
 				H10000000000000000000011 /* MemoryPressureBadge.swift in Sources */,
 				H10000000000000000000012 /* StatRow.swift in Sources */,
+				H10000000000000000000013 /* HardwarePaneViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

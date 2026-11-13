@@ -18,13 +18,32 @@ struct StatRow: Equatable, Identifiable {
   var accessibilityLabel: String { "\(title), \(value), \(subtitle)" }
 }
 
+/// What a hardware pane draws. A missing reading means one of two
+/// things: nothing has been sampled yet, or this Mac does not report it.
+/// The popover opens before the first sample lands, so the two must not
+/// share a message.
+enum HardwarePaneState: Equatable {
+  case waiting
+  case unavailable
+  case ready
+
+  static let waitingDetail = "Waiting for the first sample"
+}
+
 enum GPUPresentation {
+  static func paneState(gpu: GPUSample?, hasSampled: Bool) -> HardwarePaneState {
+    if gpu != nil { return .ready }
+    return hasSampled ? .unavailable : .waiting
+  }
+
   static func headroomPercent(_ gpu: GPUSample?) -> Int? {
     ValueFormatting.headroomPercent(used: gpu?.utilizationPercent, capacity: 100)
   }
 
-  static func usageDetail(_ gpu: GPUSample?) -> String {
-    guard let gpu else { return "GPU statistics unavailable" }
+  static func usageDetail(_ gpu: GPUSample?, hasSampled: Bool = true) -> String {
+    guard let gpu else {
+      return hasSampled ? "GPU statistics unavailable" : HardwarePaneState.waitingDetail
+    }
     let inUse = "\(ValueFormatting.percent(gpu.utilizationPercent)) in use"
     guard let allocated = gpu.allocatedMemoryBytes else { return inUse }
     return "\(inUse) · \(ValueFormatting.bytes(allocated)) GPU memory"
@@ -76,14 +95,21 @@ enum GPUPresentation {
 }
 
 enum DrivesPresentation {
+  static func paneState(volumes: [VolumeSnapshot], hasSampled: Bool) -> HardwarePaneState {
+    if !volumes.isEmpty { return .ready }
+    return hasSampled ? .unavailable : .waiting
+  }
+
   static func headroomPercent(_ volumes: [VolumeSnapshot]) -> Int? {
     guard let startup = volumes.first(where: \.isStartup) else { return nil }
     return ValueFormatting.headroomPercent(
       used: Double(startup.usedBytes), capacity: Double(startup.totalBytes))
   }
 
-  static func usageDetail(_ volumes: [VolumeSnapshot]) -> String {
-    guard let startup = volumes.first(where: \.isStartup) else { return "Drives unavailable" }
+  static func usageDetail(_ volumes: [VolumeSnapshot], hasSampled: Bool = true) -> String {
+    guard let startup = volumes.first(where: \.isStartup) else {
+      return hasSampled ? "Drives unavailable" : HardwarePaneState.waitingDetail
+    }
     let place =
       switch startup.location {
       case .internal: "internal"

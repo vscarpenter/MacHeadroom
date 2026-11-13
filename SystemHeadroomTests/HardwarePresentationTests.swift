@@ -32,6 +32,15 @@ struct GPUPresentationTests {
     #expect(GPUPresentation.usageDetail(nil) == "GPU statistics unavailable")
   }
 
+  @Test("Before the first sample the pane waits; after it, a missing GPU is unavailable")
+  func paneState() {
+    #expect(GPUPresentation.paneState(gpu: nil, hasSampled: false) == .waiting)
+    #expect(GPUPresentation.paneState(gpu: nil, hasSampled: true) == .unavailable)
+    #expect(GPUPresentation.paneState(gpu: Self.gpu(), hasSampled: true) == .ready)
+    #expect(
+      GPUPresentation.usageDetail(nil, hasSampled: false) == "Waiting for the first sample")
+  }
+
   @Test("The utilization row carries the renderer and tiler breakdown")
   func utilizationRow() throws {
     let row = try #require(
@@ -152,6 +161,15 @@ struct DrivesPresentationTests {
     #expect(
       DrivesPresentation.usageDetail([Self.startup]) == "\(used) in use · \(total) internal")
     #expect(DrivesPresentation.usageDetail([]) == "Drives unavailable")
+  }
+
+  @Test("Before the first sample the pane waits; after it, no volumes is unavailable")
+  func paneState() {
+    #expect(DrivesPresentation.paneState(volumes: [], hasSampled: false) == .waiting)
+    #expect(DrivesPresentation.paneState(volumes: [], hasSampled: true) == .unavailable)
+    #expect(DrivesPresentation.paneState(volumes: [Self.startup], hasSampled: false) == .ready)
+    #expect(
+      DrivesPresentation.usageDetail([], hasSampled: false) == "Waiting for the first sample")
   }
 
   @Test("Kind lines follow location, medium, and bus")
