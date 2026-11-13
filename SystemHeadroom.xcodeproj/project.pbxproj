@@ -24,6 +24,7 @@
 		D1000000000000000000000A /* PortTableParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000A /* PortTableParser.swift */; };
 		D1000000000000000000000B /* PortTableSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000B /* PortTableSampler.swift */; };
 		D1000000000000000000000C /* HostsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000C /* HostsFile.swift */; };
+		D1000000000000000000000D /* GPUStatsParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000D /* GPUStatsParser.swift */; };
 		E10000000000000000000001 /* CPUDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* CPUDeltaTests.swift */; };
 		E10000000000000000000002 /* GroupingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* GroupingEngineTests.swift */; };
 		E10000000000000000000003 /* PopoverLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* PopoverLayoutTests.swift */; };
@@ -48,6 +49,7 @@
 		E10000000000000000000016 /* CPUAlertTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000016 /* CPUAlertTrackerTests.swift */; };
 		E10000000000000000000017 /* StoreAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000017 /* StoreAlertTests.swift */; };
 		E10000000000000000000018 /* HostsFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000018 /* HostsFileTests.swift */; };
+		E10000000000000000000019 /* GPUStatsParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000019 /* GPUStatsParserTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -113,6 +115,7 @@
 		D2000000000000000000000A /* PortTableParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableParser.swift; sourceTree = "<group>"; };
 		D2000000000000000000000B /* PortTableSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortTableSampler.swift; sourceTree = "<group>"; };
 		D2000000000000000000000C /* HostsFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFile.swift; sourceTree = "<group>"; };
+		D2000000000000000000000D /* GPUStatsParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUStatsParser.swift; sourceTree = "<group>"; };
 		E20000000000000000000001 /* CPUDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUDeltaTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000002 /* GroupingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngineTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000003 /* PopoverLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverLayoutTests.swift; sourceTree = "<group>"; };
@@ -137,6 +140,7 @@
 		E20000000000000000000016 /* CPUAlertTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUAlertTrackerTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000017 /* StoreAlertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreAlertTests.swift; sourceTree = "<group>"; };
 		E20000000000000000000018 /* HostsFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFileTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000019 /* GPUStatsParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUStatsParserTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -279,6 +283,7 @@
 				E20000000000000000000016 /* CPUAlertTrackerTests.swift */,
 				E20000000000000000000017 /* StoreAlertTests.swift */,
 				E20000000000000000000018 /* HostsFileTests.swift */,
+				E20000000000000000000019 /* GPUStatsParserTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -298,6 +303,7 @@
 				D2000000000000000000000A /* PortTableParser.swift */,
 				D2000000000000000000000B /* PortTableSampler.swift */,
 				D2000000000000000000000C /* HostsFile.swift */,
+				D2000000000000000000000D /* GPUStatsParser.swift */,
 			);
 			path = Sampling;
 			sourceTree = "<group>";
@@ -473,6 +479,7 @@
 				D1000000000000000000000A /* PortTableParser.swift in Sources */,
 				D1000000000000000000000B /* PortTableSampler.swift in Sources */,
 				D1000000000000000000000C /* HostsFile.swift in Sources */,
+				D1000000000000000000000D /* GPUStatsParser.swift in Sources */,
 				F10000000000000000000001 /* AppMetadata.swift in Sources */,
 				F10000000000000000000002 /* AppGroup.swift in Sources */,
 				F10000000000000000000003 /* GroupingEngine.swift in Sources */,
@@ -532,6 +539,7 @@
 				E10000000000000000000016 /* CPUAlertTrackerTests.swift in Sources */,
 				E10000000000000000000017 /* StoreAlertTests.swift in Sources */,
 				E10000000000000000000018 /* HostsFileTests.swift in Sources */,
+				E10000000000000000000019 /* GPUStatsParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
