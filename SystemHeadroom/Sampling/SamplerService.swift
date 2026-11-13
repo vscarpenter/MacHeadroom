@@ -10,9 +10,16 @@ actor SamplerService {
   private var previousHostTicks: HostCPUTicks?
   private var previousTimestamp: UInt64?
   private var lastSocketsFailed = false
+  private var previousGPUTimeByPID: [Int32: UInt64]?
+  private var previousDiskCounters: [String: DiskCounters] = [:]
+  private var slowReadTimestamp: UInt64?
+  private var purgeableBytes: UInt64?
+  private var driveHealth: [DriveHealth] = []
   private let timebase: mach_timebase_info_data_t
   private let logicalCoreCount: Int
   private let processMemoryMetric: ProcessMemoryMetric
+  private let driveHealthReader: (@Sendable () -> [DriveHealth])?
+  private let slowReadIntervalNanoseconds: UInt64
 
   private static let log = Logger(
     subsystem: "com.vinnycarpenter.SystemHeadroom", category: "ports")
@@ -20,11 +27,22 @@ actor SamplerService {
   init(
     timebase: mach_timebase_info_data_t = SamplerService.currentTimebase(),
     logicalCoreCount: Int = max(ProcessInfo.processInfo.activeProcessorCount, 1),
-    processMemoryMetric: ProcessMemoryMetric = .current
+    processMemoryMetric: ProcessMemoryMetric = .current,
+    driveHealthReader: (@Sendable () -> [DriveHealth])? = SamplerService.liveDriveHealthReader(),
+    slowReadIntervalNanoseconds: UInt64 = 60 * 1_000_000_000
   ) {
     self.timebase = timebase
     self.logicalCoreCount = logicalCoreCount
     self.processMemoryMetric = processMemoryMetric
+    self.driveHealthReader = driveHealthReader
+    self.slowReadIntervalNanoseconds = slowReadIntervalNanoseconds
+  }
+
+  /// nil in the sandboxed build: the SMART read opens a user client the
+  /// App Sandbox denies, so that build never attempts it.
+  static func liveDriveHealthReader() -> (@Sendable () -> [DriveHealth])? {
+    guard DriveHealthCapability.current == .available else { return nil }
+    return { DriveHealthSampler.sample() }
   }
 
   static func currentTimebase() -> mach_timebase_info_data_t {
@@ -78,6 +96,12 @@ actor SamplerService {
       return ProcessMeasurement(snapshot: snapshot, cpuPercent: percent)
     }
 
+    let snapshotsByPID = Dictionary(
+      uniqueKeysWithValues: snapshots.map { ($0.pid, $0) }
+    )
+    let gpu = sampleGPU(snapshotsByPID: snapshotsByPID, wallTime: wallTime)
+    let drives = sampleDrives(now: now, wallTime: wallTime)
+
     let hostTicks = HostSampler.sampleCPUTicks()
     let hostMemory = HostSampler.sampleMemory()
     let memoryPressure = HostSampler.sampleMemoryPressure()
@@ -86,9 +110,7 @@ actor SamplerService {
       HostCPUDelta.percent(previous: previousHostTicks, current: current)
     }
 
-    previousSnapshotsByPID = Dictionary(
-      uniqueKeysWithValues: snapshots.map { ($0.pid, $0) }
-    )
+    previousSnapshotsByPID = snapshotsByPID
     previousHostTicks = hostTicks
     previousTimestamp = now
 
@@ -105,7 +127,87 @@ actor SamplerService {
       convention: convention,
       logicalCoreCount: logicalCoreCount,
       sockets: sockets,
-      socketFallbackNames: socketFallbackNames
+      socketFallbackNames: socketFallbackNames,
+      gpu: gpu,
+      volumes: drives.volumes,
+      diskActivity: drives.activity,
+      driveHealth: driveHealth
     )
+  }
+
+  /// Must run before `previousSnapshotsByPID` is replaced: the pid-reuse
+  /// guard compares each pid's start identity across the two ticks.
+  private func sampleGPU(
+    snapshotsByPID: [Int32: ProcessSnapshot], wallTime: UInt64
+  ) -> GPUSample? {
+    guard let reading = GPUSampler.sample() else {
+      previousGPUTimeByPID = nil
+      return nil
+    }
+    var percents: [Int32: Double]?
+    if let previous = previousGPUTimeByPID, wallTime > 0 {
+      percents = GPUDelta.percents(
+        previous: previous,
+        current: reading.gpuTimeNanosecondsByPID,
+        wallTimeNanoseconds: wallTime,
+        identityChanged: { pid in
+          guard let before = previousSnapshotsByPID[pid], let now = snapshotsByPID[pid]
+          else { return false }
+          return before.startIdentity != now.startIdentity
+        })
+    }
+    previousGPUTimeByPID = reading.gpuTimeNanosecondsByPID
+    return GPUSample(
+      model: reading.model,
+      coreCount: reading.coreCount,
+      utilizationPercent: reading.deviceUtilizationPercent,
+      rendererPercent: reading.rendererUtilizationPercent,
+      tilerPercent: reading.tilerUtilizationPercent,
+      allocatedMemoryBytes: reading.allocatedMemoryBytes,
+      inUseMemoryBytes: reading.inUseMemoryBytes,
+      processPercents: percents,
+      processNames: reading.clientNamesByPID)
+  }
+
+  private func sampleDrives(
+    now: UInt64, wallTime: UInt64
+  ) -> (volumes: [VolumeSnapshot], activity: [String: DiskActivity]) {
+    var facts = VolumeSampler.sampleFacts()
+    let startupIndex = facts.firstIndex(where: \.isStartup)
+    refreshSlowReadsIfDue(now: now, startupMountPath: startupIndex.map { facts[$0].mountPath })
+
+    // Finder's free space is available plus purgeable. Available is
+    // read every tick; the purgeable share is the paced part.
+    if let startupIndex, let purgeableBytes {
+      let (sum, overflowed) = facts[startupIndex].availableBytes
+        .addingReportingOverflow(purgeableBytes)
+      facts[startupIndex].importantAvailableBytes = min(
+        overflowed ? .max : sum, facts[startupIndex].totalBytes)
+    }
+
+    let counters = VolumeClassifier.counters(from: facts)
+    var activity: [String: DiskActivity] = [:]
+    for (disk, current) in counters {
+      activity[disk] = DiskActivityDelta.activity(
+        previous: previousDiskCounters[disk], current: current,
+        wallTimeNanoseconds: wallTime)
+    }
+    previousDiskCounters = counters
+    return (VolumeClassifier.snapshots(from: facts), activity)
+  }
+
+  /// Two reads are too slow or too invasive for every tick: purgeable
+  /// space costs about 11 ms, and SMART opens a user client on the
+  /// drive. Neither value moves quickly, so both refresh on the first
+  /// tick and then once per slow interval.
+  private func refreshSlowReadsIfDue(now: UInt64, startupMountPath: String?) {
+    if let last = slowReadTimestamp, now >= last, now - last < slowReadIntervalNanoseconds {
+      return
+    }
+    slowReadTimestamp = now
+    purgeableBytes = startupMountPath.flatMap(VolumeSampler.purgeableBytes(forMountPath:))
+    if let driveHealthReader {
+      driveHealth = driveHealthReader()
+    }
   }
 }

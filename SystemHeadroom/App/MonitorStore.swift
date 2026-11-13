@@ -26,6 +26,18 @@ final class MonitorStore {
   /// [] = genuinely nothing listening. Starts [] so launch shows the
   /// empty state, not the failure state, before the first sample.
   private(set) var portGroups: [PortGroup]? = []
+  /// nil when no GPU reported utilization: an unsupported Mac or a
+  /// virtual machine. Also nil before the first sample; `lastUpdated`
+  /// tells the two apart.
+  private(set) var gpu: GPUSample?
+  /// nil until a second sample gives the GPU counters a delta.
+  private(set) var topGPUApps: [GPUAppUsage]?
+  /// Drives only, startup volume first. Empty when none could be read.
+  private(set) var volumes: [VolumeSnapshot] = []
+  /// Keyed by physical disk. A disk is absent until its second sample.
+  private(set) var diskActivity: [String: DiskActivity] = [:]
+  /// Always empty in the sandboxed build, which may not read SMART.
+  private(set) var driveHealth: [DriveHealth] = []
   private(set) var systemSummary = SystemSummary(
     cpuPercent: nil, memoryUsedBytes: 0, memoryTotalBytes: 0)
   private(set) var processMemoryMetric = ProcessMemoryMetric.current
@@ -211,6 +223,15 @@ final class MonitorStore {
     portGroups = PortGroupBuilder.build(
       sockets: tick.sockets, groups: groups,
       fallbackNamesByPID: tick.socketFallbackNames)
+    gpu = tick.gpu
+    topGPUApps = tick.gpu?.processPercents.map { percents in
+      GPUUsageBuilder.build(
+        percentByPID: percents, groups: groups,
+        fallbackNamesByPID: tick.gpu?.processNames ?? [:], limit: topListLimit)
+    }
+    volumes = tick.volumes
+    diskActivity = tick.diskActivity
+    driveHealth = tick.driveHealth
     systemSummary = tick.system
     processMemoryMetric = tick.processMemoryMetric
     lastUpdated = Date()
@@ -356,7 +377,12 @@ extension MonitorStore {
     summary: SystemSummary,
     usesPorcelainAppearance: Bool = true,
     canTerminate: Bool = false,
-    portGroups: [PortGroup]? = []
+    portGroups: [PortGroup]? = [],
+    gpu: GPUSample? = nil,
+    gpuApps: [GPUAppUsage]? = [],
+    volumes: [VolumeSnapshot] = [],
+    diskActivity: [String: DiskActivity] = [:],
+    driveHealth: [DriveHealth] = []
   ) -> MonitorStore {
     let suiteName = "com.vinnycarpenter.SystemHeadroom.preview"
     guard let defaults = UserDefaults(suiteName: suiteName) else {
@@ -374,6 +400,11 @@ extension MonitorStore {
     store.topCPUGroups = cpuGroups
     store.topMemoryGroups = memoryGroups
     store.portGroups = portGroups
+    store.gpu = gpu
+    store.topGPUApps = gpuApps
+    store.volumes = volumes
+    store.diskActivity = diskActivity
+    store.driveHealth = driveHealth
     store.systemSummary = summary
     store.processMemoryMetric = canTerminate ? .physicalFootprint : .residentSize
     store.lastUpdated = Date()

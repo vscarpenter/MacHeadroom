@@ -61,6 +61,7 @@
 		E1000000000000000000001D /* DiskActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001D /* DiskActivityTests.swift */; };
 		E1000000000000000000001E /* DriveSamplerLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001E /* DriveSamplerLiveTests.swift */; };
 		E1000000000000000000001F /* DriveHealthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000000000000000000001F /* DriveHealthTests.swift */; };
+		E10000000000000000000020 /* HardwareTickTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000020 /* HardwareTickTests.swift */; };
 		F10000000000000000000001 /* AppMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* AppMetadata.swift */; };
 		F10000000000000000000002 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppGroup.swift */; };
 		F10000000000000000000003 /* GroupingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* GroupingEngine.swift */; };
@@ -166,6 +167,7 @@
 		E2000000000000000000001D /* DiskActivityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskActivityTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000001E /* DriveSamplerLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSamplerLiveTests.swift; sourceTree = "<group>"; };
 		E2000000000000000000001F /* DriveHealthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveHealthTests.swift; sourceTree = "<group>"; };
+		E20000000000000000000020 /* HardwareTickTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareTickTests.swift; sourceTree = "<group>"; };
 		F20000000000000000000001 /* AppMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetadata.swift; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		F20000000000000000000003 /* GroupingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingEngine.swift; sourceTree = "<group>"; };
@@ -316,6 +318,7 @@
 				E2000000000000000000001D /* DiskActivityTests.swift */,
 				E2000000000000000000001E /* DriveSamplerLiveTests.swift */,
 				E2000000000000000000001F /* DriveHealthTests.swift */,
+				E20000000000000000000020 /* HardwareTickTests.swift */,
 			);
 			path = SystemHeadroomTests;
 			sourceTree = "<group>";
@@ -592,6 +595,7 @@
 				E1000000000000000000001D /* DiskActivityTests.swift in Sources */,
 				E1000000000000000000001E /* DriveSamplerLiveTests.swift in Sources */,
 				E1000000000000000000001F /* DriveHealthTests.swift in Sources */,
+				E10000000000000000000020 /* HardwareTickTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
