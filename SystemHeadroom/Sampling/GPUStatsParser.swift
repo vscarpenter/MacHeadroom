@@ -19,6 +19,11 @@ struct GPUReading: Sendable, Equatable {
   var gpuTimeNanosecondsByPID: [Int32: UInt64]
   /// Names from the registry, for pids outside the same-user process table.
   var clientNamesByPID: [Int32: String]
+  /// Whether any client carried a usage list at all. Apple silicon
+  /// drivers publish one per client. A driver that publishes none
+  /// reports utilization but no per-app time, which is different from
+  /// every app being idle.
+  var reportsClientUsage: Bool
 }
 
 /// Turns IORegistry property dictionaries into a GPUReading. Pure and
@@ -29,23 +34,47 @@ enum GPUStatsParser {
   /// `IOUserClientCreator` and `AppUsage`. Returns nil when the
   /// accelerator reports no device utilization.
   static func reading(accelerator: [String: Any], clients: [[String: Any]]) -> GPUReading? {
-    guard let statistics = accelerator["PerformanceStatistics"] as? [String: Any],
-      let deviceUtilization = double(statistics["Device Utilization %"])
-    else { return nil }
+    reading(accelerators: [(properties: accelerator, clients: clients)])
+  }
 
+  /// A Mac can have two GPUs. The busier one supplies the headline
+  /// figures, since headroom is whatever the fuller GPU has left.
+  /// Client GPU time merges across all of them. Returns nil when no
+  /// accelerator reports device utilization.
+  static func reading(
+    accelerators: [(properties: [String: Any], clients: [[String: Any]])]
+  ) -> GPUReading? {
+    var busiest: (statistics: [String: Any], utilization: Double, properties: [String: Any])?
     var timeByPID: [Int32: UInt64] = [:]
     var namesByPID: [Int32: String] = [:]
-    for client in clients {
-      guard let creator = client["IOUserClientCreator"] as? String,
-        let owner = parseCreator(creator),
-        let usage = client["AppUsage"] as? [[String: Any]]
-      else { continue }
-      let clientTime = usage.reduce(UInt64(0)) { total, entry in
-        saturatingSum(total, unsigned(entry["accumulatedGPUTime"]) ?? 0)
+    var reportsClientUsage = false
+
+    for accelerator in accelerators {
+      if let statistics = accelerator.properties["PerformanceStatistics"] as? [String: Any],
+        let utilization = double(statistics["Device Utilization %"]),
+        utilization > busiest?.utilization ?? -.infinity
+      {
+        busiest = (statistics, utilization, accelerator.properties)
       }
-      timeByPID[owner.pid] = saturatingSum(timeByPID[owner.pid] ?? 0, clientTime)
-      namesByPID[owner.pid] = owner.name
+
+      for client in accelerator.clients {
+        guard let usage = client["AppUsage"] as? [[String: Any]] else { continue }
+        reportsClientUsage = true
+        guard let creator = client["IOUserClientCreator"] as? String,
+          let owner = parseCreator(creator)
+        else { continue }
+        let clientTime = usage.reduce(UInt64(0)) { total, entry in
+          saturatingSum(total, unsigned(entry["accumulatedGPUTime"]) ?? 0)
+        }
+        timeByPID[owner.pid] = saturatingSum(timeByPID[owner.pid] ?? 0, clientTime)
+        namesByPID[owner.pid] = owner.name
+      }
     }
+
+    guard let busiest else { return nil }
+    let statistics = busiest.statistics
+    let accelerator = busiest.properties
+    let deviceUtilization = busiest.utilization
 
     return GPUReading(
       model: text(accelerator["model"]),
@@ -56,7 +85,8 @@ enum GPUStatsParser {
       allocatedMemoryBytes: unsigned(statistics["Alloc system memory"]),
       inUseMemoryBytes: unsigned(statistics["In use system memory"]),
       gpuTimeNanosecondsByPID: timeByPID,
-      clientNamesByPID: namesByPID
+      clientNamesByPID: namesByPID,
+      reportsClientUsage: reportsClientUsage
     )
   }
 

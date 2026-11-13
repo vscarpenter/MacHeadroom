@@ -12,8 +12,9 @@ actor SamplerService {
   private var lastSocketsFailed = false
   private var lastGPUMissing = false
   private var lastDriveHealthCount: Int?
-  private var previousGPUTimeByPID: [Int32: UInt64]?
-  private var previousDiskCounters: [String: DiskCounters] = [:]
+  private var hardwareBaseline: HardwareBaseline?
+  private var lastGPUPercents: [Int32: Double]?
+  private var lastDiskActivity: [String: DiskActivity] = [:]
   private var slowReadTimestamp: UInt64?
   private var purgeableBytes: UInt64?
   private var driveHealth: [DriveHealth] = []
@@ -22,6 +23,22 @@ actor SamplerService {
   private let processMemoryMetric: ProcessMemoryMetric
   private let driveHealthReader: (@Sendable () -> [DriveHealth])?
   private let slowReadIntervalNanoseconds: UInt64
+  private let minimumHardwareWindowNanoseconds: UInt64
+
+  /// What the GPU and disk deltas measure from. It is kept apart from
+  /// the CPU baseline because its window has two limits the CPU delta
+  /// does not enforce. A tick too soon after it must not shrink the
+  /// window: one WindowServer frame fills 3 ms. A tick after a pause
+  /// must not stretch it across the pause.
+  private struct HardwareBaseline {
+    let timestamp: UInt64
+    let gpuTimeByPID: [Int32: UInt64]?
+    /// Start identities when the baseline was taken, for the pid-reuse
+    /// guard. Carrying them here means the guard never depends on when
+    /// the previous process snapshots are replaced.
+    let identitiesByPID: [Int32: String]
+    let diskCounters: [String: DiskCounters]
+  }
 
   private static let log = Logger(
     subsystem: "com.vinnycarpenter.SystemHeadroom", category: "ports")
@@ -33,13 +50,15 @@ actor SamplerService {
     logicalCoreCount: Int = max(ProcessInfo.processInfo.activeProcessorCount, 1),
     processMemoryMetric: ProcessMemoryMetric = .current,
     driveHealthReader: (@Sendable () -> [DriveHealth])? = SamplerService.liveDriveHealthReader(),
-    slowReadIntervalNanoseconds: UInt64 = 60 * 1_000_000_000
+    slowReadIntervalNanoseconds: UInt64 = 60 * 1_000_000_000,
+    minimumHardwareWindowNanoseconds: UInt64 = 250_000_000
   ) {
     self.timebase = timebase
     self.logicalCoreCount = logicalCoreCount
     self.processMemoryMetric = processMemoryMetric
     self.driveHealthReader = driveHealthReader
     self.slowReadIntervalNanoseconds = slowReadIntervalNanoseconds
+    self.minimumHardwareWindowNanoseconds = minimumHardwareWindowNanoseconds
   }
 
   /// nil in the sandboxed build: the SMART read opens a user client the
@@ -60,7 +79,12 @@ actor SamplerService {
   /// the call waits its turn on the actor, and dividing a full sweep's CPU
   /// accrual by that near-zero wall time inflated percentages a
   /// thousandfold when two refreshes overlapped.
-  func tick(convention: CPUConvention) -> MonitorTick {
+  ///
+  /// `resumingAfterPause` is a fact about the caller's schedule, not a
+  /// time: the store sets it on the first tick after sampling restarts.
+  /// The GPU and disk deltas then prime again rather than average over
+  /// however long the popover was closed.
+  func tick(convention: CPUConvention, resumingAfterPause: Bool = false) -> MonitorTick {
     let now = DispatchTime.now().uptimeNanoseconds
     let table = ProcessTableSampler.sampleTable(memoryMetric: processMemoryMetric)
     let snapshots = table.snapshots
@@ -103,8 +127,12 @@ actor SamplerService {
     let snapshotsByPID = Dictionary(
       uniqueKeysWithValues: snapshots.map { ($0.pid, $0) }
     )
-    let gpu = sampleGPU(snapshotsByPID: snapshotsByPID, wallTime: wallTime)
-    let drives = sampleDrives(now: now, wallTime: wallTime)
+    if resumingAfterPause {
+      hardwareBaseline = nil
+      lastGPUPercents = nil
+      lastDiskActivity = [:]
+    }
+    let hardware = sampleHardware(now: now, snapshotsByPID: snapshotsByPID)
 
     let hostTicks = HostSampler.sampleCPUTicks()
     let hostMemory = HostSampler.sampleMemory()
@@ -132,57 +160,90 @@ actor SamplerService {
       logicalCoreCount: logicalCoreCount,
       sockets: sockets,
       socketFallbackNames: socketFallbackNames,
-      gpu: gpu,
-      volumes: drives.volumes,
-      diskActivity: drives.activity,
+      gpu: hardware.gpu,
+      volumes: hardware.volumes,
+      diskActivity: hardware.activity,
       driveHealth: driveHealth
     )
   }
 
-  /// Must run before `previousSnapshotsByPID` is replaced: the pid-reuse
-  /// guard compares each pid's start identity across the two ticks.
-  private func sampleGPU(
-    snapshotsByPID: [Int32: ProcessSnapshot], wallTime: UInt64
-  ) -> GPUSample? {
-    guard let reading = GPUSampler.sample() else {
-      // Logged on the transition only, like the ports failure: an Intel
-      // Mac or a virtual machine would otherwise log every tick.
-      if !lastGPUMissing {
-        Self.hardwareLog.notice("no accelerator reports utilization; GPU tab unavailable")
-      }
-      lastGPUMissing = true
-      previousGPUTimeByPID = nil
-      return nil
-    }
-    lastGPUMissing = false
+  private func sampleHardware(
+    now: UInt64, snapshotsByPID: [Int32: ProcessSnapshot]
+  ) -> (gpu: GPUSample?, volumes: [VolumeSnapshot], activity: [String: DiskActivity]) {
+    let reading = readGPU()
+    let drives = readDrives(now: now)
+
     var percents: [Int32: Double]?
-    if let previous = previousGPUTimeByPID, wallTime > 0 {
-      percents = GPUDelta.percents(
-        previous: previous,
-        current: reading.gpuTimeNanosecondsByPID,
-        wallTimeNanoseconds: wallTime,
-        identityChanged: { pid in
-          guard let before = previousSnapshotsByPID[pid], let now = snapshotsByPID[pid]
-          else { return false }
-          return before.startIdentity != now.startIdentity
-        })
+    var activity: [String: DiskActivity] = [:]
+    let window = hardwareBaseline.map { now > $0.timestamp ? now - $0.timestamp : 0 }
+    if let window, window < minimumHardwareWindowNanoseconds {
+      // Too soon to measure. Repeat the last figures and leave the
+      // baseline where it is, so the window keeps growing.
+      percents = lastGPUPercents
+      activity = lastDiskActivity
+    } else {
+      if let baseline = hardwareBaseline, let window {
+        if let reading, reading.reportsClientUsage, let previous = baseline.gpuTimeByPID {
+          percents = GPUDelta.percents(
+            previous: previous,
+            current: reading.gpuTimeNanosecondsByPID,
+            wallTimeNanoseconds: window,
+            identityChanged: { pid in
+              guard let before = baseline.identitiesByPID[pid],
+                let current = snapshotsByPID[pid]?.startIdentity
+              else { return false }
+              return before != current
+            })
+        }
+        for (disk, current) in drives.counters {
+          activity[disk] = DiskActivityDelta.activity(
+            previous: baseline.diskCounters[disk], current: current,
+            wallTimeNanoseconds: window)
+        }
+      }
+      lastGPUPercents = percents
+      lastDiskActivity = activity
+      var identities: [Int32: String] = [:]
+      for pid in (reading?.gpuTimeNanosecondsByPID ?? [:]).keys {
+        identities[pid] = snapshotsByPID[pid]?.startIdentity
+      }
+      hardwareBaseline = HardwareBaseline(
+        timestamp: now,
+        gpuTimeByPID: reading?.gpuTimeNanosecondsByPID,
+        identitiesByPID: identities,
+        diskCounters: drives.counters)
     }
-    previousGPUTimeByPID = reading.gpuTimeNanosecondsByPID
-    return GPUSample(
-      model: reading.model,
-      coreCount: reading.coreCount,
-      utilizationPercent: reading.deviceUtilizationPercent,
-      rendererPercent: reading.rendererUtilizationPercent,
-      tilerPercent: reading.tilerUtilizationPercent,
-      allocatedMemoryBytes: reading.allocatedMemoryBytes,
-      inUseMemoryBytes: reading.inUseMemoryBytes,
-      processPercents: percents,
-      processNames: reading.clientNamesByPID)
+
+    let gpu = reading.map { reading in
+      GPUSample(
+        model: reading.model,
+        coreCount: reading.coreCount,
+        utilizationPercent: reading.deviceUtilizationPercent,
+        rendererPercent: reading.rendererUtilizationPercent,
+        tilerPercent: reading.tilerUtilizationPercent,
+        allocatedMemoryBytes: reading.allocatedMemoryBytes,
+        inUseMemoryBytes: reading.inUseMemoryBytes,
+        reportsProcessUsage: reading.reportsClientUsage,
+        processPercents: reading.reportsClientUsage ? percents : nil,
+        processNames: reading.clientNamesByPID)
+    }
+    return (gpu, drives.volumes, activity)
   }
 
-  private func sampleDrives(
-    now: UInt64, wallTime: UInt64
-  ) -> (volumes: [VolumeSnapshot], activity: [String: DiskActivity]) {
+  private func readGPU() -> GPUReading? {
+    let reading = GPUSampler.sample()
+    // Logged on the transition only, like the ports failure: an Intel
+    // Mac or a virtual machine would otherwise log every tick.
+    if reading == nil, !lastGPUMissing {
+      Self.hardwareLog.notice("no accelerator reports utilization; GPU tab unavailable")
+    }
+    lastGPUMissing = reading == nil
+    return reading
+  }
+
+  private func readDrives(
+    now: UInt64
+  ) -> (volumes: [VolumeSnapshot], counters: [String: DiskCounters]) {
     var facts = VolumeSampler.sampleFacts()
     let startupIndex = facts.firstIndex(where: \.isStartup)
     refreshSlowReadsIfDue(now: now, startupMountPath: startupIndex.map { facts[$0].mountPath })
@@ -195,16 +256,7 @@ actor SamplerService {
       facts[startupIndex].importantAvailableBytes = min(
         overflowed ? .max : sum, facts[startupIndex].totalBytes)
     }
-
-    let counters = VolumeClassifier.counters(from: facts)
-    var activity: [String: DiskActivity] = [:]
-    for (disk, current) in counters {
-      activity[disk] = DiskActivityDelta.activity(
-        previous: previousDiskCounters[disk], current: current,
-        wallTimeNanoseconds: wallTime)
-    }
-    previousDiskCounters = counters
-    return (VolumeClassifier.snapshots(from: facts), activity)
+    return (VolumeClassifier.snapshots(from: facts), VolumeClassifier.counters(from: facts))
   }
 
   /// Two reads are too slow or too invasive for every tick: purgeable

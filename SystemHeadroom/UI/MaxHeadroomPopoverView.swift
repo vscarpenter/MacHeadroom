@@ -248,35 +248,37 @@ struct PorcelainPopoverView: View {
           GPUPresentation.statRows(
             gpu, installedMemoryBytes: store.systemSummary.memoryTotalBytes))
         sectionLabel("Top GPU apps")
-        gpuRanking
+        gpuRanking(for: gpu)
       }
     }
   }
 
-  /// nil means the counters have no delta yet; empty means nothing is
-  /// drawing on the GPU.
   @ViewBuilder
-  private var gpuRanking: some View {
-    if let apps = store.topGPUApps {
-      if apps.isEmpty {
-        inlineMessage("No GPU activity", detail: "No app is drawing on the GPU right now.")
-      } else {
-        ForEach(Array(apps.enumerated()), id: \.element.id) { index, usage in
-          PorcelainGPUAppRowView(
-            usage: usage,
-            maxValue: apps.first?.gpuPercent ?? 0,
-            isTopConsumer: index == 0,
-            palette: palette,
-            store: store
-          )
+  private func gpuRanking(for gpu: GPUSample) -> some View {
+    let apps = store.topGPUApps ?? []
+    switch GPUPresentation.rankingState(gpu: gpu, apps: store.topGPUApps) {
+    case .unreported:
+      inlineMessage(
+        "App figures unavailable",
+        detail: "This Mac's graphics driver does not report GPU time per app.")
+    case .measuring:
+      inlineMessage("Measuring…", detail: "App figures need two samples.")
+    case .idle:
+      inlineMessage("No GPU activity", detail: "No app is drawing on the GPU right now.")
+    case .ranked:
+      ForEach(Array(apps.enumerated()), id: \.element.id) { index, usage in
+        PorcelainGPUAppRowView(
+          usage: usage,
+          maxValue: apps.first?.gpuPercent ?? 0,
+          isTopConsumer: index == 0,
+          palette: palette,
+          store: store
+        )
 
-          if usage.id != apps.last?.id {
-            porcelainRowDivider
-          }
+        if usage.id != apps.last?.id {
+          porcelainRowDivider
         }
       }
-    } else {
-      inlineMessage("Measuring…", detail: "App figures need two samples.")
     }
   }
 

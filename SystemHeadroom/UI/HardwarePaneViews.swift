@@ -92,25 +92,25 @@ struct GPUPaneView: View {
           .padding(.top, 4)
           .accessibilityAddTraits(.isHeader)
 
-        ranking
+        ranking(for: gpu)
       }
     }
   }
 
-  /// nil means the counters have no delta yet; empty means nothing is
-  /// drawing on the GPU.
   @ViewBuilder
-  private var ranking: some View {
-    if let apps = store.topGPUApps {
-      if apps.isEmpty {
-        PaneMessage("No GPU activity")
-      } else {
-        ForEach(apps) { usage in
-          GPUAppRowView(usage: usage, maxValue: apps.first?.gpuPercent ?? 0, store: store)
-        }
-      }
-    } else {
+  private func ranking(for gpu: GPUSample) -> some View {
+    let apps = store.topGPUApps ?? []
+    switch GPUPresentation.rankingState(gpu: gpu, apps: store.topGPUApps) {
+    case .unreported:
+      PaneMessage("App figures unavailable")
+    case .measuring:
       PaneMessage("Measuring…")
+    case .idle:
+      PaneMessage("No GPU activity")
+    case .ranked:
+      ForEach(apps) { usage in
+        GPUAppRowView(usage: usage, maxValue: apps.first?.gpuPercent ?? 0, store: store)
+      }
     }
   }
 }

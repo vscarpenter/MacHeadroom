@@ -8,12 +8,28 @@ struct GPUPresentationTests {
   private static func gpu(
     utilization: Double = 27, renderer: Double? = 27, tiler: Double? = 12,
     allocated: UInt64? = 5_182_881_792, inUse: UInt64? = 1_850_884_096,
-    model: String? = "Apple M4 Pro", cores: Int? = 20
+    model: String? = "Apple M4 Pro", cores: Int? = 20, reportsProcessUsage: Bool = true
   ) -> GPUSample {
     GPUSample(
       model: model, coreCount: cores, utilizationPercent: utilization,
       rendererPercent: renderer, tilerPercent: tiler, allocatedMemoryBytes: allocated,
-      inUseMemoryBytes: inUse, processPercents: nil, processNames: [:])
+      inUseMemoryBytes: inUse, reportsProcessUsage: reportsProcessUsage,
+      processPercents: nil, processNames: [:])
+  }
+
+  @Test("The ranking tells apart unreported, measuring, idle, and ranked")
+  func rankingState() {
+    let row = GPUAppUsage(
+      groupKey: "gpu-pid:1", name: "one", bundleIdentifier: nil, representativePID: 1,
+      gpuPercent: 3, processCount: 1, appGroup: nil)
+    let silent = Self.gpu(reportsProcessUsage: false)
+
+    #expect(GPUPresentation.rankingState(gpu: silent, apps: nil) == .unreported)
+    // A driver that reports nothing per app is never "idle".
+    #expect(GPUPresentation.rankingState(gpu: silent, apps: []) == .unreported)
+    #expect(GPUPresentation.rankingState(gpu: Self.gpu(), apps: nil) == .measuring)
+    #expect(GPUPresentation.rankingState(gpu: Self.gpu(), apps: []) == .idle)
+    #expect(GPUPresentation.rankingState(gpu: Self.gpu(), apps: [row]) == .ranked)
   }
 
   @Test("Headroom is what utilization leaves, and unknown without a GPU")
@@ -170,6 +186,12 @@ struct DrivesPresentationTests {
     #expect(DrivesPresentation.paneState(volumes: [Self.startup], hasSampled: false) == .ready)
     #expect(
       DrivesPresentation.usageDetail([], hasSampled: false) == "Waiting for the first sample")
+  }
+
+  @Test("Without a startup volume the header says so, and does not call every drive unavailable")
+  func noStartupVolume() {
+    #expect(DrivesPresentation.headroomPercent([Self.external]) == nil)
+    #expect(DrivesPresentation.usageDetail([Self.external]) == "Startup drive unavailable")
   }
 
   @Test("Kind lines follow location, medium, and bus")

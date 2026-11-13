@@ -105,6 +105,69 @@ struct GPUStatsParserTests {
     #expect(reading.clientNamesByPID == [783: "storagekitd"])
   }
 
+  @Test("A driver whose clients carry no usage list is marked as not reporting per-app time")
+  func reportsClientUsage() throws {
+    let silent = try #require(
+      GPUStatsParser.reading(
+        accelerator: Self.accelerator(),
+        clients: [["IOUserClientCreator": "pid 800, legacy"]]))
+    #expect(!silent.reportsClientUsage)
+
+    let noClients = try #require(
+      GPUStatsParser.reading(accelerator: Self.accelerator(), clients: []))
+    #expect(!noClients.reportsClientUsage)
+
+    // An empty usage list still shows the driver publishes the property.
+    let idle = try #require(
+      GPUStatsParser.reading(
+        accelerator: Self.accelerator(),
+        clients: [Self.client("pid 783, storagekitd", times: [])]))
+    #expect(idle.reportsClientUsage)
+  }
+
+  @Test("With two GPUs the busier one supplies the headline and the clients merge")
+  func busiestAccelerator() throws {
+    let integrated = Self.accelerator(
+      statistics: ["Device Utilization %": 2, "Alloc system memory": 100],
+      model: "Integrated")
+    let discrete = Self.accelerator(
+      statistics: ["Device Utilization %": 64, "Alloc system memory": 900],
+      model: "Discrete")
+
+    let reading = try #require(
+      GPUStatsParser.reading(accelerators: [
+        (properties: integrated, clients: [Self.client("pid 10, alpha", times: [5])]),
+        (
+          properties: discrete,
+          clients: [
+            Self.client("pid 10, alpha", times: [7]), Self.client("pid 11, beta", times: [1]),
+          ]
+        ),
+      ]))
+
+    #expect(reading.deviceUtilizationPercent == 64)
+    #expect(reading.model == "Discrete")
+    #expect(reading.allocatedMemoryBytes == 900)
+    #expect(reading.gpuTimeNanosecondsByPID == [10: 12, 11: 1])
+    #expect(reading.clientNamesByPID == [10: "alpha", 11: "beta"])
+    #expect(reading.reportsClientUsage)
+  }
+
+  @Test("An accelerator with no utilization is skipped; none reporting means no reading")
+  func skipsSilentAccelerators() throws {
+    let reporting = Self.accelerator(statistics: ["Device Utilization %": 9])
+    let reading = try #require(
+      GPUStatsParser.reading(accelerators: [
+        (properties: [:], clients: [Self.client("pid 10, alpha", times: [5])]),
+        (properties: reporting, clients: []),
+      ]))
+    #expect(reading.deviceUtilizationPercent == 9)
+    #expect(reading.gpuTimeNanosecondsByPID == [10: 5])
+
+    #expect(GPUStatsParser.reading(accelerators: [(properties: [:], clients: [])]) == nil)
+    #expect(GPUStatsParser.reading(accelerators: []) == nil)
+  }
+
   @Test("Creator strings parse to a pid and a name")
   func parseCreator() throws {
     let windowServer = try #require(GPUStatsParser.parseCreator("pid 653, WindowServer"))

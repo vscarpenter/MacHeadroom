@@ -122,7 +122,8 @@
     static let gpuSample = GPUSample(
       model: "Apple M4 Pro", coreCount: 20, utilizationPercent: 27, rendererPercent: 27,
       tilerPercent: 12, allocatedMemoryBytes: 5_182_881_792,
-      inUseMemoryBytes: 1_850_884_096, processPercents: [:], processNames: [:])
+      inUseMemoryBytes: 1_850_884_096, reportsProcessUsage: true, processPercents: [:],
+      processNames: [:])
 
     /// Three app rows and one system row, so both row variants render.
     static func makeGPUApps(from groups: [AppGroup]) -> [GPUAppUsage] {

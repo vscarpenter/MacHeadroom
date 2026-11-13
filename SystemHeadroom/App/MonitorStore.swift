@@ -144,6 +144,10 @@ final class MonitorStore {
   private var timerTask: Task<Void, Never>?
   private var isPopoverOpen = false
   private var alertTracker = CPUAlertTracker()
+  /// Set whenever the sampling loop starts and spent by the next
+  /// sample. The sampler then primes its GPU and disk deltas again
+  /// rather than measure across however long sampling was stopped.
+  private var resumesAfterPause = true
 
   private var needsBackgroundSampling: Bool {
     showsMenuBarText || cpuAlertsEnabled
@@ -213,7 +217,9 @@ final class MonitorStore {
   }
 
   func refreshNow() async {
-    let tick = await sampler.tick(convention: cpuConvention)
+    let resuming = resumesAfterPause
+    resumesAfterPause = false
+    let tick = await sampler.tick(convention: cpuConvention, resumingAfterPause: resuming)
     let metadata = Self.currentAppMetadata()
     let groups = GroupingEngine.group(measurements: tick.processes, metadataByPID: metadata)
 
@@ -238,6 +244,17 @@ final class MonitorStore {
     evaluateAlerts(
       groups: topCPUGroups, convention: tick.convention,
       logicalCoreCount: tick.logicalCoreCount, now: Date())
+  }
+
+  /// True while something on screen has one sample and needs two: CPU
+  /// percents, the GPU app ranking, or disk throughput. The loop below
+  /// answers it with one quick follow-up sample. A driver that reports
+  /// no per-app GPU time has nothing to wait for.
+  var awaitsSecondSample: Bool {
+    if systemSummary.cpuPercent == nil { return true }
+    if let gpu, gpu.reportsProcessUsage, topGPUApps == nil { return true }
+    let hasCountedDisk = volumes.contains { $0.physicalDisk != nil }
+    return hasCountedDisk && diskActivity.isEmpty
   }
 
   /// Internal so a test can drive it with fixture groups and a fixed
@@ -309,18 +326,20 @@ final class MonitorStore {
 
   private func start() {
     guard timerTask == nil else { return }
+    resumesAfterPause = true
     timerTask = Task { [weak self] in
-      // The first tick after launch only primes the CPU baseline (every
-      // delta needs two samples), so it publishes no CPU numbers. Follow
-      // it with one quick sample so real data lands in about a second
-      // instead of a full interval later. Once only: if the host reading
-      // ever failed outright, this must not tighten the loop to 1s forever.
+      // The first tick after a start only primes a baseline (every
+      // delta needs two samples): CPU on launch, and the GPU and disk
+      // deltas on every restart. Follow it with one quick sample so
+      // real data lands in about a second instead of a full interval
+      // later. Once only: if a reading ever failed outright, this must
+      // not tighten the loop to 1s forever.
       var usedQuickFollowUp = false
       while let self, !Task.isCancelled {
         await self.refreshNow()
         guard !Task.isCancelled else { return }
         let delay: TimeInterval
-        if !usedQuickFollowUp, self.systemSummary.cpuPercent == nil {
+        if !usedQuickFollowUp, self.awaitsSecondSample {
           usedQuickFollowUp = true
           delay = min(1, self.samplingInterval)
         } else {

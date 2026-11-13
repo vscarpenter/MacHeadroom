@@ -30,7 +30,9 @@ struct GPUSamplerLiveTests {
     #expect((0...100).contains(reading.deviceUtilizationPercent))
     #expect(reading.allocatedMemoryBytes != nil)
     #expect(!reading.gpuTimeNanosecondsByPID.isEmpty)
-    #expect(reading.clientNamesByPID.count == reading.gpuTimeNanosecondsByPID.count)
+    #expect(reading.reportsClientUsage)
+    // Something has drawn since boot, so the counters are not all zero.
+    #expect(reading.gpuTimeNanosecondsByPID.values.contains { $0 > 0 })
   }
 
   @Test("The registry sweep is cheap enough to ride every tick")

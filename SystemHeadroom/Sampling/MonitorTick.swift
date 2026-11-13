@@ -23,8 +23,11 @@ struct GPUSample: Sendable, Equatable {
   let tilerPercent: Double?
   let allocatedMemoryBytes: UInt64?
   let inUseMemoryBytes: UInt64?
-  /// Share of wall time per pid. nil until a second tick gives the
-  /// counters a delta; a pid is absent when its own delta is unknown.
+  /// false when the driver publishes no per-app GPU time at all. The
+  /// ranking then says so, instead of calling every app idle.
+  let reportsProcessUsage: Bool
+  /// Share of wall time per pid. nil until two ticks span a usable
+  /// window; a pid is absent when its own delta is unknown.
   let processPercents: [Int32: Double]?
   /// Registry names for pids outside the same-user process table.
   let processNames: [Int32: String]

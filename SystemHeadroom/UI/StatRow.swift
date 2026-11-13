@@ -30,7 +30,24 @@ enum HardwarePaneState: Equatable {
   static let waitingDetail = "Waiting for the first sample"
 }
 
+/// What the "Top GPU apps" ranking draws under the stat rows.
+enum GPURankingState: Equatable {
+  /// The driver publishes no per-app GPU time on this Mac.
+  case unreported
+  /// The counters do not yet span a usable window.
+  case measuring
+  /// Measured, and no app is above the display floor.
+  case idle
+  case ranked
+}
+
 enum GPUPresentation {
+  static func rankingState(gpu: GPUSample, apps: [GPUAppUsage]?) -> GPURankingState {
+    guard gpu.reportsProcessUsage else { return .unreported }
+    guard let apps else { return .measuring }
+    return apps.isEmpty ? .idle : .ranked
+  }
+
   static func paneState(gpu: GPUSample?, hasSampled: Bool) -> HardwarePaneState {
     if gpu != nil { return .ready }
     return hasSampled ? .unavailable : .waiting
@@ -108,7 +125,10 @@ enum DrivesPresentation {
 
   static func usageDetail(_ volumes: [VolumeSnapshot], hasSampled: Bool = true) -> String {
     guard let startup = volumes.first(where: \.isStartup) else {
-      return hasSampled ? "Drives unavailable" : HardwarePaneState.waitingDetail
+      guard hasSampled else { return HardwarePaneState.waitingDetail }
+      // The headline is the startup drive's. Other drives may still be
+      // listed below, so only an empty list is "Drives unavailable".
+      return volumes.isEmpty ? "Drives unavailable" : "Startup drive unavailable"
     }
     let place =
       switch startup.location {
